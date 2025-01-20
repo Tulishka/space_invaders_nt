@@ -12,13 +12,15 @@ pygame.mixer.init()
 sounds = {
     "player_shot1": load("sound/laser1.wav", 0.8),
     "player_shot2": load("sound/laser2.wav", 0.8),
-
     "player_hit": load("sound/exp2.wav", 1),
+
+    "alien_dead": load("sound/exp1.wav", 0.3),
+    "alien_shot1": load("sound/easy_blaster.wav", 1),
+    "alien_shot2": load("sound/blaster2.wav", 1),
+    "alien_shot3": load("sound/blaster1.wav", 1),
 
     "menu_beep": load("sound/hit2.wav", 1),
     "menu_start": load("sound/start1.mp3", 0.2),
-
-    "alien_dead": load("sound/exp1.wav", 0.3),
 
 }
 

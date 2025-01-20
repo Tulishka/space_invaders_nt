@@ -4,6 +4,7 @@ from random import choice
 import settings
 from alien import Alien
 from scene_manager import SceneManager
+from sound import sounds
 
 
 class Swarm:
@@ -32,6 +33,12 @@ class Swarm:
         self.min_y = 0
         self.max_x = 0
         self.max_y = 0
+
+        self.sound_alien_shot = [
+            sounds["alien_shot1"],
+            sounds["alien_shot2"],
+            sounds["alien_shot3"],
+        ]
 
         self.alien_start_count = self.create()
         self.swarm_down_warp = 0
@@ -138,3 +145,4 @@ class Swarm:
 
                 alien_closest.shot()
                 self.shot_order_pos = (self.shot_order_pos + 1) % len(self.shot_order)
+                self.sound_alien_shot[alien_closest.type - 1].play()

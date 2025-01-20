@@ -39,7 +39,7 @@ class Player(Sprite):
         self.rect = self.image.get_rect(
             center=(
                 start_x,
-                scene_manager.SCREEN_HEIGHT - self.image.get_height()
+                settings.SCREEN_HEIGHT - self.image.get_height()
             )
         )
         self.time = 0
