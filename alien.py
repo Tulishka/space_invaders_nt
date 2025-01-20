@@ -4,6 +4,7 @@ import pygame
 from pygame.sprite import Sprite
 
 from projectile import Bomb
+from sound import play_sound
 
 
 class Alien(Sprite):
@@ -29,6 +30,7 @@ class Alien(Sprite):
 
     def die(self):
         self.kill()
+        play_sound("alien_dead")
 
     def hit(self):
         self.die()
