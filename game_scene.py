@@ -1,6 +1,7 @@
 import pygame
 
 import settings
+import sound
 from player import Player
 from scene import Scene
 from swarm import Swarm
@@ -108,6 +109,7 @@ class GameScene(Scene):
             if bullet:
                 bullet.kill()
                 self.lives -= 1
+                sound.play_sound("player_hit")
 
             if self.lives == 0 or self.swarm.max_y > player.rect.y:
                 self.lives = 0
