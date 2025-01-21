@@ -5,7 +5,7 @@ from projectile import Bullet
 
 import settings
 from scene_manager import SceneManager
-from sound import sounds
+from sound import sounds, play_sound
 
 
 class PlayerKeys:
@@ -35,6 +35,7 @@ class Player(Sprite):
         self.bullets_group = bullets_group
         self.num = num
         self.image = pygame.image.load(f'./img/player{self.num}.png')
+        self.images = [pygame.image.load(f'./img/player{self.num}.png'), pygame.image.load(f'./img/player_stasis.png')]
         self.kill_image = pygame.image.load(f'./img/player{self.num}k.png')
         self.rect = self.image.get_rect(
             center=(
@@ -49,9 +50,9 @@ class Player(Sprite):
         self.alt_keys = self.PLAYER_KEYS[self.num]
         self.shot_cooldown = 1
         self.dead = False
+        self.stasis = 0
 
         self.sound_shot = sounds[f"player_shot{self.num}"]
-
 
     def shot(self):
         self.shot_cooldown = settings.SHOT_COOLDOWN
@@ -64,6 +65,12 @@ class Player(Sprite):
 
         if self.dead:
             return
+
+        if self.stasis > 0:
+            self.image = self.images[int(self.time * 8) % len(self.images)]
+            self.stasis -= dt
+        else:
+            self.image = self.images[0]
 
         if self.shot_cooldown < 0:
             self.shot_cooldown = 0
@@ -79,3 +86,8 @@ class Player(Sprite):
         if not self.dead:
             self.image = self.kill_image
             self.dead = True
+            play_sound("player_dead")
+
+    def do_stasis(self):
+        self.stasis = settings.PLAYER_STASIS_TIME
+        play_sound("player_stasis")

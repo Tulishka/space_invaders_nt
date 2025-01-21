@@ -10,6 +10,8 @@ def load(name, volume):
 pygame.mixer.init()
 
 sounds = {
+    "player_dead": load("sound/exp2.wav", 0.3),
+    "player_stasis": load("sound/exp2.wav", 0.3),
     "player_shot1": load("sound/laser1.wav", 0.8),
     "player_shot2": load("sound/laser2.wav", 0.8),
     "player_hit": load("sound/exp2.wav", 1),

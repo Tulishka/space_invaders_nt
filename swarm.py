@@ -118,8 +118,9 @@ class Swarm:
 
             alien.x += px
             alien.y += self.swarm_down_warp * dt
-            alien.rect.x = alien.x
-            alien.rect.y = alien.y
+            alien.rect.x = alien.x + self.ls.swarm_rot_amp * math.cos(alien.time * self.ls.swarm_rot_spd)
+            alien.rect.y = alien.y + 0.2 * self.ls.swarm_rot_amp * math.sin(
+                alien.time * self.ls.swarm_rot_spd)
 
         self.shot_cooldown -= dt
         if self.shot_cooldown < 0:
@@ -144,5 +145,5 @@ class Swarm:
                     alien_closest = choice(can_shot)
 
                 alien_closest.shot()
-                self.shot_order_pos = (self.shot_order_pos + 1) % len(self.shot_order)
                 self.sound_alien_shot[alien_closest.type - 1].play()
+                self.shot_order_pos = (self.shot_order_pos + 1) % len(self.shot_order)

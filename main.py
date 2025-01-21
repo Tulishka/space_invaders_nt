@@ -4,6 +4,7 @@ import settings
 from scene_manager import SceneManager
 from game_scene import GameScene
 from menu_scene import MenuScene
+from trailer_scene import TrailerScene
 
 
 def main():
@@ -14,6 +15,7 @@ def main():
 
     scene_manager.add_scene("menu", MenuScene)
     scene_manager.add_scene("game", GameScene)
+    scene_manager.add_scene("trailer", TrailerScene)
 
     scene_manager.set_scene("menu")
 
