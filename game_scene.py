@@ -169,6 +169,7 @@ class GameScene(Scene):
             return
 
         if event.key == pygame.K_ESCAPE:
+            self.scene_manager.kill_scene("game")
             self.scene_manager.set_scene("menu")
 
         # отладка
