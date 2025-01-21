@@ -131,6 +131,7 @@ class GameScene(Scene):
             self.gameover_time = self.time + GameScene.GAME_OVER_DELAY
 
         if self.gameover_time and self.gameover_time < self.time:
+            self.scene_manager.kill_scene("game")
             self.scene_manager.set_scene("menu")
 
     def check_next_level(self):
