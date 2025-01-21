@@ -49,7 +49,8 @@ class MenuScene(Scene):
             y += item.get_height() + py
 
     def start_game(self, num_players, level=1):
-        self.scene_manager.set_scene("game", {
+        self.scene_manager.kill_scene("trailer")
+        self.scene_manager.set_scene("trailer", {
             "num_players": num_players,
             "level": level,
             "lives": settings.PLAYER_START_LIVES,

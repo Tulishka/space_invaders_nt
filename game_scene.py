@@ -52,6 +52,9 @@ class GameScene(Scene):
         self.swarm = Swarm(self.level, self.aliens_group, self.scene_manager,
                            self.players_group, self.bombs_group)
 
+        # отладка
+        self.undead_players = False
+
     def draw(self, screen):
         screen.fill((0, 0, 0))
 
@@ -91,29 +94,38 @@ class GameScene(Scene):
                     self.score += points
                     self.player_score[bullet.player.num - 1] += points
 
+    def swarm_crash_player(self, player):
+        return self.swarm.max_y > player.rect.y
+
     def update_players(self, dt):
         count = 0
         self.players_group.update(dt)
-
 
         for player in self.players_group:
             if player.dead:
                 continue
 
-            count += 1
+            die = 0
 
-            bullet = pygame.sprite.spritecollideany(
-                player, self.bombs_group, collided=pygame.sprite.collide_mask
-            )
+            if self.swarm_crash_player(player):
+                die = 1000
+            else:
+                count += 1
 
-            if bullet:
-                bullet.kill()
-                self.lives -= 1
-                sound.play_sound("player_hit")
+                bullet = pygame.sprite.spritecollideany(
+                    player, self.bombs_group, collided=pygame.sprite.collide_mask
+                )
 
-            if self.lives == 0 or self.swarm.max_y > player.rect.y:
-                self.lives = 0
-                player.die()
+                if bullet:
+                    bullet.kill()
+                    die = player.stasis <= 0 and not self.undead_players
+
+            if die:
+                self.lives -= die
+                if self.lives > 0:
+                    player.do_stasis()
+                else:
+                    player.die()
 
         if count == 0 and self.gameover_time == 0:
             self.gameover_time = self.time + GameScene.GAME_OVER_DELAY
@@ -134,7 +146,7 @@ class GameScene(Scene):
             next_scene = "menu"
             self.params = {}
         else:
-            next_scene = "game"
+            next_scene = "trailer"
             bonus_for_no_dead = 0
             self.params["level"] = self.level + 1
             self.params["score"] = self.score + self.num_players * bonus_for_no_dead
@@ -142,6 +154,7 @@ class GameScene(Scene):
             self.params["p2_score"] = self.player_score[1] + bonus_for_no_dead * (self.num_players == 2)
             self.params["lives"] = self.lives
 
+        self.scene_manager.kill_scene("game")
         self.scene_manager.set_scene(next_scene, self.params)
 
     def update(self, dt):
@@ -157,3 +170,12 @@ class GameScene(Scene):
 
         if event.key == pygame.K_ESCAPE:
             self.scene_manager.set_scene("menu")
+
+        # отладка
+        if event.key == pygame.K_DELETE:
+            self.aliens_group.empty()
+        if event.key == pygame.K_PAGEDOWN:
+            self.swarm.swarm_down_warp = 100
+
+        if event.key == pygame.K_BACKSPACE:
+            self.undead_players = not self.undead_players
