@@ -49,6 +49,10 @@ class GameScene(Scene):
         if self.num_players == 1:
             player.alt_keys = Player.PLAYER_KEYS[2]
 
+        self.wound = 0
+        self.wound_image = None
+        self.wound_image_alpha = 0
+
         self.swarm = Swarm(self.level, self.aliens_group, self.scene_manager,
                            self.players_group, self.bombs_group)
 
@@ -72,6 +76,17 @@ class GameScene(Scene):
         for i in range(self.lives):
             screen.blit(self.live_img, (x, y))
             x += self.live_img.get_width() + 7
+
+        if self.wound:
+            new_alpha = round(self.wound * 200)
+
+            if not self.wound_image or abs(self.wound_image_alpha - new_alpha) > 10:
+                self.wound_image_alpha = new_alpha
+                w, h = screen.get_width(), screen.get_height()
+                self.wound_image = pygame.Surface((w, h), flags=pygame.SRCALPHA)
+                pygame.draw.rect(self.wound_image, (255, 0, 0, new_alpha),
+                                 (0, 0, w, h), 0)
+            screen.blit(self.wound_image, (0, 0))
 
     def update_projectiles(self, dt):
         for bomb in self.bombs_group:
@@ -101,6 +116,11 @@ class GameScene(Scene):
         count = 0
         self.players_group.update(dt)
 
+        if self.wound:
+            self.wound *= 0.92
+            if self.wound < 0.05:
+                self.wound = 0
+
         for player in self.players_group:
             if player.dead:
                 continue
@@ -121,6 +141,7 @@ class GameScene(Scene):
                     die = player.stasis <= 0 and not self.undead_players
 
             if die:
+                self.wound = 1.0
                 self.lives -= die
                 if self.lives > 0:
                     player.do_stasis()
