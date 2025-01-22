@@ -8,6 +8,13 @@ class TrailerScene(Scene):
     SCENE_TIMEOUT = 3
     SCREEN_MOVE_SPEED = 200
 
+    def __init__(self, scene_manager, params=None):
+        super().__init__(scene_manager, params)
+        self.back_image = pygame.image.load("img/game_back.jpg")
+
+    def on_show(self, first_time):
+        self.time = 0
+
     def update_params(self, params):
         super().update_params(params)
         font_object = pygame.font.Font(None, 42)
@@ -20,7 +27,7 @@ class TrailerScene(Scene):
             self.run_game()
 
     def draw(self, screen):
-        screen.fill((0, 0, 0))
+        screen.blit(self.back_image, (0, 0))
         screen.blit(self.text, (settings.SCREEN_WIDTH // 2 - self.text.get_width() // 2,
                                 settings.SCREEN_HEIGHT // 2 - self.text.get_height() // 2))
 

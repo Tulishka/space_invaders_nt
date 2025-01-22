@@ -29,9 +29,10 @@ class MenuScene(Scene):
         ]
         self.selected = 1
         self.max_select = 3
+        self.back_image = pygame.image.load("img/menu_back.jpg")
 
     def draw(self, screen):
-        screen.fill((0, 0, 0))
+        screen.blit(self.back_image, (0, 0))
 
         start_y = settings.SCREEN_HEIGHT // 2 - 200
         y = start_y

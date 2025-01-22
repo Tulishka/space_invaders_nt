@@ -33,6 +33,8 @@ class GameScene(Scene):
         self.aliens_group = pygame.sprite.Group()
 
         self.live_img = pygame.image.load("img/life.png")
+        self.back_image = pygame.image.load("img/game_back.jpg")
+        self.back_image_top = settings.SCREEN_HEIGHT - self.back_image.get_height()
 
         self.font_obj = pygame.font.SysFont("serif", 24)
         self.text_sch = self.font_obj.render("Очки:", True, "white")
@@ -65,7 +67,7 @@ class GameScene(Scene):
         self.undead_players = False
 
     def draw(self, screen):
-        screen.fill((0, 0, 0))
+        screen.blit(self.back_image, (0, self.back_image_top))
 
         self.players_group.draw(screen)
         self.aliens_group.draw(screen)
