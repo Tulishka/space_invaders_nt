@@ -15,6 +15,7 @@ sounds = {
     "player_shot1": load("sound/laser1.wav", 0.8),
     "player_shot2": load("sound/laser2.wav", 0.8),
     "player_hit": load("sound/exp2.wav", 1),
+    "upgrade_gun": load("sound/upgrade_gun.mp3", 0.3),
 
     "alien_dead": load("sound/exp1.wav", 0.3),
     "alien_shot1": load("sound/easy_blaster.wav", 1),

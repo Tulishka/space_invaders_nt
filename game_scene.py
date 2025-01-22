@@ -113,6 +113,8 @@ class GameScene(Scene):
                     points = settings.ALIENS_REWARD[alien.type]
                     self.score += points
                     self.player_score[bullet.player.num - 1] += points
+                    if alien.type == settings.BONUS_ALIEN_TYPE:
+                        bullet.player.upgrade_gun()
 
     def swarm_crash_player(self, player):
         return self.swarm.max_y > player.rect.y

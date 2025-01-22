@@ -51,13 +51,17 @@ class Player(Sprite):
         self.shot_cooldown = 1
         self.dead = False
         self.stasis = 0
+        self.gun_upgraded = False
 
         self.sound_shot = sounds[f"player_shot{self.num}"]
 
     def shot(self):
         self.shot_cooldown = settings.SHOT_COOLDOWN
-        Bullet(self.rect.midtop, self.bullets_group, self)
         self.sound_shot.play()
+        Bullet(self.rect.midtop, self.bullets_group, self)
+        if self.gun_upgraded:
+            Bullet(self.rect.topleft, self.bullets_group, self)
+            Bullet(self.rect.topright, self.bullets_group, self)
 
     def update(self, dt):
         self.time += dt
@@ -90,4 +94,9 @@ class Player(Sprite):
 
     def do_stasis(self):
         self.stasis = settings.PLAYER_STASIS_TIME
+        self.gun_upgraded = False
         play_sound("player_stasis")
+
+    def upgrade_gun(self):
+        self.gun_upgraded = True
+        play_sound("upgrade_gun")
