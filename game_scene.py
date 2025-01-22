@@ -1,7 +1,10 @@
+import random
+
 import pygame
 
 import settings
-import sound
+from alien import BonusAlien
+from sound import play_sound
 from player import Player
 from scene import Scene
 from swarm import Swarm
@@ -52,6 +55,8 @@ class GameScene(Scene):
         self.wound = 0
         self.wound_image = None
         self.wound_image_alpha = 0
+
+        self.bonus_ship = False
 
         self.swarm = Swarm(self.level, self.aliens_group, self.scene_manager,
                            self.players_group, self.bombs_group)
@@ -155,6 +160,26 @@ class GameScene(Scene):
             self.scene_manager.kill_scene("game")
             self.scene_manager.set_scene("menu")
 
+    def bonus_ship_should_arrive(self):
+        return self.swarm.min_y > settings.SCREEN_HEIGHT // 5
+
+    def update_swarm(self, dt):
+        self.swarm.update(dt)
+
+        if not self.bonus_ship and self.bonus_ship_should_arrive():
+            self.bonus_ship = True
+            x = random.choice((-100, settings.SCREEN_WIDTH + 100))
+            spd = settings.BONUS_ALIEN_SPEED * (1 if x < 0 else -1)
+            ba = BonusAlien(
+                (x, 80),
+                spd,
+                self.aliens_group,
+                self.bombs_group,
+                settings.SCREEN_WIDTH + 100 if x < 0 else -100,
+            )
+            ba.warp_y = 0
+            play_sound(f"bonus_alien_{'lr' if spd > 0 else 'rl'}")
+
     def check_next_level(self):
         if self.next_level_time == 0 and len(self.aliens_group) == 0:
             self.next_level_time = self.time + 2
@@ -181,9 +206,9 @@ class GameScene(Scene):
 
     def update(self, dt):
         self.time += dt
-        self.swarm.update(dt)
         self.update_projectiles(dt)
         self.update_players(dt)
+        self.update_swarm(dt)
         self.check_next_level()
 
     def process_event(self, event):
