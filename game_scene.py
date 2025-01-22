@@ -161,8 +161,15 @@ class GameScene(Scene):
             self.gameover_time = self.time + GameScene.GAME_OVER_DELAY
 
         if self.gameover_time and self.gameover_time < self.time:
-            self.scene_manager.kill_scene("game")
-            self.scene_manager.set_scene("menu")
+            self.scene_manager.set_scene(
+                "gameover",
+                {
+                    "text": "GAME OVER",
+                    "score": self.score,
+                    "p1_score": self.player_score[0],
+                    "p2_score": self.player_score[1]
+                }
+            )
 
     def bonus_ship_should_arrive(self):
         return self.swarm.min_y > settings.SCREEN_HEIGHT // 5

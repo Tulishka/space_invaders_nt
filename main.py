@@ -1,6 +1,7 @@
 import pygame
 
 import settings
+from gameover_scene import GameOverScene
 from scene_manager import SceneManager
 from game_scene import GameScene
 from menu_scene import MenuScene
@@ -15,6 +16,7 @@ def main():
 
     scene_manager.add_scene("menu", MenuScene)
     scene_manager.add_scene("game", GameScene)
+    scene_manager.add_scene("gameover", GameOverScene)
     scene_manager.add_scene("trailer", TrailerScene)
 
     scene_manager.set_scene("menu")
