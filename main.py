@@ -1,6 +1,7 @@
 import pygame
 
 import settings
+from boss_scene import BossScene
 from gameover_scene import GameOverScene
 from scene_manager import SceneManager
 from game_scene import GameScene
@@ -18,6 +19,7 @@ def main():
     scene_manager.add_scene("game", GameScene)
     scene_manager.add_scene("gameover", GameOverScene)
     scene_manager.add_scene("trailer", TrailerScene)
+    scene_manager.add_scene("boss", BossScene)
 
     scene_manager.set_scene("menu")
 

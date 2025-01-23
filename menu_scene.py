@@ -74,8 +74,19 @@ class MenuScene(Scene):
         if event.key == pygame.K_1:
             self.start_game(1)
             self.selected = 1
+        if event.key == pygame.K_5:
+            self.start_game(1, 5)
+            self.selected = 1
+        if event.key == pygame.K_6:
+            self.scene_manager.kill_scene("boss")
+            self.scene_manager.set_scene("boss", {
+                "num_players": 2,
+                "level": 1,
+                "lives": settings.PLAYER_START_LIVES,
+            })
+
         if event.key == pygame.K_2:
             self.start_game(2)
             self.selected = 2
-        if event.key == pygame.K_ESCAPE:
+        if self.time > settings.KEY_COOLDOWN and event.key == pygame.K_ESCAPE:
             return "exit"

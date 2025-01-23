@@ -15,7 +15,6 @@ class GameScene(Scene):
 
     def __init__(self, scene_manager, params):
         super().__init__(scene_manager, params)
-
         self.lives = self.params.get("lives", settings.PLAYER_START_LIVES)
         self.score = self.params.get("score", 0)
         self.level = self.params.get("level", 1)
@@ -60,11 +59,14 @@ class GameScene(Scene):
 
         self.bonus_ship = False
 
-        self.swarm = Swarm(self.level, self.aliens_group, self.scene_manager,
-                           self.players_group, self.bombs_group)
+        self.swarm = self.create_swarm()
 
         # отладка
         self.undead_players = False
+
+    def create_swarm(self):
+        return Swarm(self.level, self.aliens_group, self.scene_manager,
+                     self.players_group, self.bombs_group)
 
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
@@ -200,19 +202,24 @@ class GameScene(Scene):
 
     def go_next_level(self):
         if self.level + 1 >= len(settings.level):
-            # сделать переход на уровень с босом
-            next_scene = "menu"
-            self.params = {}
+            next_scene = "boss"
+            bonus_for_no_dead = 100 * (self.lives == 3)
+            self.lives = min(self.lives + 1, 3)
         else:
             next_scene = "trailer"
             bonus_for_no_dead = 0
-            self.params["level"] = self.level + 1
-            self.params["score"] = self.score + self.num_players * bonus_for_no_dead
-            self.params["p1_score"] = self.player_score[0] + bonus_for_no_dead
-            self.params["p2_score"] = self.player_score[1] + bonus_for_no_dead * (self.num_players == 2)
-            self.params["lives"] = self.lives
 
+        self.params["level"] = self.level + 1
+        self.params["score"] = self.score + self.num_players * bonus_for_no_dead
+        self.params["p1_score"] = self.player_score[0] + bonus_for_no_dead
+        self.params["p2_score"] = self.player_score[1] + bonus_for_no_dead * (self.num_players == 2)
+
+        self.params["p1_pos"] = self.players[0].rect.centerx
+        self.params["p2_pos"] = self.players[1 % self.num_players].rect.centerx
+
+        self.params["lives"] = self.lives
         self.scene_manager.kill_scene("game")
+        self.scene_manager.kill_scene("boss")
         self.scene_manager.set_scene(next_scene, self.params)
 
     def update(self, dt):
