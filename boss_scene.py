@@ -35,7 +35,7 @@ class BossScene(GameScene):
     def draw(self, screen):
         super().draw(screen)
 
-        if self.swarm.hp > 0:
+        if self.swarm.hp > 0 and self.swarm.time > self.swarm.spawn_time + 2:
             bar_width = 50
             bar_height = 5
             x, y = self.swarm.rect.midtop
