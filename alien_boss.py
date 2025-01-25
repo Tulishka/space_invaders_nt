@@ -4,15 +4,17 @@ import random
 import pygame
 
 import settings
+import sound
 from alien import Alien
 from minion_alien import MinionAlien
+from scene_manager import SceneManager
 
 
 class AlienBoss(Alien):
     MINION_ALIEN_TYPES = (1, 2, 3)
 
     def __init__(self, aliens_group, pos, player_group, bombs_group):
-        super().__init__(aliens_group, pos, settings.BOSS_ALIEN_TYPE, -1, bombs_group)
+        super().__init__(aliens_group, pos, settings.BOSS_ALIEN_TYPE, -1, bombs_group, 0.3)
         self.player_group = player_group
         self.max_hp = 100 * len(self.player_group)
         self.hp = self.max_hp
@@ -61,11 +63,15 @@ class AlienBoss(Alien):
             self.next_pos_time = self.time + random.randint(6, 12)
             self.current_pos = (self.current_pos + 1) % len(self.positions)
             self.spd = 0
+            sound.play_sound("boss_move")
 
         ly = self.rect.bottom
         x = self.x + 10 * math.cos(self.time + self.time * abs(math.cos(self.time * 0.5)) * 0.05)
         y = self.y + self.warp_y + 10 * math.sin(self.time + self.time * abs(math.sin(self.time * 0.2)) * 0.05)
         self.rect = self.image.get_rect(center=(x, y))
+
+        if ly < 0 <= self.rect.bottom:
+            sound.play_sound("boss_signal")
 
     def spawn_minion(self):
         max_minions = settings.MINIONS_COUNT * self.spawn_players_rate
@@ -73,6 +79,7 @@ class AlienBoss(Alien):
             x, y = self.rect.midbottom
 
             if self.time > self.boss_next_online:
+                sound.play_sound("boss_online")
                 self.boss_next_online = self.time + 30
 
             m = MinionAlien(
@@ -83,6 +90,7 @@ class AlienBoss(Alien):
                 self.bombs_group,
                 x + random.uniform(-10.0, 10.0)
             )
+            sound.play_sound("minion_warp")
             m.warp_y = - random.randint(50, 150)
             m.y -= m.warp_y
             m.y = min(m.y, settings.SCREEN_HEIGHT - 150)
@@ -105,6 +113,8 @@ class AlienBoss(Alien):
     def update(self, dt):
         warp = self.time < self.spawn_time
         super().update(dt)
+        if warp and self.time >= self.spawn_time:
+            sound.play_sound("boss_online")
         self.warp_y *= 0.99
 
         if not self.kill_time and self.alive():

@@ -1,5 +1,6 @@
 import pygame
 
+import music
 import settings
 from scene import Scene
 from sound import play_sound
@@ -31,6 +32,17 @@ class MenuScene(Scene):
         self.max_select = 3
         self.back_image = pygame.image.load("img/menu_back.jpg")
 
+    def replay_scene(self):
+        music.play("menu")
+        self.time = 0
+
+    def on_show(self, first_time):
+        play_sound("menu_show")
+        self.replay_scene()
+
+    def on_hide(self):
+        music.stop()
+
     def draw(self, screen):
         screen.blit(self.back_image, (0, 0))
 
@@ -59,6 +71,9 @@ class MenuScene(Scene):
         play_sound("menu_start")
 
     def process_event(self, event):
+
+        if event.type == settings.MUSIC_END_EVENT:
+            self.replay_scene()
 
         if event.type != pygame.KEYDOWN:
             return

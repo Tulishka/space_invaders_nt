@@ -21,15 +21,22 @@ sounds = {
     "alien_shot1": load("sound/easy_blaster.wav", 1),
     "alien_shot2": load("sound/blaster2.wav", 1),
     "alien_shot3": load("sound/blaster1.wav", 1),
+    "alien_warp": load("sound/warp.wav", 0.2),
 
     "bonus_alien_lr": load("sound/bonus_alien_lr.wav", 1),
     "bonus_alien_rl": load("sound/bonus_alien_rl.wav", 1),
 
     "minion_shot": load("sound/blaster1.wav", 0.2),
+    "minion_warp": load("sound/minion_warp.wav", 0.5),
+    "minion_relocate": load("sound/woosh.wav", 0.3),
+
+    "boss_online": load("sound/boss_online.wav", 0.7),
+    "boss_signal": load("sound/boss_signal.wav", 0.7),
+    "boss_move": load("sound/boss_move.wav", 0.3),
 
     "menu_beep": load("sound/hit2.wav", 1),
     "menu_start": load("sound/start1.mp3", 0.2),
-
+    "menu_show": load("sound/start2.mp3", 0.8),
 }
 
 

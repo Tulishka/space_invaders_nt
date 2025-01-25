@@ -12,6 +12,8 @@ from trailer_scene import TrailerScene
 def main():
     pygame.init()
 
+    pygame.mixer_music.set_endevent(settings.MUSIC_END_EVENT)
+
     scene_manager = SceneManager()
     screen = pygame.display.set_mode(settings.SCREEN_SIZE)
 

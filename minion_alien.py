@@ -49,6 +49,8 @@ class MinionAlien(Alien):
         return self.target_time < self.time
 
     def set_target(self, target_x):
+        if abs(target_x - self.x)>250:
+            sound.play_sound("minion_relocate")
         self.warp_x = self.x - target_x
         self.x = target_x
         self.target_time = self.time + 3 + 3 * random()

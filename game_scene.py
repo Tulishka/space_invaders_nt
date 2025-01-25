@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+import music
 import settings
 from alien import BonusAlien
 from sound import play_sound
@@ -161,6 +162,7 @@ class GameScene(Scene):
 
         if count == 0 and self.gameover_time == 0:
             self.gameover_time = self.time + GameScene.GAME_OVER_DELAY
+            music.play("gameover")
 
         if self.gameover_time and self.gameover_time < self.time:
             self.scene_manager.set_scene(
@@ -196,6 +198,7 @@ class GameScene(Scene):
     def check_next_level(self):
         if self.next_level_time == 0 and len(self.aliens_group) == 0:
             self.next_level_time = self.time + 2
+            music.play("next_level")
 
         if not self.gameover_time and self.next_level_time and self.next_level_time < self.time:
             self.go_next_level()

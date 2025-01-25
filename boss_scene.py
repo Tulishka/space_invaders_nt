@@ -1,11 +1,15 @@
 import pygame
 
+import music
 import settings
 from alien_boss import AlienBoss
 from game_scene import GameScene
 
 
 class BossScene(GameScene):
+    def __init__(self, scene_manager, params):
+        super().__init__(scene_manager, params)
+        self.music_on = False
 
     def on_hide(self):
         super().on_hide()
@@ -25,12 +29,20 @@ class BossScene(GameScene):
         return self.time > 60
 
     def go_next_level(self):
+        music.play("victory")
         self.params["score"] = self.score
         self.params["p1_score"] = self.player_score[0]
         self.params["p2_score"] = self.player_score[1]
         self.params["text"] = "VICTORY!"
         self.scene_manager.kill_scene("boss")
         self.scene_manager.set_scene("gameover", self.params)
+
+    def update(self, dt):
+        self.time+=dt
+        super().update(dt)
+        if self.time>30 and not self.music_on and self.gameover_time == 0:
+            self.music_on = True
+            # music.play("boss", 10, 1.5)
 
     def draw(self, screen):
         super().draw(screen)
