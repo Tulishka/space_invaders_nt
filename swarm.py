@@ -1,10 +1,13 @@
 import math
+import random
 from random import choice
+
+import pygame
 
 import settings
 from alien import Alien
 from scene_manager import SceneManager
-from sound import sounds
+from sound import sounds, play_sound
 
 
 class Swarm:
@@ -20,7 +23,7 @@ class Swarm:
     def __init__(self, level, aliens_group, scene_manager: SceneManager, players_group, bombs_group):
         self.ls = settings.level[level]
         self.ALIEN_X_DISTANCE = self.LINE_WIDTH // self.ls.alien_in_line
-        self.dir = 1
+        self.dir = 0
         self.aliens_group = aliens_group
         self.scene_manager = scene_manager
         self.players_group = players_group
@@ -47,16 +50,19 @@ class Swarm:
         x0 = self.SWARM_START_X
         y0 = self.SWARM_START_Y
 
+        lines = len(self.ls.alien_types)
         cnt = 0
 
         for y, typ in enumerate(self.ls.alien_types):
             for x in range(self.ls.alien_in_line):
-                Alien(
+                alien = Alien(
                     self.aliens_group,
                     (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE),
                     typ,
-                    x, self.bombs_group
+                    x, self.bombs_group, 0
                 )
+                alien.warp_y = -alien.y - 60
+                alien.time -= (lines - y) * 0.2 + x * 0.1
                 cnt += 1
 
         return cnt
@@ -75,6 +81,8 @@ class Swarm:
                 continue
 
             alive_aliens_count += 1
+            if alien.time - dt < 0 and alien.time > 0:
+                play_sound("alien_warp")
 
             if alien.rect.left < self.min_x:
                 self.min_x = alien.rect.left
@@ -112,15 +120,23 @@ class Swarm:
         if old_dir != self.dir:
             self.swarm_down_warp = self.ls.swarm_down_spd * len(self.players_group)
 
+        wp = alive_aliens_count
         for alien in self.aliens_group:
             if alien.column < 0:
                 continue
 
+            if alien.time >= 0:
+                alien.warp_y *= 0.7
+                if int(alien.warp_y) == 0:
+                    wp -= 1
             alien.x += px
             alien.y += self.swarm_down_warp * dt
             alien.rect.x = alien.x + self.ls.swarm_rot_amp * math.cos(alien.time * self.ls.swarm_rot_spd)
-            alien.rect.y = alien.y + 0.2 * self.ls.swarm_rot_amp * math.sin(
+            alien.rect.y = alien.y + alien.warp_y + 0.2 * self.ls.swarm_rot_amp * math.sin(
                 alien.time * self.ls.swarm_rot_spd)
+
+        if wp == 0 and self.dir == 0:
+            self.dir = 1
 
         self.shot_cooldown -= dt
         if self.shot_cooldown < 0:
