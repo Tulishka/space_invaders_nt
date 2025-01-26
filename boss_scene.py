@@ -11,6 +11,13 @@ class BossScene(GameScene):
         super().__init__(scene_manager, params)
         self.music_on = False
 
+        players_start_pos = [
+            self.params.get("p1_pos", 100),
+            self.params.get("p2_pos", settings.SCREEN_WIDTH - 100),
+        ]
+        for i, player in enumerate(self.players):
+            player.rect.centerx = players_start_pos[i]
+
     def on_hide(self):
         super().on_hide()
         self.scene_manager.kill_scene("boss")
@@ -38,9 +45,9 @@ class BossScene(GameScene):
         self.scene_manager.set_scene("gameover", self.params)
 
     def update(self, dt):
-        self.time+=dt
+        self.time += dt
         super().update(dt)
-        if self.time>30 and not self.music_on and self.gameover_time == 0:
+        if self.time > 30 and not self.music_on and self.gameover_time == 0:
             self.music_on = True
             # music.play("boss", 10, 1.5)
 
