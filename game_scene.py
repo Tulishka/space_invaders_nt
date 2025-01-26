@@ -12,7 +12,7 @@ from swarm import Swarm
 
 
 class GameScene(Scene):
-    GAME_OVER_DELAY = 3
+    GAME_OVER_DELAY = 7
 
     def __init__(self, scene_manager, params):
         super().__init__(scene_manager, params)
@@ -227,6 +227,8 @@ class GameScene(Scene):
 
     def update(self, dt):
         self.time += dt
+        if self.gameover_time:
+            dt *= max((self.gameover_time - self.time) / GameScene.GAME_OVER_DELAY, 0.1)
         self.update_projectiles(dt)
         self.update_players(dt)
         self.update_swarm(dt)
