@@ -1,12 +1,12 @@
 import pygame
 
-import settings
-from boss_scene import BossScene
-from game_scene import GameScene
-from gameover_scene import GameOverScene
-from menu_scene import MenuScene
-from scene_manager import SceneManager
-from trailer_scene import TrailerScene
+from src import settings
+from src.scenes.boss_scene import BossScene
+from src.scenes.game_scene import GameScene
+from src.scenes.gameover_scene import GameOverScene
+from src.scenes.menu_scene import MenuScene
+from src.core.scene_manager import SceneManager
+from src.scenes.trailer_scene import TrailerScene
 
 
 def main():

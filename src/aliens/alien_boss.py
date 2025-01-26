@@ -3,10 +3,9 @@ import random
 
 import pygame
 
-import settings
-import sound
-from alien import Alien
-from minion_alien import MinionAlien
+from src import settings, sound
+from src.aliens.alien import Alien
+from src.aliens.minion_alien import MinionAlien
 
 
 class AlienBoss(Alien):

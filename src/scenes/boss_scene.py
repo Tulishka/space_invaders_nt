@@ -1,9 +1,8 @@
 import pygame
 
-import music
-import settings
-from alien_boss import AlienBoss
-from game_scene import GameScene
+from src import music, settings
+from src.aliens.alien_boss import AlienBoss
+from src.scenes.game_scene import GameScene
 
 
 class BossScene(GameScene):

@@ -2,13 +2,12 @@ import random
 
 import pygame
 
-import music
-import settings
-from alien import BonusAlien
-from player import Player
-from scene import Scene
-from sound import play_sound
-from swarm import Swarm
+from src import music, settings
+from src.aliens.alien import BonusAlien
+from src.components.player import Player
+from src.core.scene import Scene
+from src.sound import play_sound
+from src.components.swarm import Swarm
 
 
 class GameScene(Scene):

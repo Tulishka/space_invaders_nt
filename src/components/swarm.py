@@ -1,10 +1,10 @@
 import math
 from random import choice
 
-import settings
-from alien import Alien
-from scene_manager import SceneManager
-from sound import sounds, play_sound
+from src import settings
+from src.aliens.alien import Alien
+from src.core.scene_manager import SceneManager
+from src.sound import sounds, play_sound
 
 
 class Swarm:

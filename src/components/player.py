@@ -1,10 +1,10 @@
 import pygame
 from pygame.sprite import Sprite
 
-import settings
-from projectile import Bullet
-from scene_manager import SceneManager
-from sound import sounds, play_sound
+from src import settings
+from src.components.projectile import Bullet
+from src.core.scene_manager import SceneManager
+from src.sound import sounds, play_sound
 
 
 class PlayerKeys:

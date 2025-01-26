@@ -2,11 +2,10 @@ import random
 
 import pygame
 
-import music
-import settings
-from alien import MenuAlien
-from scene import Scene
-from sound import play_sound
+from src import music, settings
+from src.aliens.alien import MenuAlien
+from src.core.scene import Scene
+from src.sound import play_sound
 
 
 class MenuScene(Scene):

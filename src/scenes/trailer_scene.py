@@ -1,7 +1,7 @@
 import pygame
 
-import settings
-from scene import Scene
+from src import settings
+from src.core.scene import Scene
 
 
 class TrailerScene(Scene):

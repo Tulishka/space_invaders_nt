@@ -4,9 +4,9 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.transform import scale
 
-import settings
-from projectile import Bomb
-from sound import play_sound
+from src import settings
+from src.components.projectile import Bomb
+from src.sound import play_sound
 
 
 class Alien(Sprite):

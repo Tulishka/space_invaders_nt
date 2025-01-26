@@ -1,9 +1,8 @@
 import math
 from random import random, randint, choice
 
-import settings
-import sound
-from alien import Alien
+from src import settings, sound
+from src.aliens.alien import Alien
 
 
 class MinionAlien(Alien):
