@@ -38,10 +38,11 @@ class MinionAlien(Alien):
             self.y + self.warp_y + radius * math.sin(a),
         ))
 
-        if self.shot_cooldown < 0 and abs(self.rect.center[0] - self.x) < 32 and len(self.bombs_group) < settings.MINIONS_MAX_BOMBS:
+        if self.shot_cooldown < 0 and abs(self.rect.center[0] - self.x) < 32 and len(
+                self.bombs_group) < settings.MINIONS_MAX_BOMBS:
             self.shot(0.5)
             sound.play_sound("minion_shot")
-            self.shot_cooldown = 2+2*random()
+            self.shot_cooldown = 2 + 2 * random()
         else:
             self.shot_cooldown -= dt
 
@@ -49,7 +50,7 @@ class MinionAlien(Alien):
         return self.target_time < self.time
 
     def set_target(self, target_x):
-        if abs(target_x - self.x)>250:
+        if abs(target_x - self.x) > 250:
             sound.play_sound("minion_relocate")
         self.warp_x = self.x - target_x
         self.x = target_x

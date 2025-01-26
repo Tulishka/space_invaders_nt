@@ -1,9 +1,8 @@
 import pygame
 from pygame.sprite import Sprite
 
-from projectile import Bullet
-
 import settings
+from projectile import Bullet
 from scene_manager import SceneManager
 from sound import sounds, play_sound
 

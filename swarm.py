@@ -1,8 +1,5 @@
 import math
-import random
 from random import choice
-
-import pygame
 
 import settings
 from alien import Alien

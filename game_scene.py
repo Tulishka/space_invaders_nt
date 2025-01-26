@@ -5,9 +5,9 @@ import pygame
 import music
 import settings
 from alien import BonusAlien
-from sound import play_sound
 from player import Player
 from scene import Scene
+from sound import play_sound
 from swarm import Swarm
 
 

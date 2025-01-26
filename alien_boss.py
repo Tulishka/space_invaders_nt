@@ -7,7 +7,6 @@ import settings
 import sound
 from alien import Alien
 from minion_alien import MinionAlien
-from scene_manager import SceneManager
 
 
 class AlienBoss(Alien):

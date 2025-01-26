@@ -2,7 +2,6 @@ from scene import Scene
 
 
 class SceneManager:
-    SCREEN_WIDTH, SCREEN_HEIGHT = 1150, 750
 
     def __init__(self):
         self.scenes = {}

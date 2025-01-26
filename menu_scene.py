@@ -1,4 +1,3 @@
-import math
 import random
 
 import pygame
@@ -25,10 +24,7 @@ class MenuScene(Scene):
         p1 = p3
 
         self.menu = [
-            # (font1.render("SPACE INVADERS", True, "white"), 2, 0),
-            # (font3.render("НОВАЯ УГРОЗА", True, "white"), 50, 0),
             (pygame.image.load(f'./img/logo.png'), 30, 0),
-            # (font2.render("выбери режим", True, "white"), 50, 0),
             (p1, 20, 1),
             (p2, 20, 2),
             (font3.render("рекорды", True, "green"), 0, 3),
