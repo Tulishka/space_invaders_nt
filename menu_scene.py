@@ -12,8 +12,6 @@ from sound import play_sound
 class MenuScene(Scene):
     def __init__(self, scene_manager, params=None):
         super().__init__(scene_manager, params)
-        font1 = pygame.font.Font(None, 60)
-        font2 = pygame.font.Font(None, 28)
         font3 = pygame.font.Font(None, 40)
 
         p1 = font3.render("1 - игрок", True, "green")
