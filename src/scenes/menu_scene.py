@@ -85,9 +85,9 @@ class MenuScene(Scene):
             rect = img.get_rect(
                 center=(xc, start_y + (y - start_y) // 2))
             # img.blit(self.back_image, (0, 0), rect)
-            pygame.draw.rect(img, (10, 10, 20), (0, 0, width, height), 0, 12)
-            pygame.draw.rect(img, (20, 20, 40), (0, 0, width, height), 2, 12)
-            img.set_alpha(150)
+            pygame.draw.rect(img, (10, 10, 20), (0, 0, width, height), 0, 8)
+            pygame.draw.rect(img, (40, 40, 80), (0, 0, width, height), 2, 8)
+            img.set_alpha(200)
             self.back = pygame.sprite.Sprite(self.front_group)
             self.back.image = img
             self.back.rect = rect
