@@ -2,7 +2,7 @@ import math
 from random import choice
 
 from src import settings
-from src.aliens.alien import Alien
+from src.aliens import Alien
 from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
 

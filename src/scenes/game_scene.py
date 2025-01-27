@@ -3,7 +3,7 @@ import random
 import pygame
 
 from src import music, settings
-from src.aliens.alien import BonusAlien
+from src.aliens import BonusAlien
 from src.components.player import Player
 from src.core.scene import Scene
 from src.sound import play_sound

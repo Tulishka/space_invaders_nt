@@ -4,7 +4,6 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.transform import scale
 
-from src import settings
 from src.components.projectile import Bomb
 from src.sound import play_sound
 
@@ -72,38 +71,3 @@ class Alien(Sprite):
 
     def shot(self, spd_scale=1):
         Bomb(self.rect.midbottom, self.bombs_group, self.type, spd_scale)
-
-
-class BonusAlien(Alien):
-    def __init__(self, pos, spd, sprite_group, bombs_group, kill_x):
-        super().__init__(sprite_group, pos, settings.BONUS_ALIEN_TYPE, -1, bombs_group)
-        self.spd = spd
-        self.kill_x = kill_x
-        self.ALIEN_DEAD_TIME = 0.4
-        self.animation_spd = 6
-
-    def update(self, dt) -> None:
-        super().update(dt)
-        if self.kill_time:
-            return
-        self.x += self.spd * dt
-        if (self.x >= self.kill_x >= self.rect.x) or (self.x <= self.kill_x <= self.rect.x):
-            self.kill()
-        self.rect.x = self.x
-
-
-class MenuAlien(Alien):
-    def __init__(self, aliens_group, pos, type_, column, bombs_group, spd, spawn_time=0):
-        super().__init__(aliens_group, pos, type_, column, bombs_group, spawn_time)
-        self.spd = spd
-        self.warp_spd = random.randint(1000, 2000)
-        self.x = self.rect.x
-        self.animation_spd = 6 if type_ == 4 else 2
-
-    def update(self, dt):
-        super().update(dt)
-        self.x -= max(self.spd, self.warp_spd) * dt
-        self.rect.x = self.x
-        self.warp_spd *= 0.7
-        if self.rect.right < 0:
-            self.kill()
