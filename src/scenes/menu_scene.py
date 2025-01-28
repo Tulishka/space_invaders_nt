@@ -1,4 +1,5 @@
 import random
+import sys
 from functools import partial
 
 import pygame
@@ -27,7 +28,8 @@ class MenuScene(Scene):
         MarginMenuItem(self.menu, 10)
         self.menu.selected = ImageMenuItem(self.menu, p1, partial(self.start_game, 1),pygame.K_1)
         ImageMenuItem(self.menu, p2, partial(self.start_game, 2),pygame.K_2)
-        ImageMenuItem(self.menu, font3.render("рекорды", True, "green"))
+        ImageMenuItem(self.menu, font3.render("рекорды", True, "green"), self.open_results)
+        ImageMenuItem(self.menu, font3.render("выход", True, "green"),sys.exit)
 
         self.markers = self.load_markers("music/menu1_markers.txt")
         self.cur_marker = 0
@@ -121,3 +123,6 @@ class MenuScene(Scene):
         with open(filename, "r") as f:
             lines = f.readlines()
             return [float(i) for i in lines]
+
+    def open_results(self):
+        pass
