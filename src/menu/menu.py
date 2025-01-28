@@ -1,8 +1,10 @@
 import pygame
+from select import select
 
 from .items_menu import ItemsMenu
 from .menu_item import MenuItem
 from .. import settings
+from ..sound import play_sound
 
 
 class Menu(ItemsMenu):
@@ -12,30 +14,78 @@ class Menu(ItemsMenu):
         self.items: list[MenuItem] = []
         self.time = 0
         self.selected: MenuItem | None = None
-        self.selection_extend_x = 5
+        self.selection_extend_x = 25
         self.selection_extend_y = 5
         self.selection_radius = 25
         self.spacing = 0
         self.back_padding = 20
         self.back_image = None
         self.back_rect = None
+        self.top = 200
 
     def update(self, dt):
         self.time += dt
 
     def process_event(self, event):
-        for item in self.items:
-            if item.process_event(event):
-                break
+
+        if event.type != pygame.KEYDOWN:
+            return
+
+        if event.key in (pygame.K_DOWN, pygame.K_s):
+            self.select_next()
+        elif event.key in (pygame.K_UP, pygame.K_w):
+            self.select_prev()
+        elif self.selected and event.key in (pygame.K_KP_ENTER, pygame.K_SPACE, pygame.K_RETURN):
+            self.selected.activate()
+        else:
+            for item in self.items:
+                if item.process_event(event):
+                    break
 
     def item_activated(self, item: MenuItem):
-        pass
+        self.selected = item
 
     def item_selected(self, item: MenuItem):
-        pass
+        self.selected = item
+        play_sound("menu_beep")
+
+    def select_next(self):
+        new = was = self.selected
+
+        if not new:
+            idx = 0
+        else:
+            idx = self.items.index(new) + 1
+
+        for item in self.items[idx:]:
+            new = item
+            if item.action:
+                break
+        else:
+            new = was
+
+        if new and new is not was:
+            new.select()
+
+    def select_prev(self):
+        new = was = self.selected
+        if new is None:
+            self.select_next()
+            return
+        idx = max(self.items.index(new) - 1, 0)
+
+        for i in range(idx, -1, -1):
+            new = self.items[i]
+            if self.items[i].action:
+                break
+        else:
+            new = was
+
+        if new and new is not was:
+            new.select()
 
     def draw(self, screen: pygame.Surface):
-        start_y = settings.SCREEN_HEIGHT // 2 - 200
+        start_y = settings.SCREEN_HEIGHT // 2 - self.top
         y = start_y
         xc = settings.SCREEN_WIDTH // 2
 

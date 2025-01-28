@@ -34,9 +34,8 @@ class MenuItem:
 
     def activate(self):
         if self.action:
-            self.parent.item_selected(self)
-            self.action()
             self.parent.item_activated(self)
+            self.action()
 
     def select(self):
         if self.action:
