@@ -22,6 +22,7 @@ class Menu(ItemsMenu):
         self.back_rect = None
         self.top = 200
         self.opacity = 200
+        self.cursor_image = pygame.image.load('./img/cursor.png')
 
     def update(self, dt):
         self.time += dt
@@ -138,3 +139,7 @@ class Menu(ItemsMenu):
             img.set_alpha(self.opacity)
             self.back_image = img
             self.back_rect = rect
+
+        mouse_pos = pygame.mouse.get_pos()
+        if mouse_pos[0] != 0 and mouse_pos[1] != 0:
+            screen.blit(self.cursor_image, mouse_pos)

@@ -11,7 +11,7 @@ from src.scenes.trailer_scene import TrailerScene
 
 def main():
     pygame.init()
-
+    pygame.mouse.set_visible(False)
     pygame.mixer_music.set_endevent(settings.MUSIC_END_EVENT)
 
     scene_manager = SceneManager()
