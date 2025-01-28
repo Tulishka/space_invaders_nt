@@ -28,6 +28,19 @@ class Menu(ItemsMenu):
 
     def process_event(self, event):
 
+        if event.type == pygame.MOUSEMOTION or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
+            mouse_pos = event.pos
+            print(mouse_pos)
+            for item in self.items:
+                if item.rect.collidepoint(mouse_pos):
+                    if item.action:
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            item.activate()
+                        elif self.selected is not item:
+                            item.select()
+                    break
+            return
+
         if event.type != pygame.KEYDOWN:
             return
 
