@@ -30,7 +30,6 @@ class Menu(ItemsMenu):
 
         if event.type == pygame.MOUSEMOTION or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
             mouse_pos = event.pos
-            print(mouse_pos)
             for item in self.items:
                 if item.rect.collidepoint(mouse_pos):
                     if item.action:
