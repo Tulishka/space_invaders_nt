@@ -95,7 +95,8 @@ class Menu(ItemsMenu):
         max_width = 0
         for item in self.items:
             x = xc - item.get_width() // 2
-            item.draw(screen, (x, y))
+            item.rect.topleft = x, y
+            item.draw(screen)
             max_width = max(max_width, item.get_width())
 
             if self.selected is item:
