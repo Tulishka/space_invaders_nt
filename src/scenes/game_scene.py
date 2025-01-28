@@ -107,27 +107,25 @@ class GameScene(Scene):
             return True
 
     def update_projectiles(self, dt):
-        for bomb in self.bombs_group:
-            bomb.rect.y += bomb.spd * dt
-            if bomb.rect.y > settings.SCREEN_HEIGHT:
-                bomb.kill()
+        self.bombs_group.update(dt)
+        self.bullets_group.update(dt)
 
-        for bullet in self.bullets_group:
-            bullet.rect.y += bullet.spd * dt
-            if bullet.rect.y < 0:
-                bullet.kill()
+        collisions = pygame.sprite.groupcollide(
+            self.aliens_group, self.bullets_group, False, True, collided=pygame.sprite.collide_mask
+        )
 
-            alien = pygame.sprite.spritecollideany(
-                bullet, self.aliens_group, collided=pygame.sprite.collide_mask)
-
-            if alien:
-                bullet.kill()
+        for alien, bullets in collisions.items():
+            for bullet in bullets:
                 if alien.hit():
-                    points = settings.ALIENS_REWARD[alien.type]
-                    self.score += points
-                    self.player_score[bullet.player.num - 1] += points
-                    if alien.type == settings.BONUS_ALIEN_TYPE:
-                        bullet.player.upgrade_gun()
+                    self.hit_alien(alien, bullet.player)
+
+        collisions = pygame.sprite.groupcollide(
+            self.players_group, self.bombs_group, False, True, collided=pygame.sprite.collide_mask
+        )
+
+        for player, bombs in collisions.items():
+            if bombs and player.stasis <= 0 and not self.undead_players:
+                self.hit_player(player)
 
     def swarm_crash_player(self, player):
         return self.swarm.max_y > player.rect.y
@@ -145,28 +143,10 @@ class GameScene(Scene):
             if player.dead:
                 continue
 
-            die = 0
-
             if self.swarm_crash_player(player):
-                die = 1000
+                self.hit_player(player, 1000)
             else:
                 count += 1
-
-                bullet = pygame.sprite.spritecollideany(
-                    player, self.bombs_group, collided=pygame.sprite.collide_mask
-                )
-
-                if bullet:
-                    bullet.kill()
-                    die = player.stasis <= 0 and not self.undead_players
-
-            if die:
-                self.wound = 1.0
-                self.lives -= die
-                if self.lives > 0:
-                    player.do_stasis()
-                else:
-                    player.die()
 
         if count == 0 and self.gameover_time == 0:
             self.gameover_time = self.time + GameScene.GAME_OVER_DELAY
@@ -182,6 +162,23 @@ class GameScene(Scene):
                     "p2_score": self.player_score[1]
                 }
             )
+
+    def hit_player(self, player, minus_lives=1):
+        self.wound = 1.0
+        self.lives -= minus_lives
+        if self.lives > 0:
+            player.do_stasis()
+        else:
+            player.die()
+
+    def hit_alien(self, alien, player):
+        points = settings.ALIENS_REWARD[alien.type]
+        self.score += points
+        if not player:
+            return
+        self.player_score[player.num - 1] += points
+        if alien.type == settings.BONUS_ALIEN_TYPE:
+            player.upgrade_gun()
 
     def bonus_ship_should_arrive(self):
         return self.swarm.min_y > settings.SCREEN_HEIGHT // 5
@@ -280,7 +277,6 @@ class GameScene(Scene):
         p = p1 = pygame.image.load(f'./img/p1_keys.png')
         if self.num_players > 1:
             p2 = pygame.image.load(f'./img/p2_keys.png')
-            # ImageMenuItem(menu, p2)
             p = pygame.Surface((p1.get_width() + p2.get_width() + 30, p1.get_height()), flags=pygame.SRCALPHA)
             p.blit(p1, (0, 0))
             p.blit(p2, (p1.get_width() + 30, 0))

@@ -1,14 +1,20 @@
 import pygame
 from pygame.sprite import Sprite
 
+from src import settings
+
 
 class Projectile(Sprite):
     def __init__(self, pos: tuple, img_name, spd, sprite_group):
         super().__init__(sprite_group)
-        # self.sprite = pygame.sprite.Sprite(sprite_group)
         self.image = pygame.image.load(f'./img/{img_name}.png')
         self.rect = self.image.get_rect(center=pos)
         self.spd = spd
+
+    def update(self, dt):
+        self.rect.y += self.spd * dt
+        if self.rect.y > settings.SCREEN_HEIGHT or self.rect.y < 0:
+            self.kill()
 
 
 class Bullet(Projectile):
