@@ -70,7 +70,7 @@ class Menu(ItemsMenu):
         else:
             idx = self.items.index(new) + 1
 
-        for item in self.items[idx:]:
+        for item in self.items[idx:] + self.items[0:idx]:
             new = item
             if item.action:
                 break
@@ -85,11 +85,13 @@ class Menu(ItemsMenu):
         if new is None:
             self.select_next()
             return
-        idx = max(self.items.index(new) - 1, 0)
+        idx = self.items.index(new) - 1
+        if idx < 0:
+            idx = len(self.items) - 1
 
-        for i in range(idx, -1, -1):
-            new = self.items[i]
-            if self.items[i].action:
+        for item in [self.items[i] for i in range(idx, -1, -1)] + self.items[-1:idx:-1]:
+            new = item
+            if item.action:
                 break
         else:
             new = was
