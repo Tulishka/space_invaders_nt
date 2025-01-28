@@ -1,3 +1,5 @@
+import platform
+
 import pygame
 
 SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 850, 800
@@ -42,6 +44,13 @@ class LevelSettings:
         self.swarm_down_spd = swarm_down_spd
 
 
+class PlayerKeys:
+    def __init__(self, left, right, shot):
+        self.left = left
+        self.right = right
+        self.shot = shot
+
+
 level = [
     None,
     LevelSettings(8, (3, 2, 2, 1, 1), (30, 250), 3.0, 0.3, (0, 0, 1, 0, 1, 1, 0, 1), 0, 0, 60),
@@ -49,4 +58,18 @@ level = [
     LevelSettings(8, (3, 3, 3, 2, 2, 1), (50, 360), 2.0, 0.3, (1, 0, 1, 1, 1, 1, 0, 1), 0, 0, 90),
     LevelSettings(8, (3, 3, 3, 2, 2, 2), (60, 380), 1.7, 0.3, (1, 0, 1, 0, 1, 1, 0, 1), 0, 0, 100),
     LevelSettings(4, (3, 3, 2, 2, 1, 1), (70, 400), 1.5, 0.3, (1, 0, 1, 0, 1, 1, 0, 1), 40, 5, 110),
+]
+
+PLAYER_KEYS = [
+    None,
+    PlayerKeys(
+        left=pygame.K_a,
+        right=pygame.K_d,
+        shot=pygame.K_SPACE
+    ),
+    PlayerKeys(
+        left=pygame.K_LEFT,
+        right=pygame.K_RIGHT,
+        shot=1073742055 if platform.system() == "Darwin" else pygame.K_RCTRL
+    )
 ]

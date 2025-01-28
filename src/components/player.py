@@ -7,27 +7,8 @@ from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
 
 
-class PlayerKeys:
-    def __init__(self, left, right, shot):
-        self.left = left
-        self.right = right
-        self.shot = shot
-
 
 class Player(Sprite):
-    PLAYER_KEYS = [
-        None,
-        PlayerKeys(
-            left=pygame.K_a,
-            right=pygame.K_d,
-            shot=pygame.K_SPACE,
-        ),
-        PlayerKeys(
-            left=pygame.K_LEFT,
-            right=pygame.K_RIGHT,
-            shot=pygame.K_RCTRL,
-        ),
-    ]
 
     def __init__(self, num: int, sprite_group, scene_manager: SceneManager, bullets_group, start_x: int):
         super().__init__(sprite_group)
@@ -45,8 +26,8 @@ class Player(Sprite):
         self.time = 0
         self.spd = settings.PLAYER_SPEED
         self.scene_manager = scene_manager
-        self.keys = self.PLAYER_KEYS[self.num]
-        self.alt_keys = self.PLAYER_KEYS[self.num]
+        self.keys = settings.PLAYER_KEYS[self.num]
+        self.alt_keys = settings.PLAYER_KEYS[self.num]
         self.shot_cooldown = 1
         self.dead = False
         self.stasis = 0
