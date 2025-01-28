@@ -35,7 +35,7 @@ class GameScene(Scene):
         self.back_image = pygame.image.load("img/game_back.jpg")
         self.back_image_top = settings.SCREEN_HEIGHT - self.back_image.get_height()
 
-        self.font_obj = pygame.font.SysFont("serif", 24)
+        self.font_obj = pygame.font.Font(None, 30)
         self.text_sch = self.font_obj.render("Очки:", True, "white")
         self.text_lvl = self.font_obj.render(f"Ур: {self.level}", True, "yellow")
 
@@ -77,11 +77,11 @@ class GameScene(Scene):
         self.bullets_group.draw(screen)
 
         text = self.font_obj.render(f"{self.score}", True, "white")
-        screen.blit(self.text_sch, (5, 5))
-        screen.blit(self.text_lvl, (330, 5))
-        screen.blit(text, (70, 5))
+        screen.blit(self.text_sch, (5, 10))
+        screen.blit(self.text_lvl, (330, 10))
+        screen.blit(text, (70, 10))
 
-        x, y = 150, 5
+        x, y = 160, 5
         for i in range(self.lives):
             screen.blit(self.live_img, (x, y))
             x += self.live_img.get_width() + 7
