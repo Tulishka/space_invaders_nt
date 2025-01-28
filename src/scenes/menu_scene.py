@@ -6,8 +6,7 @@ import pygame
 from src import music, settings
 from src.aliens import MenuAlien
 from src.core.scene import Scene
-from src.menu import Menu
-from src.menu.menu_item import ImageMenuItem, MarginMenuItem
+from src.menu import Menu, ImageMenuItem, MarginMenuItem
 from src.sound import play_sound
 
 
@@ -24,11 +23,10 @@ class MenuScene(Scene):
         p1 = p3
 
         self.menu = Menu()
-        self.menu.spacing = 20
         ImageMenuItem(self.menu, pygame.image.load(f'./img/logo.png'))
         MarginMenuItem(self.menu, 10)
-        self.menu.selected = ImageMenuItem(self.menu, p1, action=partial(self.start_game, 1))
-        ImageMenuItem(self.menu, p2, action=partial(self.start_game, 2))
+        self.menu.selected = ImageMenuItem(self.menu, p1, partial(self.start_game, 1),pygame.K_1)
+        ImageMenuItem(self.menu, p2, partial(self.start_game, 2),pygame.K_2)
         ImageMenuItem(self.menu, font3.render("рекорды", True, "green"))
 
         self.markers = self.load_markers("music/menu1_markers.txt")
@@ -84,6 +82,7 @@ class MenuScene(Scene):
             MenuAlien(self.aliens_group, pos, alien_type, 0, self.front_group, spd, 0.2 * (self.time > 5))
 
         self.aliens_group.update(dt)
+        self.menu.update(dt)
 
     def start_game(self, num_players, level=1):
         self.scene_manager.kill_scene("trailer")

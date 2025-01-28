@@ -51,7 +51,8 @@ class BossScene(GameScene):
             # music.play("boss", 10, 1.5)
 
     def draw(self, screen):
-        super().draw(screen)
+        if super().draw(screen):
+            return True
 
         if self.swarm.hp > 0 and self.swarm.time > self.swarm.spawn_time + 2:
             bar_width = 50

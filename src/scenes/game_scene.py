@@ -6,6 +6,7 @@ from src import music, settings
 from src.aliens import BonusAlien
 from src.components.player import Player
 from src.core.scene import Scene
+from src.menu import Menu, ImageMenuItem, MarginMenuItem
 from src.sound import play_sound
 from src.components.swarm import Swarm
 
@@ -51,7 +52,7 @@ class GameScene(Scene):
             self.players.append(player)
 
         if self.num_players == 1:
-            player.alt_keys = Player.PLAYER_KEYS[2]
+            player.alt_keys = settings.PLAYER_KEYS[2]
 
         self.wound = 0
         self.wound_image = None
@@ -60,6 +61,10 @@ class GameScene(Scene):
         self.bonus_ship = False
 
         self.swarm = self.create_swarm()
+
+        self.menu_opened = False
+        self.menu = self.create_menu()
+        self.menu_dt_slowing = 0
 
         # отладка
         self.undead_players = False
@@ -96,6 +101,10 @@ class GameScene(Scene):
                 pygame.draw.rect(self.wound_image, (255, 0, 0, new_alpha),
                                  (0, 0, w, h), 0)
             screen.blit(self.wound_image, (0, 0))
+
+        if self.menu_opened:
+            self.menu.draw(screen)
+            return True
 
     def update_projectiles(self, dt):
         for bomb in self.bombs_group:
@@ -225,6 +234,12 @@ class GameScene(Scene):
         self.scene_manager.set_scene(next_scene, self.params)
 
     def update(self, dt):
+        if self.menu_opened:
+            self.menu.update(dt)
+            self.menu_dt_slowing *= 0.95
+            if self.menu_dt_slowing < 0.01:
+                return
+            dt *= self.menu_dt_slowing
         self.time += dt
         if self.gameover_time:
             dt *= max((self.gameover_time - self.time) / GameScene.GAME_OVER_DELAY, 0.1)
@@ -234,12 +249,16 @@ class GameScene(Scene):
         self.check_next_level()
 
     def process_event(self, event):
+
+        if self.menu_opened:
+            self.menu.process_event(event)
+            return
+
         if event.type != pygame.KEYDOWN:
             return
 
         if event.key == pygame.K_ESCAPE:
-            self.scene_manager.kill_scene("game")
-            self.scene_manager.set_scene("menu")
+            self.open_menu()
 
         # отладка
         if event.key == pygame.K_DELETE:
@@ -249,3 +268,37 @@ class GameScene(Scene):
 
         if event.key == pygame.K_BACKSPACE:
             self.undead_players = not self.undead_players
+
+    def create_menu(self):
+        menu = Menu()
+        font1 = pygame.font.Font(None, 60)
+        font3 = pygame.font.Font(None, 40)
+        ImageMenuItem(menu, font1.render("ПАУЗА", True, "white"))
+        MarginMenuItem(menu, 10)
+        menu.selected = ImageMenuItem(menu, font3.render("продолжить", True, "green"), self.close_menu, pygame.K_ESCAPE)
+        ImageMenuItem(menu, font3.render("выход", True, "green"), self.game_exit)
+        p = p1 = pygame.image.load(f'./img/p1_keys.png')
+        if self.num_players > 1:
+            p2 = pygame.image.load(f'./img/p2_keys.png')
+            # ImageMenuItem(menu, p2)
+            p = pygame.Surface((p1.get_width() + p2.get_width() + 30, p1.get_height()), flags=pygame.SRCALPHA)
+            p.blit(p1, (0, 0))
+            p.blit(p2, (p1.get_width() + 30, 0))
+        ImageMenuItem(menu, p)
+        menu.back_padding = 40
+        menu.selection_extend_x = 15
+        menu.opacity = 230
+        return menu
+
+    def game_exit(self):
+        self.scene_manager.kill_scene("game")
+        self.scene_manager.set_scene("menu")
+
+    def close_menu(self):
+        self.menu_opened = False
+        self.menu_dt_slowing = 0
+
+    def open_menu(self):
+        play_sound("menu_show")
+        self.menu_opened = True
+        self.menu_dt_slowing = 1

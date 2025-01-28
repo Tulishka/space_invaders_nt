@@ -1,5 +1,4 @@
 import pygame
-from select import select
 
 from .items_menu import ItemsMenu
 from .menu_item import MenuItem
@@ -17,11 +16,12 @@ class Menu(ItemsMenu):
         self.selection_extend_x = 25
         self.selection_extend_y = 5
         self.selection_radius = 25
-        self.spacing = 0
+        self.spacing = 20
         self.back_padding = 20
         self.back_image = None
         self.back_rect = None
         self.top = 200
+        self.opacity = 200
 
     def update(self, dt):
         self.time += dt
@@ -122,6 +122,6 @@ class Menu(ItemsMenu):
             )
             pygame.draw.rect(img, (10, 10, 20), (0, 0, width, height), 0, 8)
             pygame.draw.rect(img, (40, 40, 80), (0, 0, width, height), 2, 8)
-            img.set_alpha(200)
+            img.set_alpha(self.opacity)
             self.back_image = img
             self.back_rect = rect
