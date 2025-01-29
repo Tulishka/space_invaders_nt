@@ -21,6 +21,7 @@ sounds = {
     "alien_shot1": load("sound/easy_blaster.wav", 1),
     "alien_shot2": load("sound/blaster2.wav", 1),
     "alien_shot3": load("sound/blaster1.wav", 1),
+    "alien_shot7": load("sound/blaster2.wav", 1),
     "alien_warp": load("sound/warp.wav", 0.2),
 
     "bonus_alien_lr": load("sound/bonus_alien_lr.wav", 1),
