@@ -54,7 +54,7 @@ def create_particle_explosion(group, target, num_particles, size_range, initial_
         Particle(
             group=group,
             image=particle_img,
-            pos=rect.center,
+            pos=(rect.left+x, rect.top+y),
             spd=spd,
             lifetime=lifetime,
             gravity=98

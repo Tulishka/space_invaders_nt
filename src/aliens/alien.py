@@ -43,6 +43,9 @@ class Alien(Sprite):
         self.warp_y = 0
         self.animation_spd = 2
 
+    def is_dead(self):
+        return self.kill_time > 0
+
     def update(self, dt) -> None:
         self.time += dt
 
