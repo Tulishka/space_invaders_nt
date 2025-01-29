@@ -4,7 +4,7 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.transform import scale
 
-from src.components.projectile import Bomb
+from src.components.projectile import Bomb, Projectile
 from src.sound import play_sound
 
 
@@ -42,6 +42,8 @@ class Alien(Sprite):
         self.warp_x = 0
         self.warp_y = 0
         self.animation_spd = 2
+        self.special1 = 0
+        self.special2 = 0
 
     def is_dead(self):
         return self.kill_time > 0
@@ -73,4 +75,63 @@ class Alien(Sprite):
         return False
 
     def shot(self, spd_scale=1):
-        Bomb(self.rect.midbottom, self.bombs_group, self.type, spd_scale)
+        if not self.is_dead():
+            Bomb(self.rect.midbottom, self.bombs_group, self.type, spd_scale)
+
+
+class AlienLaserArm(Alien):
+    def __init__(self, aliens_group, pos, type_, column, bombs_group, spawn_time=0, size=1, left_side=True):
+        super().__init__(aliens_group, pos, type_, column, bombs_group, spawn_time=0, size=1)
+        if not left_side:
+            self.images = [pygame.transform.flip(img, True, False) for img in self.images]
+            self.kill_image = pygame.transform.flip(self.kill_image, True, False)
+            self.spawn_image = pygame.transform.flip(self.spawn_image, True, False)
+            self.image = self.images[0]
+        self.left_side = left_side
+        self.extended = 0
+        self.extend_range = 13
+        self.parent = None
+        self.type = 8
+        self.animation_spd = 4
+        self.laser = None
+        self.charge = 0
+
+    def update(self, dt):
+        super().update(dt)
+
+        if not self.parent:
+            return
+
+        if self.parent.is_dead():
+            self.die()
+        if self.left_side:
+            self.x = self.parent.x - (self.extend_range * self.charge + 4)
+        else:
+            self.x = self.parent.x + self.parent.rect.width // 2 + (self.extend_range * self.charge + 4)
+        self.y = self.parent.y + 15
+
+        if self.parent.special2:
+            if not self.laser or not self.laser.alive():
+                self.laser = Projectile((0, 0), "laser", 0, self.bombs_group)
+            self.laser.rect.midtop = self.rect.centerx - (7 if self.left_side else -8), self.rect.centery + 10
+
+        elif self.laser:
+            if self.laser.alive():
+                self.laser.kill()
+            self.laser = None
+
+        st = (self.parent.special1 - self.charge) * 2 * dt
+        self.charge += st
+        if self.charge > 1:
+            self.charge = 1
+        elif self.charge < 0:
+            self.charge = 0
+
+    def set_parent(self, alien):
+        self.parent = alien
+        self.warp_y = alien.warp_y
+        self.time = alien.time
+        self.spawn_time = alien.spawn_time
+
+    def shot(self, spd_scale=1):
+        pass

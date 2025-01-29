@@ -78,8 +78,8 @@ class GameScene(Scene):
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
 
-        self.particles_group.draw(screen)
         self.players_group.draw(screen)
+        self.particles_group.draw(screen)
         self.aliens_group.draw(screen)
         self.bombs_group.draw(screen)
         self.bullets_group.draw(screen)

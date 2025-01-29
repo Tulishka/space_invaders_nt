@@ -12,7 +12,8 @@ PLAYER_STASIS_TIME = 1
 BONUS_ALIEN_TYPE = 4
 BONUS_ALIEN_SPEED = 400
 BOSS_ALIEN_TYPE = 5
-ALIENS_REWARD = [0, 10, 20, 30, 100, 5]
+HEAVY_ALIEN_TYPE = 7
+ALIENS_REWARD = [0, 10, 20, 30, 100, 5, 80, 40, 10]
 MUSIC_END_EVENT = pygame.event.custom_type()
 KEY_COOLDOWN = 0.5
 MINIONS_COUNT = 15
@@ -53,6 +54,7 @@ class PlayerKeys:
 
 level = [
     None,
+    LevelSettings(8, (7, 3, 2, 1, 1), (30, 250), 3.0, 0.3, (0, 0, 1, 0, 1, 1, 0, 1), 0, 0, 60),
     LevelSettings(8, (3, 2, 2, 1, 1), (30, 250), 3.0, 0.3, (0, 0, 1, 0, 1, 1, 0, 1), 0, 0, 60),
     LevelSettings(8, (3, 3, 2, 2, 1, 1), (40, 350), 2.5, 0.3, (0, 0, 1, 0, 1, 1, 0, 1), 0, 0, 80),
     LevelSettings(8, (3, 3, 3, 2, 2, 1), (50, 360), 2.0, 0.3, (1, 0, 1, 1, 1, 1, 0, 1), 0, 0, 90),

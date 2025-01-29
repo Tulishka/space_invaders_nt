@@ -27,6 +27,7 @@ class Bullet(Projectile):
 
 class Bomb(Projectile):
     BULLET_SPEED = 300
+    MAX_BULLET_SPEED = 1300
 
     def __init__(self, pos: tuple, sprite_group, alient_type, spd_scale=1):
-        super().__init__(pos, f'bomb{alient_type}', (self.BULLET_SPEED + 200 * alient_type) * spd_scale, sprite_group)
+        super().__init__(pos, f'bomb{alient_type}', min(self.MAX_BULLET_SPEED, (self.BULLET_SPEED + 200 * alient_type) * spd_scale), sprite_group)

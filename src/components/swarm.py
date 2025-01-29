@@ -1,8 +1,8 @@
 import math
-from random import choice
+from random import choice, randint, choices
 
 from src import settings
-from src.aliens import Alien
+from src.aliens import Alien, AlienLaserArm
 from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
 
@@ -18,6 +18,7 @@ class Swarm:
     ALIEN_WIDTH = 64
 
     def __init__(self, level, aliens_group, scene_manager: SceneManager, players_group, bombs_group):
+        self.time = 0
         self.ls = settings.level[level]
         self.ALIEN_X_DISTANCE = self.LINE_WIDTH // self.ls.alien_in_line
         self.dir = 0
@@ -38,10 +39,40 @@ class Swarm:
             sounds["alien_shot1"],
             sounds["alien_shot2"],
             sounds["alien_shot3"],
+            sounds["alien_shot3"],
+            sounds["alien_shot3"],
+            sounds["alien_shot3"],
+            sounds["alien_shot7"],
         ]
 
         self.alien_start_count = self.create()
         self.swarm_down_warp = 0
+
+        self.special_shot_time = self.time + randint(8, 9)
+        self.special_prepare_time = self.special_shot_time - 2
+        self.special_aliens = []
+
+    def special_weapon_init(self):
+        for alien in self.special_aliens:
+            alien.special1 = 0
+            alien.special2 = 0
+        self.special_shot_time = self.time + randint(10, 20)
+        self.special_prepare_time = self.special_shot_time - 2
+        self.special_aliens = []
+
+    def special_shot(self, on):
+        for alien in self.special_aliens:
+            alien.special2 = on
+
+    def special_prepare(self, aliens):
+        if len(aliens) > 0:
+            idx1 = randint(0, len(aliens)-1)
+            idx2 = (idx1 + len(aliens) // 2) % len(aliens)
+            self.special_aliens = [aliens[idx1], aliens[idx2]]
+            for alien in self.special_aliens:
+                alien.special1 = 1
+        else:
+            self.special_aliens = []
 
     def create(self):
         x0 = self.SWARM_START_X
@@ -52,6 +83,19 @@ class Swarm:
 
         for y, typ in enumerate(self.ls.alien_types):
             for x in range(self.ls.alien_in_line):
+                if typ == settings.HEAVY_ALIEN_TYPE:
+                    l_arm = AlienLaserArm(
+                        self.aliens_group,
+                        (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE),
+                        "7_arm",
+                        x, self.bombs_group, 0
+                    )
+                    r_arm = AlienLaserArm(
+                        self.aliens_group,
+                        (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE),
+                        "7_arm",
+                        x, self.bombs_group, 0, left_side=False
+                    )
                 alien = Alien(
                     self.aliens_group,
                     (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE),
@@ -60,11 +104,17 @@ class Swarm:
                 )
                 alien.warp_y = -alien.y - 60
                 alien.time -= (lines - y) * 0.2 + x * 0.1
+
+                if typ == settings.HEAVY_ALIEN_TYPE:
+                    l_arm.set_parent(alien)
+                    r_arm.set_parent(alien)
+
                 cnt += 1
 
         return cnt
 
     def update(self, dt):
+        self.time += dt
         self.min_x = 100000
         self.min_y = 100000
         self.max_x = 0
@@ -74,7 +124,7 @@ class Swarm:
         alive_aliens_count = 0
         for alien in self.aliens_group:
             alien.update(dt)
-            if alien.column < 0:
+            if alien.column < 0 or isinstance(alien, AlienLaserArm):
                 continue
 
             alive_aliens_count += 1
@@ -124,7 +174,7 @@ class Swarm:
 
             if alien.time >= 0:
                 alien.warp_y *= 0.7
-                if int(alien.warp_y) == 0:
+                if int(alien.warp_y) == 0 and not isinstance(alien, AlienLaserArm):
                     wp -= 1
             alien.x += px
             alien.y += self.swarm_down_warp * dt
@@ -160,3 +210,15 @@ class Swarm:
                 alien_closest.shot()
                 self.sound_alien_shot[alien_closest.type - 1].play()
                 self.shot_order_pos = (self.shot_order_pos + 1) % len(self.shot_order)
+
+        if self.time > self.special_prepare_time and not self.special_aliens:
+            self.special_prepare([alien for alien in self.aliens_group if alien.type == settings.HEAVY_ALIEN_TYPE])
+            self.special_prepare_time += 1000
+
+        if self.time > self.special_shot_time and self.special_aliens:
+            if self.time - self.special_shot_time > 2:
+                self.special_shot(0)
+                if self.time - self.special_shot_time > 3:
+                    self.special_weapon_init()
+            else:
+                self.special_shot(1)
