@@ -180,9 +180,10 @@ class Swarm:
                     wp -= 1
             alien.x += px
             alien.y += self.swarm_down_warp * dt
-            alien.rect.x = alien.x + self.ls.swarm_rot_amp * math.cos(alien.time * self.ls.swarm_rot_spd)
-            alien.rect.y = alien.y + alien.warp_y + 0.2 * self.ls.swarm_rot_amp * math.sin(
-                alien.time * self.ls.swarm_rot_spd)
+            alien.set_rect_xy(
+                alien.x + self.ls.swarm_rot_amp * math.cos(alien.time * self.ls.swarm_rot_spd),
+                alien.y + alien.warp_y + 0.2 * self.ls.swarm_rot_amp * math.sin(alien.time * self.ls.swarm_rot_spd)
+            )
 
         if wp == 0 and self.dir == 0:
             self.dir = 1

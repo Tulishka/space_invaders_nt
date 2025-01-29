@@ -78,6 +78,9 @@ class Alien(Sprite):
         if not self.is_dead():
             Bomb(self.rect.midbottom, self.bombs_group, self.type, spd_scale)
 
+    def set_rect_xy(self, x, y):
+        self.rect.x, self.rect.y = (x, y)
+
 
 class AlienLaserArm(Alien):
     def __init__(self, aliens_group, pos, type_, column, bombs_group, spawn_time=0, size=1, left_side=True):
@@ -118,17 +121,21 @@ class AlienLaserArm(Alien):
         if self.parent.special2:
             if not self.laser or not self.laser.alive():
                 self.laser = Beam((0, 0), "laser", 0, self.bombs_group)
-            self.laser.rect.midtop = self.rect.centerx - (7 if self.left_side else -8), self.rect.centery + 10
 
         elif self.laser:
             self.stop_beam_laser()
 
-        st = (self.parent.special1 - self.charge) * 3  * dt
+        st = (self.parent.special1 - self.charge) * 3 * dt
         self.charge += st
         if self.charge > 1:
             self.charge = 1
         elif self.charge < 0:
             self.charge = 0
+
+    def set_rect_xy(self, x, y):
+        super().set_rect_xy(x, y)
+        if self.laser:
+            self.laser.rect.midtop = self.rect.centerx - (7 if self.left_side else -8), self.rect.centery + 10
 
     def kill(self):
         super().kill()
