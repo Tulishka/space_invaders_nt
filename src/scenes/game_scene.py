@@ -120,8 +120,10 @@ class GameScene(Scene):
         for alien, bullets in collisions.items():
             for bullet in bullets:
                 if alien.hit():
-                    create_particle_explosion(self.particles_group, alien, 12, (2, 6), 40, (0, -30))
+                    particles = max((alien.rect.width*alien.rect.height // 256) if alien.is_dead() else 12, 12)
+                    create_particle_explosion(self.particles_group, alien, particles, (2, 6), 40, (0, -30), min(particles / 12, 2))
                     self.hit_alien(alien, bullet.player)
+
 
         collisions = pygame.sprite.groupcollide(
             self.players_group, self.bombs_group, False, True, collided=pygame.sprite.collide_mask
