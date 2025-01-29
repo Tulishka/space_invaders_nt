@@ -29,6 +29,10 @@ class Menu(ItemsMenu):
 
     def process_event(self, event):
 
+        for item in self.items:
+            if item.process_event(event):
+                return
+
         if event.type == pygame.MOUSEMOTION or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
             mouse_pos = event.pos
             for item in self.items:
@@ -50,10 +54,6 @@ class Menu(ItemsMenu):
             self.select_prev()
         elif self.selected and event.key in (pygame.K_KP_ENTER, pygame.K_SPACE, pygame.K_RETURN):
             self.selected.activate()
-        else:
-            for item in self.items:
-                if item.process_event(event):
-                    break
 
     def item_activated(self, item: MenuItem):
         self.selected = item
