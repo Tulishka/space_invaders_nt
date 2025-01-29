@@ -4,7 +4,7 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.transform import scale
 
-from src.components.projectile import Bomb, Projectile
+from src.components.projectile import Bomb, Beam
 from src.sound import play_sound
 
 
@@ -102,8 +102,13 @@ class AlienLaserArm(Alien):
         if not self.parent:
             return
 
-        if self.parent.is_dead():
+        if not self.is_dead() and self.parent.is_dead():
+            self.stop_beam_laser()
             self.die()
+
+        if self.is_dead():
+            return
+
         if self.left_side:
             self.x = self.parent.x - (self.extend_range * self.charge + 4)
         else:
@@ -112,20 +117,28 @@ class AlienLaserArm(Alien):
 
         if self.parent.special2:
             if not self.laser or not self.laser.alive():
-                self.laser = Projectile((0, 0), "laser", 0, self.bombs_group)
+                self.laser = Beam((0, 0), "laser", 0, self.bombs_group)
             self.laser.rect.midtop = self.rect.centerx - (7 if self.left_side else -8), self.rect.centery + 10
 
         elif self.laser:
-            if self.laser.alive():
-                self.laser.kill()
-            self.laser = None
+            self.stop_beam_laser()
 
-        st = (self.parent.special1 - self.charge) * 2 * dt
+        st = (self.parent.special1 - self.charge) * 3  * dt
         self.charge += st
         if self.charge > 1:
             self.charge = 1
         elif self.charge < 0:
             self.charge = 0
+
+    def kill(self):
+        super().kill()
+        self.stop_beam_laser()
+
+    def stop_beam_laser(self):
+        if self.laser:
+            if self.laser.alive():
+                self.laser.kill()
+            self.laser = None
 
     def set_parent(self, alien):
         self.parent = alien

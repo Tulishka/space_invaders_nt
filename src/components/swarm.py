@@ -3,6 +3,7 @@ from random import choice, randint, choices
 
 from src import settings
 from src.aliens import Alien, AlienLaserArm
+from src.components.projectile import Beam
 from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
 
@@ -48,15 +49,16 @@ class Swarm:
         self.alien_start_count = self.create()
         self.swarm_down_warp = 0
 
-        self.special_shot_time = self.time + randint(8, 9)
+        self.special_shot_time = self.time + 5
         self.special_prepare_time = self.special_shot_time - 2
         self.special_aliens = []
+        self.beam_on = False
 
     def special_weapon_init(self):
         for alien in self.special_aliens:
             alien.special1 = 0
             alien.special2 = 0
-        self.special_shot_time = self.time + randint(10, 20)
+        self.special_shot_time = self.time + randint(5, 10)
         self.special_prepare_time = self.special_shot_time - 2
         self.special_aliens = []
 
@@ -66,7 +68,7 @@ class Swarm:
 
     def special_prepare(self, aliens):
         if len(aliens) > 0:
-            idx1 = randint(0, len(aliens)-1)
+            idx1 = randint(0, len(aliens) - 1)
             idx2 = (idx1 + len(aliens) // 2) % len(aliens)
             self.special_aliens = [aliens[idx1], aliens[idx2]]
             for alien in self.special_aliens:
@@ -222,3 +224,12 @@ class Swarm:
                     self.special_weapon_init()
             else:
                 self.special_shot(1)
+
+            beams = len([beam for beam in self.bombs_group if isinstance(beam, Beam)])
+            if beams and not self.beam_on:
+                self.beam_on = True
+                sounds["laser_beam"].set_volume(0.5)
+                sounds["laser_beam"].play()
+            elif not beams and self.beam_on:
+                self.beam_on = False
+                sounds["laser_beam"].fadeout(300)
