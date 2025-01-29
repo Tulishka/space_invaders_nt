@@ -51,6 +51,7 @@ class Alien(Sprite):
             return
 
         if self.kill_time > 0:
+            self.image = self.kill_image
             if self.time > self.kill_time:
                 self.kill()
         else:
@@ -59,7 +60,6 @@ class Alien(Sprite):
     def die(self):
         if self.kill_time == 0:
             play_sound("alien_dead")
-            self.image = self.kill_image
             self.kill_time = self.ALIEN_DEAD_TIME + self.time
 
     def hit(self):

@@ -4,6 +4,7 @@ import pygame
 
 from src import music, settings
 from src.aliens import BonusAlien
+from src.components.particles import create_particle_explosion
 from src.components.player import Player
 from src.core.scene import Scene
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
@@ -31,6 +32,7 @@ class GameScene(Scene):
         self.bullets_group = pygame.sprite.Group()
         self.players_group = pygame.sprite.Group()
         self.aliens_group = pygame.sprite.Group()
+        self.particles_group = pygame.sprite.Group()
 
         self.live_img = pygame.image.load("img/life.png")
         self.back_image = pygame.image.load("img/game_back.jpg")
@@ -76,6 +78,7 @@ class GameScene(Scene):
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
 
+        self.particles_group.draw(screen)
         self.players_group.draw(screen)
         self.aliens_group.draw(screen)
         self.bombs_group.draw(screen)
@@ -117,6 +120,7 @@ class GameScene(Scene):
         for alien, bullets in collisions.items():
             for bullet in bullets:
                 if alien.hit():
+                    create_particle_explosion(self.particles_group, alien, 12, (2, 6), 40, (0, -30))
                     self.hit_alien(alien, bullet.player)
 
         collisions = pygame.sprite.groupcollide(
@@ -124,8 +128,16 @@ class GameScene(Scene):
         )
 
         for player, bombs in collisions.items():
-            if bombs and player.stasis <= 0 and not self.undead_players:
+            if bombs and player.stasis <= 0 and not self.undead_players and not player.dead:
                 self.hit_player(player)
+                create_particle_explosion(
+                    self.particles_group,
+                    player,
+                    12 * (1 + 2 * player.dead),
+                    (4, 12),
+                    60,
+                    (0, -50)
+                )
 
     def swarm_crash_player(self, player):
         return self.swarm.max_y > player.rect.y
@@ -244,6 +256,7 @@ class GameScene(Scene):
         self.update_players(dt)
         self.update_swarm(dt)
         self.check_next_level()
+        self.particles_group.update(dt)
 
     def process_event(self, event):
 
