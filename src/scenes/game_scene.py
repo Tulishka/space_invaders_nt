@@ -6,10 +6,10 @@ from src import music, settings
 from src.aliens import BonusAlien
 from src.components.particles import create_particle_explosion
 from src.components.player import Player
+from src.components.swarm import Swarm
 from src.core.scene import Scene
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
-from src.sound import play_sound
-from src.components.swarm import Swarm
+from src.sound import play_sound, stop_sound
 
 
 class GameScene(Scene):
@@ -38,19 +38,20 @@ class GameScene(Scene):
             "shields": pygame.sprite.Group(),
         }
 
+        self.num_players = self.params.get("num_players", 1)
+
         self.live_img = pygame.image.load("img/life.png")
         self.back_image = pygame.image.load("img/game_back.jpg")
         self.back_image_top = settings.SCREEN_HEIGHT - self.back_image.get_height()
 
         self.font_obj = pygame.font.Font(None, 30)
-        self.text_sch = self.font_obj.render("Очки:", True, "white")
+        self.text_score = [self.render_score_text(idx) for idx in range(self.num_players)]
         self.text_lvl = self.font_obj.render(f"Ур: {self.level}", True, "yellow")
 
         self.time = 0
         self.gameover_time = 0
         self.next_level_time = 0
 
-        self.num_players = self.params.get("num_players", 1)
         self.players = []
         for num in range(self.num_players):
             player = Player(num + 1, self.scene_groups, self.scene_manager, players_start_pos[num])
@@ -74,6 +75,9 @@ class GameScene(Scene):
         # отладка
         self.undead_players = False
 
+    def on_kill(self):
+        stop_sound()
+
     def create_swarm(self):
         return Swarm(self.level, self.scene_groups, self.scene_manager)
 
@@ -83,12 +87,13 @@ class GameScene(Scene):
         for group in self.scene_groups.values():
             group.draw(screen)
 
-        text = self.font_obj.render(f"{self.score}", True, "white")
-        screen.blit(self.text_sch, (5, 10))
-        screen.blit(self.text_lvl, (330, 10))
-        screen.blit(text, (70, 10))
+        sx = (5 + self.text_score[0].get_width(), settings.SCREEN_WIDTH - 5)
+        for idx in range(self.num_players):
+            screen.blit(self.text_score[idx], (sx[idx] - self.text_score[idx].get_width(), 10))
 
-        x, y = 160, 5
+        screen.blit(self.text_lvl, (settings.SCREEN_WIDTH // 2 - self.text_lvl.get_width() // 2, 10))
+
+        x, y = 180, 5
         for i in range(self.lives):
             screen.blit(self.live_img, (x, y))
             x += self.live_img.get_width() + 7
@@ -198,6 +203,7 @@ class GameScene(Scene):
         if not player:
             return
         self.player_score[player.num - 1] += points
+        self.text_score[player.num - 1] = self.render_score_text(player.num - 1)
         if alien.type == settings.BONUS_ALIEN_TYPE:
             player.upgrade_gun()
 
@@ -316,6 +322,14 @@ class GameScene(Scene):
         self.menu_dt_slowing = 0
 
     def open_menu(self):
+        stop_sound()
         play_sound("menu_show")
         self.menu_opened = True
         self.menu_dt_slowing = 1
+
+    def render_score_text(self, player_idx):
+        return self.font_obj.render(
+            f"{player_idx + 1}P: {self.player_score[player_idx]}",
+            True,
+            settings.PLAYER_COLORS[player_idx]
+        )
