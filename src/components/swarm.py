@@ -3,6 +3,7 @@ from random import choice, randint, choices
 
 from src import settings
 from src.aliens import Alien, AlienLaserArm
+from src.aliens.acolyte_alien import AcolyteAlien
 from src.components.projectile import Beam
 from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
@@ -29,6 +30,7 @@ class Swarm:
         self.players_group = scene_groups["players"]
         self.bombs_group = scene_groups["bombs"]
         self.shot_order = self.ls.swarm_shot_order
+        self.acolyte = False
 
         self.shot_cooldown = [self.ls.swarm_cd] * len(self.players_group)
         self.shot_order_pos = [0] * len(self.players_group)
@@ -51,7 +53,7 @@ class Swarm:
         self.alien_start_count = self.create()
         self.swarm_down_warp = 0
 
-        self.special_shot_time = self.time + 5
+        self.special_shot_time = self.time + 6
         self.special_prepare_time = self.special_shot_time - 2
         self.special_aliens = []
         self.beam_on = False
@@ -128,7 +130,7 @@ class Swarm:
         alive_aliens_count = 0
         for alien in self.aliens_group:
             alien.update(dt)
-            if alien.column < 0 or isinstance(alien, AlienLaserArm):
+            if alien.column < 0 or alien.type not in self.ls.alien_types:
                 continue
 
             alive_aliens_count += 1
@@ -200,7 +202,7 @@ class Swarm:
                     continue
 
                 alien_closest_dist = 9999
-                accurate = len(can_shot)<settings.SWARM_ALIEN_ACCURATE_SHOT_COUNT
+                accurate = len(can_shot) < settings.SWARM_ALIEN_ACCURATE_SHOT_COUNT
                 if self.shot_order[self.shot_order_pos[idx]] or accurate:
                     alien_closest = can_shot[0]
                     for alien in can_shot:
@@ -211,7 +213,8 @@ class Swarm:
                 else:
                     alien_closest = choice(can_shot)
 
-                if (self.shot_order[self.shot_order_pos[idx]] != 2 and not accurate) or alien_closest_dist < player.rect.width // 2:
+                if (self.shot_order[
+                        self.shot_order_pos[idx]] != 2 and not accurate) or alien_closest_dist < player.rect.width // 2:
                     alien_closest.shot()
                     self.shot_cooldown[idx] = self.ls.swarm_cd
                     self.sound_alien_shot[alien_closest.type - 1].play()
@@ -237,3 +240,9 @@ class Swarm:
             elif not beams and self.beam_on:
                 self.beam_on = False
                 sounds["laser_beam"].fadeout(300)
+
+        if not self.acolyte and self.ls.acolyte and self.time > 3:
+            ac = AcolyteAlien(self.scene_groups, (randint(100, 400), 100), 1)
+            ac.hp /= 2
+            ac.protect_cooldown = 1.5
+            self.acolyte = True
