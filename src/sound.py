@@ -25,6 +25,11 @@ sounds = {
     "alien_shot3": load("sound/blaster1.wav", 1),
     "alien_shot7": load("sound/blaster2.wav", 1),
     "alien_warp": load("sound/warp.wav", 0.2),
+    "alien_shield_up": load("sound/give_shield.wav", 1),
+    "alien_shield_down": load("sound/pop.wav", 1),
+
+
+
 
     "bonus_alien_lr": load("sound/bonus_alien_lr.wav", 1),
     "bonus_alien_rl": load("sound/bonus_alien_rl.wav", 1),
@@ -36,6 +41,8 @@ sounds = {
     "boss_online": load("sound/boss_online.wav", 0.7),
     "boss_signal": load("sound/boss_signal.wav", 0.7),
     "boss_move": load("sound/boss_move.wav", 0.3),
+    "boss_shield_up": load("sound/start2.mp3", 1),
+    "boss_shield_down": load("sound/woosh.wav", 1),
 
     "menu_beep": load("sound/hit2.wav", 1),
     "menu_start": load("sound/start1.mp3", 0.2),
@@ -45,3 +52,6 @@ sounds = {
 
 def play_sound(name):
     sounds[name].play()
+
+def stop_sound():
+    pygame.mixer.fadeout(500)
