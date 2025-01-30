@@ -47,10 +47,19 @@ class Alien(Sprite):
         self.special2 = 0
         self.size = size
 
-    def add_shield(self):
-        if not self.shield_sprite:
+    def create_shield_image(self) -> pygame.Surface:
+        return pygame.image.load('./img/shield.png')
+
+    def hit_shield(self) -> bool:
+        if self.has_shield():
+            self.shield_down()
+            return True
+        return False
+
+    def shield_up(self):
+        if not self.shield_sprite and self.alive() and not self.is_dead():
             self.shield_sprite = Sprite(self.scene_groups["shields"])
-            self.shield_sprite.image = pygame.image.load('./img/shield.png')
+            self.shield_sprite.image = self.create_shield_image()
             if self.size != 1:
                 self.shield_sprite.image = scale(
                     self.shield_sprite.image,
@@ -65,7 +74,7 @@ class Alien(Sprite):
         if self.shield_sprite:
             self.shield_sprite.rect = self.shield_sprite.image.get_rect(center=self.rect.center)
 
-    def remove_shield(self):
+    def shield_down(self):
         if self.shield_sprite:
             self.shield_sprite.kill()
             self.shield_sprite = None
@@ -93,8 +102,7 @@ class Alien(Sprite):
             self.kill_time = self.ALIEN_DEAD_TIME + self.time
 
     def hit(self):
-        if self.has_shield():
-            self.remove_shield()
+        if self.hit_shield():
             return False
 
         if self.kill_time == 0:
@@ -173,6 +181,7 @@ class AlienLaserArm(Alien):
     def kill(self):
         super().kill()
         self.stop_beam_laser()
+        self.shield_down()
 
     def stop_beam_laser(self):
         if self.laser:
@@ -188,3 +197,20 @@ class AlienLaserArm(Alien):
 
     def shot(self, spd_scale=1):
         pass
+
+
+class HpAlienMixin:
+
+    def hit(self):
+        if self.time < self.spawn_time:
+            return False
+
+        if self.hit_shield():
+            return False
+
+        self.hp -= 1
+        if self.kill_time == 0 and self.hp <= 0:
+            self.die()
+            return True
+
+        return self.hp > 0
