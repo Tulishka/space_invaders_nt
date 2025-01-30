@@ -21,6 +21,26 @@ MINIONS_MAX_BOMBS = 2
 MINIONS_SPAWN_COOLDOWN = 0.6
 BOSS_RESPAWN_MINIONS_COOLDOWN = 10
 
+SWARM_ALIEN_ACCURATE_SHOT_COUNT = 5
+
+PARTICLES_HIT_COUNT = 10
+PARTICLES_KILL_COUNT = {
+    "Alien": 12,
+    "MinionAlien": 12,
+    "BossAlien": 80,
+    "BonusAlien": 25,
+    "AcolyteAlien": 40
+}
+
+PARTICLES_HIT_SIZE = (2, 6)
+PARTICLES_KILL_SIZE = {
+    "MinionAlien": (2, 6),
+    "Alien": (3, 7),
+    "BonusAlien": (3, 8),
+    "AcolyteAlien": (3, 10),
+    "BossAlien": (3, 10),
+}
+
 
 class LevelSettings:
     def __init__(self,

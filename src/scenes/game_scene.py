@@ -79,8 +79,8 @@ class GameScene(Scene):
         screen.blit(self.back_image, (0, self.back_image_top))
 
         self.players_group.draw(screen)
-        self.particles_group.draw(screen)
         self.aliens_group.draw(screen)
+        self.particles_group.draw(screen)
         self.bombs_group.draw(screen)
         self.bullets_group.draw(screen)
 
@@ -120,10 +120,18 @@ class GameScene(Scene):
         for alien, bullets in collisions.items():
             for bullet in bullets:
                 if alien.hit():
-                    particles = max((alien.rect.width*alien.rect.height // 256) if alien.is_dead() else 12, 12)
-                    create_particle_explosion(self.particles_group, alien, particles, (2, 6), 40, (0, -30), min(particles / 12, 2))
-                    self.hit_alien(alien, bullet.player)
+                    if alien.is_dead():
+                        particles = settings.PARTICLES_KILL_COUNT.get(type(alien).__name__, 12)
+                        size = settings.PARTICLES_KILL_SIZE.get(type(alien).__name__, (2, 6))
+                    else:
+                        particles, size = settings.PARTICLES_HIT_COUNT, settings.PARTICLES_HIT_SIZE
 
+                    create_particle_explosion(
+                        self.particles_group, alien, particles, size,
+                        40, (0, -30),
+                        2 if alien.type == settings.BONUS_ALIEN_TYPE else 1
+                    )
+                    self.hit_alien(alien, bullet.player)
 
         collisions = pygame.sprite.groupcollide(
             self.players_group, self.bombs_group, False, True, collided=pygame.sprite.collide_mask
