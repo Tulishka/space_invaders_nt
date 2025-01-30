@@ -27,9 +27,10 @@ class Swarm:
         self.scene_manager = scene_manager
         self.players_group = players_group
         self.bombs_group = bombs_group
-        self.shot_cooldown = self.ls.swarm_cd
         self.shot_order = self.ls.swarm_shot_order
-        self.shot_order_pos = 0
+
+        self.shot_cooldown = [self.ls.swarm_cd] * len(players_group)
+        self.shot_order_pos = [0] * len(players_group)
 
         self.min_x = 0
         self.min_y = 0
@@ -188,31 +189,33 @@ class Swarm:
         if wp == 0 and self.dir == 0:
             self.dir = 1
 
-        self.shot_cooldown -= dt
-        if self.shot_cooldown < 0:
-            self.shot_cooldown = 0
+        if can_shot:
+            for idx, player in enumerate(self.players_group):
+                self.shot_cooldown[idx] -= dt
+                if self.shot_cooldown[idx] < 0:
+                    self.shot_cooldown[idx] = 0
 
-        if can_shot and self.shot_cooldown == 0:
-            self.shot_cooldown = self.ls.swarm_cd
-
-            for player in self.players_group:
-                if player.dead:
+                if player.dead or self.shot_cooldown[idx]:
                     continue
-                if self.shot_order[self.shot_order_pos]:
+
+                alien_closest_dist = 9999
+                accurate = len(can_shot)<settings.SWARM_ALIEN_ACCURATE_SHOT_COUNT
+                if self.shot_order[self.shot_order_pos[idx]] or accurate:
                     alien_closest = can_shot[0]
                     for alien in can_shot:
-                        if (
-                                abs(alien.rect.x - player.rect.x)
-                                <
-                                abs(player.rect.x - alien_closest.rect.x)
-                        ):
+                        d = abs(alien.rect.centerx - player.rect.centerx)
+                        if d < alien_closest_dist:
                             alien_closest = alien
+                            alien_closest_dist = d
                 else:
                     alien_closest = choice(can_shot)
 
-                alien_closest.shot()
-                self.sound_alien_shot[alien_closest.type - 1].play()
-                self.shot_order_pos = (self.shot_order_pos + 1) % len(self.shot_order)
+                if (self.shot_order[self.shot_order_pos[idx]] != 2 and not accurate) or alien_closest_dist < player.rect.width // 2:
+                    print(self.shot_order[self.shot_order_pos[idx]],alien_closest_dist)
+                    alien_closest.shot()
+                    self.shot_cooldown[idx] = self.ls.swarm_cd
+                    self.sound_alien_shot[alien_closest.type - 1].play()
+                    self.shot_order_pos[idx] = (self.shot_order_pos[idx] + 1) % len(self.shot_order)
 
         if self.time > self.special_prepare_time and not self.special_aliens:
             self.special_prepare([alien for alien in self.aliens_group if alien.type == settings.HEAVY_ALIEN_TYPE])
