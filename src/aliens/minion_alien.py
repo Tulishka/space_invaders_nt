@@ -7,16 +7,16 @@ from .alien import Alien
 
 class MinionAlien(Alien):
 
-    def __init__(self, aliens_group, pos, type_, column, bombs_group, move_target_x, players_group):
-        super().__init__(aliens_group, pos, type_, column, bombs_group, 0.2, size=0.5)
+    def __init__(self, scene_groups, pos, type_, column, move_target_x):
+        super().__init__(scene_groups, pos, type_, column, 0.2, size=0.5)
         self.target_time = 0
         self.set_target(move_target_x)
-        self.players_group = players_group
         self.radius = randint(36, 80)
         self.radius_spd = randint(2, 4) * 0.3
         self.radius_dir = choice((-1, 1))
         self.radius_k = - self.radius
         self.shot_cooldown = 2
+        # self.add_shield()
 
     def update(self, dt):
         super().update(dt)
@@ -31,14 +31,13 @@ class MinionAlien(Alien):
                 self.radius_k += dt * 100
         radius = self.radius + self.radius_k
         a = self.time * self.radius_spd * self.radius_dir
-        self.rect = self.image.get_rect(center=(
-            self.x + self.warp_x + radius * math.cos(a),
-            self.y + self.warp_y + radius * math.sin(a),
-        ))
+        self.set_rect_xy(
+            self.x + self.warp_x + radius * math.cos(a) - self.image.get_width() // 2,
+            self.y + self.warp_y + radius * math.sin(a) - self.image.get_height() // 2,
+        )
 
-
-        if self.shot_cooldown < 0 and len(self.bombs_group) < settings.MINIONS_MAX_BOMBS:
-            for player in self.players_group:
+        if self.shot_cooldown < 0 and len(self.scene_groups["bombs"]) < settings.MINIONS_MAX_BOMBS:
+            for player in self.scene_groups["players"]:
                 if not player.dead and abs(self.rect.centerx - player.rect.centerx) < player.rect.width // 2:
                     self.shot(0.5)
                     sound.play_sound("minion_shot")

@@ -4,8 +4,8 @@ from .alien import Alien
 
 
 class MenuAlien(Alien):
-    def __init__(self, aliens_group, pos, type_, column, bombs_group, spd, spawn_time=0):
-        super().__init__(aliens_group, pos, type_, column, bombs_group, spawn_time)
+    def __init__(self, scene_groups, pos, type_, column, spd, spawn_time=0):
+        super().__init__(scene_groups, pos, type_, column, spawn_time)
         self.spd = spd
         self.warp_spd = random.randint(1000, 2000)
         self.x = self.rect.x

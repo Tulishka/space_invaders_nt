@@ -28,11 +28,15 @@ class GameScene(Scene):
 
         players_start_pos = [100, settings.SCREEN_WIDTH - 100]
 
-        self.bombs_group = pygame.sprite.Group()
-        self.bullets_group = pygame.sprite.Group()
-        self.players_group = pygame.sprite.Group()
-        self.aliens_group = pygame.sprite.Group()
-        self.particles_group = pygame.sprite.Group()
+        # порядок отрисовки:
+        self.scene_groups = {
+            "players": pygame.sprite.Group(),
+            "aliens": pygame.sprite.Group(),
+            "particles": pygame.sprite.Group(),
+            "bombs": pygame.sprite.Group(),
+            "bullets": pygame.sprite.Group(),
+            "shields": pygame.sprite.Group(),
+        }
 
         self.live_img = pygame.image.load("img/life.png")
         self.back_image = pygame.image.load("img/game_back.jpg")
@@ -49,8 +53,7 @@ class GameScene(Scene):
         self.num_players = self.params.get("num_players", 1)
         self.players = []
         for num in range(self.num_players):
-            player = Player(num + 1, self.players_group, self.scene_manager,
-                            self.bullets_group, players_start_pos[num])
+            player = Player(num + 1, self.scene_groups, self.scene_manager, players_start_pos[num])
             self.players.append(player)
 
         if self.num_players == 1:
@@ -72,17 +75,13 @@ class GameScene(Scene):
         self.undead_players = False
 
     def create_swarm(self):
-        return Swarm(self.level, self.aliens_group, self.scene_manager,
-                     self.players_group, self.bombs_group)
+        return Swarm(self.level, self.scene_groups, self.scene_manager)
 
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
 
-        self.players_group.draw(screen)
-        self.aliens_group.draw(screen)
-        self.particles_group.draw(screen)
-        self.bombs_group.draw(screen)
-        self.bullets_group.draw(screen)
+        for group in self.scene_groups.values():
+            group.draw(screen)
 
         text = self.font_obj.render(f"{self.score}", True, "white")
         screen.blit(self.text_sch, (5, 10))
@@ -110,11 +109,11 @@ class GameScene(Scene):
             return True
 
     def update_projectiles(self, dt):
-        self.bombs_group.update(dt)
-        self.bullets_group.update(dt)
+        self.scene_groups["bombs"].update(dt)
+        self.scene_groups["bullets"].update(dt)
 
         collisions = pygame.sprite.groupcollide(
-            self.aliens_group, self.bullets_group, False, True, collided=pygame.sprite.collide_mask
+            self.scene_groups["aliens"], self.scene_groups["bullets"], False, True, collided=pygame.sprite.collide_mask
         )
 
         for alien, bullets in collisions.items():
@@ -127,21 +126,21 @@ class GameScene(Scene):
                         particles, size = settings.PARTICLES_HIT_COUNT, settings.PARTICLES_HIT_SIZE
 
                     create_particle_explosion(
-                        self.particles_group, alien, particles, size,
+                        self.scene_groups["particles"], alien, particles, size,
                         40, (0, -30),
                         2 if alien.type == settings.BONUS_ALIEN_TYPE else 1
                     )
                     self.hit_alien(alien, bullet.player)
 
         collisions = pygame.sprite.groupcollide(
-            self.players_group, self.bombs_group, False, True, collided=pygame.sprite.collide_mask
+            self.scene_groups["players"], self.scene_groups["bombs"], False, True, collided=pygame.sprite.collide_mask
         )
 
         for player, bombs in collisions.items():
             if bombs and player.stasis <= 0 and not self.undead_players and not player.dead:
                 self.hit_player(player)
                 create_particle_explosion(
-                    self.particles_group,
+                    self.scene_groups["particles"],
                     player,
                     12 * (1 + 2 * player.dead),
                     (4, 12),
@@ -154,14 +153,14 @@ class GameScene(Scene):
 
     def update_players(self, dt):
         count = 0
-        self.players_group.update(dt)
+        self.scene_groups["players"].update(dt)
 
         if self.wound:
             self.wound *= 0.92
             if self.wound < 0.05:
                 self.wound = 0
 
-        for player in self.players_group:
+        for player in self.scene_groups["players"]:
             if player.dead:
                 continue
 
@@ -215,15 +214,14 @@ class GameScene(Scene):
             ba = BonusAlien(
                 (x, 80),
                 spd,
-                self.aliens_group,
-                self.bombs_group,
+                self.scene_groups,
                 settings.SCREEN_WIDTH + 100 if x < 0 else -100,
             )
             ba.warp_y = 0
             play_sound(f"bonus_alien_{'lr' if spd > 0 else 'rl'}")
 
     def check_next_level(self):
-        if self.next_level_time == 0 and len(self.aliens_group) == 0:
+        if self.next_level_time == 0 and len(self.scene_groups["aliens"]) == 0:
             self.next_level_time = self.time + 2
             music.play("next_level")
 
@@ -266,7 +264,7 @@ class GameScene(Scene):
         self.update_players(dt)
         self.update_swarm(dt)
         self.check_next_level()
-        self.particles_group.update(dt)
+        self.scene_groups["particles"].update(dt)
 
     def process_event(self, event):
 
@@ -282,7 +280,7 @@ class GameScene(Scene):
 
         # отладка
         if event.key == pygame.K_DELETE:
-            self.aliens_group.empty()
+            self.scene_groups["aliens"].empty()
         if event.key == pygame.K_PAGEDOWN:
             self.swarm.swarm_down_warp = 100
 

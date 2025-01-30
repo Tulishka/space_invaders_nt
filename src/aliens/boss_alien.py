@@ -11,10 +11,9 @@ from .minion_alien import MinionAlien
 class BossAlien(Alien):
     MINION_ALIEN_TYPES = (1, 2, 3)
 
-    def __init__(self, aliens_group, pos, players_group, bombs_group):
-        super().__init__(aliens_group, pos, settings.BOSS_ALIEN_TYPE, -1, bombs_group, 0.3)
-        self.players_group = players_group
-        self.max_hp = 100 * len(self.players_group)
+    def __init__(self, scene_groups, pos):
+        super().__init__(scene_groups, pos, settings.BOSS_ALIEN_TYPE, -1, 0.3)
+        self.max_hp = 100 * len(self.scene_groups["players"])
         self.hp = self.max_hp
         self.warp_y = -500
         self.minions_spawn_time = 4.5
@@ -26,7 +25,7 @@ class BossAlien(Alien):
             (pos[0] - 100, pos[1] + 150),
         ]
         self.spawn_rate = [1, 1, 2, 1, 1.5]
-        self.spawn_players_rate = max(len(players_group) * 0.75, 1)
+        self.spawn_players_rate = max(len(self.scene_groups["players"]) * 0.75, 1)
         self.current_pos = 0
         self.next_pos_time = self.time + random.randint(6, 12)
         self.boss_next_online = 15
@@ -73,7 +72,7 @@ class BossAlien(Alien):
 
     def spawn_minion(self):
         max_minions = settings.MINIONS_COUNT * self.spawn_players_rate
-        if self.minions_spawn_time < self.time and len(self.aliens_group) <= max_minions:
+        if self.minions_spawn_time < self.time and len(self.scene_groups["aliens"]) <= max_minions:
             x, y = self.rect.midbottom
 
             if self.time > self.boss_next_online:
@@ -81,13 +80,11 @@ class BossAlien(Alien):
                 self.boss_next_online = self.time + 30
 
             m = MinionAlien(
-                self.aliens_group,
+                self.scene_groups,
                 (x, y),
                 random.choice(self.MINION_ALIEN_TYPES),
                 0,
-                self.bombs_group,
                 x + random.uniform(-10.0, 10.0),
-                self.players_group
             )
             sound.play_sound("minion_warp")
             m.warp_y = - random.randint(50, 150)
@@ -99,8 +96,8 @@ class BossAlien(Alien):
             self.minions_spawn_time = self.time + settings.BOSS_RESPAWN_MINIONS_COOLDOWN
 
     def update_minions(self, dt):
-        players = [player for player in self.players_group if not player.dead]
-        for alien in self.aliens_group:
+        players = [player for player in self.scene_groups["players"] if not player.dead]
+        for alien in self.scene_groups["aliens"]:
             if alien is not self:
                 alien.update(dt)
                 if alien.type in BossAlien.MINION_ALIEN_TYPES and alien.can_set_target() and players:

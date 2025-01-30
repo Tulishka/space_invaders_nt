@@ -18,19 +18,20 @@ class Swarm:
     LINE_WIDTH = 640
     ALIEN_WIDTH = 64
 
-    def __init__(self, level, aliens_group, scene_manager: SceneManager, players_group, bombs_group):
+    def __init__(self, level, scene_groups, scene_manager: SceneManager):
         self.time = 0
+        self.scene_groups = scene_groups
         self.ls = settings.level[level]
         self.ALIEN_X_DISTANCE = self.LINE_WIDTH // self.ls.alien_in_line
         self.dir = 0
-        self.aliens_group = aliens_group
         self.scene_manager = scene_manager
-        self.players_group = players_group
-        self.bombs_group = bombs_group
+        self.aliens_group = scene_groups["aliens"]
+        self.players_group = scene_groups["players"]
+        self.bombs_group = scene_groups["bombs"]
         self.shot_order = self.ls.swarm_shot_order
 
-        self.shot_cooldown = [self.ls.swarm_cd] * len(players_group)
-        self.shot_order_pos = [0] * len(players_group)
+        self.shot_cooldown = [self.ls.swarm_cd] * len(self.players_group)
+        self.shot_order_pos = [0] * len(self.players_group)
 
         self.min_x = 0
         self.min_y = 0
@@ -88,22 +89,22 @@ class Swarm:
             for x in range(self.ls.alien_in_line):
                 if typ == settings.HEAVY_ALIEN_TYPE:
                     l_arm = AlienLaserArm(
-                        self.aliens_group,
+                        self.scene_groups,
                         (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE),
                         "7_arm",
-                        x, self.bombs_group, 0
+                        x, 0
                     )
                     r_arm = AlienLaserArm(
-                        self.aliens_group,
+                        self.scene_groups,
                         (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE),
                         "7_arm",
-                        x, self.bombs_group, 0, left_side=False
+                        x, 0, left_side=False
                     )
                 alien = Alien(
-                    self.aliens_group,
+                    self.scene_groups,
                     (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE),
                     typ,
-                    x, self.bombs_group, 0
+                    x, 0
                 )
                 alien.warp_y = -alien.y - 60
                 alien.time -= (lines - y) * 0.2 + x * 0.1

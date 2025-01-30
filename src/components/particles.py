@@ -5,8 +5,8 @@ from pygame.sprite import Sprite
 
 
 class Particle(Sprite):
-    def __init__(self, group, image, pos, spd, lifetime, gravity=98):
-        super().__init__(group)
+    def __init__(self, sprite_group, image, pos, spd, lifetime, gravity=98):
+        super().__init__(sprite_group)
         self.image = image
         self.rect = self.image.get_rect(center=pos)
         self.spd = pygame.Vector2(spd)
@@ -52,7 +52,7 @@ def create_particle_explosion(group, target, num_particles, size_range, initial_
 
         lifetime = random.uniform(0.8, 1.5) * life_time_mult
         Particle(
-            group=group,
+            sprite_group=group,
             image=particle_img,
             pos=(rect.left+x, rect.top+y),
             spd=spd,
