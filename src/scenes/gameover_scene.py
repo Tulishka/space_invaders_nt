@@ -36,8 +36,8 @@ class GameOverScene(Scene):
         font_object = pygame.font.Font(None, 48)
         font_object2 = pygame.font.Font(None, 32)
         self.score = font_object.render(f"общий счёт: {score}", True, "white")
-        self.score1 = font_object2.render(f"1-й игрок: {score1}", True, "green")
-        self.score2 = font_object2.render(f"2-й игрок: {score2}", True, "green")
+        self.score1 = font_object2.render(f"1-й игрок: {score1:0>5}", True, settings.PLAYER_COLORS[0])
+        self.score2 = font_object2.render(f"2-й игрок: {score2:0>5}", True, settings.PLAYER_COLORS[1])
 
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
