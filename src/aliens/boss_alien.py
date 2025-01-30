@@ -8,13 +8,13 @@ from .alien import Alien
 from .minion_alien import MinionAlien
 
 
-class AlienBoss(Alien):
+class BossAlien(Alien):
     MINION_ALIEN_TYPES = (1, 2, 3)
 
-    def __init__(self, aliens_group, pos, player_group, bombs_group):
+    def __init__(self, aliens_group, pos, players_group, bombs_group):
         super().__init__(aliens_group, pos, settings.BOSS_ALIEN_TYPE, -1, bombs_group, 0.3)
-        self.player_group = player_group
-        self.max_hp = 100 * len(self.player_group)
+        self.players_group = players_group
+        self.max_hp = 100 * len(self.players_group)
         self.hp = self.max_hp
         self.warp_y = -500
         self.minions_spawn_time = 4.5
@@ -26,7 +26,7 @@ class AlienBoss(Alien):
             (pos[0] - 100, pos[1] + 150),
         ]
         self.spawn_rate = [1, 1, 2, 1, 1.5]
-        self.spawn_players_rate = max(len(player_group) * 0.75, 1)
+        self.spawn_players_rate = max(len(players_group) * 0.75, 1)
         self.current_pos = 0
         self.next_pos_time = self.time + random.randint(6, 12)
         self.boss_next_online = 15
@@ -86,7 +86,8 @@ class AlienBoss(Alien):
                 random.choice(self.MINION_ALIEN_TYPES),
                 0,
                 self.bombs_group,
-                x + random.uniform(-10.0, 10.0)
+                x + random.uniform(-10.0, 10.0),
+                self.players_group
             )
             sound.play_sound("minion_warp")
             m.warp_y = - random.randint(50, 150)
@@ -98,11 +99,11 @@ class AlienBoss(Alien):
             self.minions_spawn_time = self.time + settings.BOSS_RESPAWN_MINIONS_COOLDOWN
 
     def update_minions(self, dt):
-        players = [player for player in self.player_group if not player.dead]
+        players = [player for player in self.players_group if not player.dead]
         for alien in self.aliens_group:
             if alien is not self:
                 alien.update(dt)
-                if alien.type in AlienBoss.MINION_ALIEN_TYPES and alien.can_set_target() and players:
+                if alien.type in BossAlien.MINION_ALIEN_TYPES and alien.can_set_target() and players:
                     min_d = alien.time - alien.target_time > 8 or min(
                         abs(player.rect.center[0] - alien.x) for player in players) > 10
                     if min_d:
