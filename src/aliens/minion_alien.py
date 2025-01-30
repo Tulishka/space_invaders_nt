@@ -1,8 +1,10 @@
 import math
+from collections import Counter
 from random import random, randint, choice
 
 from src import settings, sound
 from .alien import Alien
+from ..sound import play_sound
 
 
 class MinionAlien(Alien):
@@ -16,7 +18,6 @@ class MinionAlien(Alien):
         self.radius_dir = choice((-1, 1))
         self.radius_k = - self.radius
         self.shot_cooldown = 2
-        # self.add_shield()
 
     def update(self, dt):
         super().update(dt)
@@ -35,9 +36,11 @@ class MinionAlien(Alien):
             self.x + self.warp_x + radius * math.cos(a) - self.image.get_width() // 2,
             self.y + self.warp_y + radius * math.sin(a) - self.image.get_height() // 2,
         )
-
-        if self.shot_cooldown < 0 and len(self.scene_groups["bombs"]) < settings.MINIONS_MAX_BOMBS:
+        zones = Counter(b.rect.centerx // 333 for b in self.scene_groups["bombs"])
+        zones.subtract(player.rect.centerx // 333 for player in self.scene_groups["players"] if not player.dead)
+        if self.shot_cooldown < 0 and zones[self.rect.centerx // 333] + 1 < settings.MINIONS_MAX_BOMBS:
             for player in self.scene_groups["players"]:
+
                 if not player.dead and abs(self.rect.centerx - player.rect.centerx) < player.rect.width // 2:
                     self.shot(0.5)
                     sound.play_sound("minion_shot")
@@ -45,6 +48,12 @@ class MinionAlien(Alien):
                     break
         else:
             self.shot_cooldown -= dt
+
+    def shield_down(self):
+        res = super().shield_down()
+        if res:
+            play_sound("alien_shield_down")
+        return res
 
     def can_set_target(self):
         return self.target_time < self.time
