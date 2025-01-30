@@ -211,7 +211,6 @@ class Swarm:
                     alien_closest = choice(can_shot)
 
                 if (self.shot_order[self.shot_order_pos[idx]] != 2 and not accurate) or alien_closest_dist < player.rect.width // 2:
-                    print(self.shot_order[self.shot_order_pos[idx]],alien_closest_dist)
                     alien_closest.shot()
                     self.shot_cooldown[idx] = self.ls.swarm_cd
                     self.sound_alien_shot[alien_closest.type - 1].play()
