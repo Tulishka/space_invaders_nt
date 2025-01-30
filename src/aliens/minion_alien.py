@@ -17,6 +17,7 @@ class MinionAlien(Alien):
         self.radius_dir = choice((-1, 1))
         self.radius_k = - self.radius
         self.shot_cooldown = 2
+        # self.add_shield()
 
     def update(self, dt):
         super().update(dt)
@@ -31,11 +32,10 @@ class MinionAlien(Alien):
                 self.radius_k += dt * 100
         radius = self.radius + self.radius_k
         a = self.time * self.radius_spd * self.radius_dir
-        self.rect = self.image.get_rect(center=(
-            self.x + self.warp_x + radius * math.cos(a),
-            self.y + self.warp_y + radius * math.sin(a),
-        ))
-
+        self.set_rect_xy(
+            self.x + self.warp_x + radius * math.cos(a) - self.image.get_width() // 2,
+            self.y + self.warp_y + radius * math.sin(a) - self.image.get_height() // 2,
+        )
 
         if self.shot_cooldown < 0 and len(self.bombs_group) < settings.MINIONS_MAX_BOMBS:
             for player in self.players_group:

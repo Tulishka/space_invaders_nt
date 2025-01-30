@@ -29,6 +29,8 @@ class Alien(Sprite):
                 for image in self.images
             ]
 
+        self.shield_sprite = None
+
         self.image = self.images[0]
         self.rect = self.image.get_rect(center=pos)
         self.time = random.random()
@@ -44,6 +46,30 @@ class Alien(Sprite):
         self.animation_spd = 2
         self.special1 = 0
         self.special2 = 0
+        self.size = size
+
+    def add_shield(self):
+        if not self.shield_sprite:
+            self.shield_sprite = Sprite(self.bombs_group)
+            self.shield_sprite.image = pygame.image.load('./img/shield.png')
+            if self.size != 1:
+                self.shield_sprite.image = scale(
+                    self.shield_sprite.image,
+                    (
+                        self.shield_sprite.image.get_width() * self.size,
+                        self.shield_sprite.image.get_height() * self.size
+                    )
+                )
+            self.update_shield()
+
+    def update_shield(self):
+        if self.shield_sprite:
+            self.shield_sprite.rect = self.shield_sprite.image.get_rect(center=self.rect.center)
+
+    def remove_shield(self):
+        if self.shield_sprite:
+            self.shield_sprite.kill()
+            self.shield_sprite = None
 
     def is_dead(self):
         return self.kill_time > 0
@@ -68,6 +94,10 @@ class Alien(Sprite):
             self.kill_time = self.ALIEN_DEAD_TIME + self.time
 
     def hit(self):
+        if self.has_shield():
+            self.remove_shield()
+            return False
+
         if self.kill_time == 0:
             self.die()
             return True
@@ -80,6 +110,10 @@ class Alien(Sprite):
 
     def set_rect_xy(self, x, y):
         self.rect.x, self.rect.y = (x, y)
+        self.update_shield()
+
+    def has_shield(self):
+        return self.shield_sprite is not None
 
 
 class AlienLaserArm(Alien):
