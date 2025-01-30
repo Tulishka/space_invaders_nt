@@ -22,9 +22,10 @@ class BossScene(GameScene):
         self.scene_manager.kill_scene("boss")
 
     def create_swarm(self):
-        boss = BossAlien(self.aliens_group,
-                         (settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 3),
-                         self.players_group, self.bombs_group)
+        boss = BossAlien(
+            self.scene_groups,
+            (settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 3)
+        )
         boss.time = -4
         return boss
 

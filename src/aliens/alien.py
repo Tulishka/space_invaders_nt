@@ -11,9 +11,9 @@ from src.sound import play_sound
 class Alien(Sprite):
     ALIEN_DEAD_TIME = 0.25
 
-    def __init__(self, aliens_group, pos, type_, column, bombs_group, spawn_time=0, size=1):
-        super().__init__(aliens_group)
-        self.aliens_group = aliens_group
+    def __init__(self, scene_groups, pos, type_, column, spawn_time=0, size=1):
+        super().__init__(scene_groups["aliens"])
+        self.scene_groups = scene_groups
         self.type = type_
         self.images = [
             pygame.image.load(f'./img/enemy{self.type}.png'),
@@ -36,7 +36,6 @@ class Alien(Sprite):
         self.time = random.random()
         self.kill_time = 0
         self.column = column
-        self.bombs_group = bombs_group
         self.x, self.y = pos
         self.spawn_time = self.time + spawn_time
         self.spawn_image = self.images[0].copy()
@@ -50,7 +49,7 @@ class Alien(Sprite):
 
     def add_shield(self):
         if not self.shield_sprite:
-            self.shield_sprite = Sprite(self.bombs_group)
+            self.shield_sprite = Sprite(self.scene_groups["shields"])
             self.shield_sprite.image = pygame.image.load('./img/shield.png')
             if self.size != 1:
                 self.shield_sprite.image = scale(
@@ -106,7 +105,7 @@ class Alien(Sprite):
 
     def shot(self, spd_scale=1):
         if not self.is_dead():
-            Bomb(self.rect.midbottom, self.bombs_group, self.type, spd_scale)
+            Bomb(self.rect.midbottom, self.scene_groups["bombs"], self.type, spd_scale)
 
     def set_rect_xy(self, x, y):
         self.rect.x, self.rect.y = (x, y)
@@ -117,8 +116,8 @@ class Alien(Sprite):
 
 
 class AlienLaserArm(Alien):
-    def __init__(self, aliens_group, pos, type_, column, bombs_group, spawn_time=0, size=1, left_side=True):
-        super().__init__(aliens_group, pos, type_, column, bombs_group, spawn_time=0, size=1)
+    def __init__(self, scene_groups, pos, type_, column, spawn_time=0, size=1, left_side=True):
+        super().__init__(scene_groups, pos, type_, column, spawn_time, size)
         if not left_side:
             self.images = [pygame.transform.flip(img, True, False) for img in self.images]
             self.kill_image = pygame.transform.flip(self.kill_image, True, False)
@@ -154,7 +153,7 @@ class AlienLaserArm(Alien):
 
         if self.parent.special2:
             if not self.laser or not self.laser.alive():
-                self.laser = Beam((0, 0), "laser", 0, self.bombs_group)
+                self.laser = Beam((0, 0), "laser", 0, self.scene_groups["bombs"])
 
         elif self.laser:
             self.stop_beam_laser()

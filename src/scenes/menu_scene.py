@@ -1,5 +1,6 @@
 import random
 import sys
+from collections import defaultdict
 from functools import partial
 
 import pygame
@@ -34,8 +35,7 @@ class MenuScene(Scene):
         self.markers = self.load_markers("music/menu1_markers.txt")
         self.cur_marker = 0
         self.beat_value = 0
-        self.aliens_group = pygame.sprite.Group()
-        self.front_group = pygame.sprite.Group()
+        self.scene_groups = defaultdict(pygame.sprite.Group)
         self.bonus_alien_beat_num = 4
 
         self.back_image = pygame.image.load("img/menu_back.jpg")
@@ -49,7 +49,7 @@ class MenuScene(Scene):
         play_sound("menu_show")
 
         # для анимации фона
-        self.aliens_group.empty()
+        self.scene_groups["aliens"].empty()
 
         self.replay_scene()
         self.time = 0
@@ -60,8 +60,9 @@ class MenuScene(Scene):
     def draw(self, screen):
         screen.blit(self.back_image, (0, 0))
 
-        self.aliens_group.draw(screen)
-        self.front_group.draw(screen)
+        for group in self.scene_groups.values():
+            group.draw(screen)
+
         self.menu.selection_extend_x = 25 + 30 * self.beat_value * (self.time > 5)
         self.menu.draw(screen)
 
@@ -81,9 +82,9 @@ class MenuScene(Scene):
                 alien_type = random.randint(1, 2)
                 spd = random.randint(50, 120)
 
-            MenuAlien(self.aliens_group, pos, alien_type, 0, self.front_group, spd, 0.2 * (self.time > 5))
+            MenuAlien(self.scene_groups, pos, alien_type, 0, spd, 0.2 * (self.time > 5))
 
-        self.aliens_group.update(dt)
+        self.scene_groups["aliens"].update(dt)
         self.menu.update(dt)
 
     def start_game(self, num_players, level=1):

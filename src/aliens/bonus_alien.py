@@ -3,8 +3,8 @@ from .alien import Alien
 
 
 class BonusAlien(Alien):
-    def __init__(self, pos, spd, sprite_group, bombs_group, kill_x):
-        super().__init__(sprite_group, pos, settings.BONUS_ALIEN_TYPE, -1, bombs_group)
+    def __init__(self, pos, spd, scene_groups, kill_x):
+        super().__init__(scene_groups, pos, settings.BONUS_ALIEN_TYPE, -1)
         self.spd = spd
         self.kill_x = kill_x
         self.ALIEN_DEAD_TIME = 0.4

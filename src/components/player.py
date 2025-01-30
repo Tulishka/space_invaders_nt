@@ -10,9 +10,9 @@ from src.sound import sounds, play_sound
 
 class Player(Sprite):
 
-    def __init__(self, num: int, sprite_group, scene_manager: SceneManager, bullets_group, start_x: int):
-        super().__init__(sprite_group)
-        self.bullets_group = bullets_group
+    def __init__(self, num: int, scene_groups, scene_manager: SceneManager, start_x: int):
+        super().__init__(scene_groups["players"])
+        self.scene_groups = scene_groups
         self.num = num
         self.image = pygame.image.load(f'./img/player{self.num}.png')
         self.images = [pygame.image.load(f'./img/player{self.num}.png'), pygame.image.load(f'./img/player_stasis.png')]
@@ -38,10 +38,10 @@ class Player(Sprite):
     def shot(self):
         self.shot_cooldown = settings.SHOT_COOLDOWN
         self.sound_shot.play()
-        Bullet(self.rect.midtop, self.bullets_group, self)
+        Bullet(self.rect.midtop, self.scene_groups["bullets"], self)
         if self.gun_upgraded:
-            Bullet(self.rect.topleft, self.bullets_group, self)
-            Bullet(self.rect.topright, self.bullets_group, self)
+            Bullet(self.rect.topleft, self.scene_groups["bullets"], self)
+            Bullet(self.rect.topright, self.scene_groups["bullets"], self)
 
     def update(self, dt):
         self.time += dt
