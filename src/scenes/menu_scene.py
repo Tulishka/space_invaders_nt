@@ -33,7 +33,7 @@ class MenuScene(Scene):
         ImageMenuItem(self.menu, font3.render("зал славы", True, "green"), self.open_results)
         ImageMenuItem(self.menu, font3.render("выход", True, "green"), sys.exit)
 
-        self.markers = self.load_markers(os.getcwd() + "/music/menu1_markers.txt")
+        self.markers = self.load_markers("music/menu1_markers.txt")
         self.cur_marker = 0
         self.beat_value = 0
         self.scene_groups = defaultdict(pygame.sprite.Group)

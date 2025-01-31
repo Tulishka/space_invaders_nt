@@ -49,7 +49,7 @@ class ScoresScene(Scene):
         self.menu = Menu()
         self.menu.top = settings.SCREEN_HEIGHT - 170
         self.menu.no_back = True
-        ImageMenuItem(self.menu, create_text_image("эксклюзивный саундтрек к игре", font_size=26, color="cyan"))
+        ImageMenuItem(self.menu, create_text_image("саундтреки созданные в рамках проекта", font_size=26, color="cyan"))
         self.menu.selected = ImageMenuItem(self.menu,
                                            create_text_image("Вторжение пришельцев (rus)", font_size=28, color="green"),
                                            partial(self.set_music_theme, "ost_rus"))

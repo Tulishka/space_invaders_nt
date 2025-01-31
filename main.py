@@ -1,3 +1,6 @@
+import os
+import sys
+
 import pygame
 
 from src import settings
@@ -9,7 +12,12 @@ from src.core.scene_manager import SceneManager
 from src.scenes.scores_scene import ScoresScene
 from src.scenes.trailer_scene import TrailerScene
 
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+else:
+    application_path = os.path.dirname(__file__)
 
+os.chdir(application_path)
 def main():
     pygame.init()
     pygame.display.set_caption("Space Invaders: Новая угроза")
