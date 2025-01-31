@@ -7,8 +7,9 @@ from pygame.locals import *
 class InputText(pygame.sprite.Sprite):
     active_input = None
 
-    def __init__(self, sprite_group, pos, value="", width=250, height=60, bg_color=(10, 20, 40), border_color=(20, 40, 80),
-                 max_length=20, cursor_width=6, cursor_color=(255, 255, 255),font_size=28, font_color=(255, 255, 255)):
+    def __init__(self, sprite_group, pos, value="", width=250, height=60, bg_color=(10, 20, 40),
+                 border_color=(20, 40, 80),
+                 max_length=20, cursor_width=6, cursor_color=(255, 255, 255), font_size=28, font_color=(255, 255, 255)):
         super().__init__(sprite_group)
         self.font_color = font_color
         self.sprite_group = sprite_group
@@ -57,7 +58,7 @@ class InputText(pygame.sprite.Sprite):
             if event.key == K_ESCAPE:
                 self.blur()
             elif event.key in (K_RETURN, K_DOWN, K_KP_ENTER) or (event.key == K_TAB and not event.mod & KMOD_SHIFT):
-                self.next_focus()
+                return self.next_focus()
             elif event.key == K_UP or (event.key == K_TAB and event.mod & KMOD_SHIFT):
                 self.prev_focus()
             elif event.key == K_BACKSPACE:
@@ -128,8 +129,10 @@ class InputText(pygame.sprite.Sprite):
         idx = inputs.index(self) + 1
         if idx >= len(inputs):
             self.blur()
-        else:
-            inputs[idx].set_focus()
+            return False
+
+        inputs[idx].set_focus()
+        return True
 
     def prev_focus(self):
         inputs = list(self.sprite_group)

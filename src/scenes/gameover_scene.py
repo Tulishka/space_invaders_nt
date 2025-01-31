@@ -77,6 +77,8 @@ class GameOverScene(Scene):
             label = create_text_sprite(self.scene_groups["labels"], f"Введи имя {i + 1}-го игрока")
             label.rect.bottomleft = (it.rect.left + 8, it.rect.top - 5)
 
+        self.name_input[0].set_focus()
+
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
 
