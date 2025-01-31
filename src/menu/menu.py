@@ -10,6 +10,7 @@ class Menu(ItemsMenu):
 
     def __init__(self):
         super().__init__()
+        self.no_back = False
         self.items: list[MenuItem] = []
         self.time = 0
         self.selected: MenuItem | None = None
@@ -20,7 +21,7 @@ class Menu(ItemsMenu):
         self.back_padding = 20
         self.back_image = None
         self.back_rect = None
-        self.top = 200
+        self.top = settings.SCREEN_HEIGHT // 2 - 200
         self.opacity = 200
         self.cursor_image = pygame.image.load('./img/cursor.png')
 
@@ -31,7 +32,7 @@ class Menu(ItemsMenu):
 
         for item in self.items:
             if item.process_event(event):
-                return
+                return True
 
         if event.type == pygame.MOUSEMOTION or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
             mouse_pos = event.pos
@@ -50,10 +51,15 @@ class Menu(ItemsMenu):
 
         if event.key in (pygame.K_DOWN, pygame.K_s):
             self.select_next()
+            return True
         elif event.key in (pygame.K_UP, pygame.K_w):
             self.select_prev()
+            return True
         elif self.selected and event.key in (pygame.K_KP_ENTER, pygame.K_SPACE, pygame.K_RETURN):
             self.selected.activate()
+            return True
+
+        return False
 
     def item_activated(self, item: MenuItem):
         self.selected = item
@@ -100,7 +106,7 @@ class Menu(ItemsMenu):
             new.select()
 
     def draw(self, screen: pygame.Surface):
-        start_y = settings.SCREEN_HEIGHT // 2 - self.top
+        start_y = self.top
         y = start_y
         xc = settings.SCREEN_WIDTH // 2
 
@@ -128,7 +134,7 @@ class Menu(ItemsMenu):
 
             y += item.get_height() + self.spacing
 
-        if not self.back_image:
+        if not self.no_back and not self.back_image:
             height = y - start_y + self.back_padding * 2
             width = max_width + self.back_padding * 2
 

@@ -27,16 +27,18 @@ class MenuScene(Scene):
         self.menu = Menu()
         ImageMenuItem(self.menu, pygame.image.load(f'./img/logo.png'))
         MarginMenuItem(self.menu, 10)
-        self.menu.selected = ImageMenuItem(self.menu, p1, partial(self.start_game, 1),pygame.K_1)
-        ImageMenuItem(self.menu, p2, partial(self.start_game, 2),pygame.K_2)
-        ImageMenuItem(self.menu, font3.render("рекорды", True, "green"), self.open_results)
-        ImageMenuItem(self.menu, font3.render("выход", True, "green"),sys.exit)
+        self.menu.selected = ImageMenuItem(self.menu, p1, partial(self.start_game, 1), pygame.K_1)
+        ImageMenuItem(self.menu, p2, partial(self.start_game, 2), pygame.K_2)
+        ImageMenuItem(self.menu, font3.render("зал славы", True, "green"), self.open_results)
+        ImageMenuItem(self.menu, font3.render("выход", True, "green"), sys.exit)
 
         self.markers = self.load_markers("music/menu1_markers.txt")
         self.cur_marker = 0
         self.beat_value = 0
         self.scene_groups = defaultdict(pygame.sprite.Group)
         self.bonus_alien_beat_num = 4
+
+        self.scene_groups["aliens"].empty()
 
         self.back_image = pygame.image.load("img/menu_back.jpg")
 
@@ -107,17 +109,24 @@ class MenuScene(Scene):
         if event.type != pygame.KEYDOWN:
             return
 
-        if event.key == pygame.K_5:
+        if event.key == pygame.K_t:
+            self.scene_manager.set_scene("gameover", {
+                "num_players": 2,
+                "score": 1000,
+                "p1_score": 500,
+                "p2_score": 500,
+                "text": "VICTORY!",
+            })
+        elif event.key == pygame.K_5:
             self.start_game(1, 5)
-        if event.key == pygame.K_6:
+        elif event.key == pygame.K_6:
             self.scene_manager.kill_scene("boss")
             self.scene_manager.set_scene("boss", {
                 "num_players": 2,
                 "level": 1,
                 "lives": settings.PLAYER_START_LIVES,
             })
-
-        if self.time > settings.KEY_COOLDOWN and event.key == pygame.K_ESCAPE:
+        elif self.time > settings.KEY_COOLDOWN and event.key == pygame.K_ESCAPE:
             return "exit"
 
     def load_markers(self, filename):
@@ -126,4 +135,5 @@ class MenuScene(Scene):
             return [float(i) for i in lines]
 
     def open_results(self):
-        pass
+        self.scene_manager.kill_scene("scores")
+        self.scene_manager.set_scene("scores", {})

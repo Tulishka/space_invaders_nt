@@ -6,6 +6,9 @@ music = {
     "gameover": ("music/gameover.mp3", 1),
     "menu": ("music/menu1.mp3", 0.5),
     "victory": ("music/victory.mp3", 0.5),
+    "credits": ("music/credits.mp3", 0.7),
+    "ost_rus": ("music/ost_track_rus.mp3", 1),
+    "ost_eng": ("music/ost_track_eng.mp3", 1),
 }
 
 

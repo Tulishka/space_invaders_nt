@@ -6,11 +6,14 @@ from src.scenes.game_scene import GameScene
 from src.scenes.gameover_scene import GameOverScene
 from src.scenes.menu_scene import MenuScene
 from src.core.scene_manager import SceneManager
+from src.scenes.scores_scene import ScoresScene
 from src.scenes.trailer_scene import TrailerScene
 
 
 def main():
     pygame.init()
+    pygame.display.set_caption("Space Invaders: Новая угроза")
+
     pygame.mouse.set_visible(False)
     pygame.mixer_music.set_endevent(settings.MUSIC_END_EVENT)
 
@@ -22,6 +25,7 @@ def main():
     scene_manager.add_scene("gameover", GameOverScene)
     scene_manager.add_scene("trailer", TrailerScene)
     scene_manager.add_scene("boss", BossScene)
+    scene_manager.add_scene("scores", ScoresScene)
 
     scene_manager.set_scene("menu")
 

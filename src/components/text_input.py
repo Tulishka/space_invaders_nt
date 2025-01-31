@@ -1,0 +1,138 @@
+import string
+
+import pygame
+from pygame.locals import *
+
+
+class InputText(pygame.sprite.Sprite):
+    active_input = None
+
+    def __init__(self, sprite_group, pos, value="", width=250, height=60, bg_color=(10, 20, 40), border_color=(20, 40, 80),
+                 max_length=20, cursor_width=6, cursor_color=(255, 255, 255),font_size=28, font_color=(255, 255, 255)):
+        super().__init__(sprite_group)
+        self.font_color = font_color
+        self.sprite_group = sprite_group
+        self.value = value
+        self.max_length = max_length
+        self.has_focus = False
+
+        self.cursor_width = cursor_width
+        self.cursor_color = cursor_color
+        self.blink_interval = 0.25
+        self.cursor_visible = True
+        self.cursor_timer = 0.0
+
+        self.font = pygame.font.Font(None, font_size)
+        self.bg_color = bg_color
+        self.border_color = border_color
+        self.border_radius = 8
+
+        self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+        self.rect = self.image.get_rect(topleft=pos)
+
+        self.on_change = None
+        self.allowed_chars = string.ascii_letters + string.digits + "_@.!- йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ"
+        self._render()
+
+    def set_focus(self):
+        if InputText.active_input:
+            InputText.active_input.has_focus = False
+            InputText.active_input._render()
+
+        InputText.active_input = self
+        self.has_focus = True
+        self.cursor_visible = True
+        self.cursor_timer = 0.0
+        self._render()
+
+    def process_event(self, event):
+        if event.type == MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                self.set_focus()
+                return True
+            elif self.has_focus:
+                self.blur()
+        elif self.has_focus and event.type == KEYDOWN:
+            value = self.value
+            if event.key == K_ESCAPE:
+                self.blur()
+            elif event.key in (K_RETURN, K_DOWN, K_KP_ENTER) or (event.key == K_TAB and not event.mod & KMOD_SHIFT):
+                self.next_focus()
+            elif event.key == K_UP or (event.key == K_TAB and event.mod & KMOD_SHIFT):
+                self.prev_focus()
+            elif event.key == K_BACKSPACE:
+                self.set_value(value[:-1])
+            else:
+                char = event.unicode
+                if char in self.allowed_chars:
+                    value += char
+                if char and len(value) < self.max_length:
+                    self.set_value(value)
+
+            return True
+
+        return False
+
+    def set_value(self, value, emit_on_change=False):
+        if self.value != value:
+            self.value = value
+            self._render()
+            if emit_on_change and self.on_change:
+                self.on_change()
+
+    def update(self, dt):
+        if self.has_focus:
+            self.cursor_timer += dt
+            if self.cursor_timer >= self.blink_interval:
+                self.cursor_timer = 0.0
+                self.cursor_visible = not self.cursor_visible
+                self._render()
+
+    def _render(self):
+        self.image.fill((0, 0, 0, 0))
+        pygame.draw.rect(
+            self.image, self.bg_color,
+            self.image.get_rect(),
+            border_radius=self.border_radius
+        )
+        pygame.draw.rect(
+            self.image, (self.border_color[0] * 2, self.border_color[1] * 2,
+                         self.border_color[2] * 2) if self.has_focus else self.border_color,
+            self.image.get_rect(),
+            width=2,
+            border_radius=self.border_radius
+        )
+
+        text_img = self.font.render(self.value, True, self.font_color)
+        text_rect = text_img.get_rect(midleft=(10, self.rect.height // 2))
+
+        self.image.blit(text_img, text_rect)
+
+        if self.has_focus and self.cursor_visible:
+            cursor_x = text_rect.right + 4 if self.value else 10
+            cursor_y = text_rect.centery - text_rect.height // 2
+            pygame.draw.line(
+                self.image, self.cursor_color,
+                (cursor_x, cursor_y + 2),
+                (cursor_x, cursor_y + text_rect.height - 2),
+                self.cursor_width
+            )
+
+    def blur(self):
+        self.has_focus = False
+        InputText.active_input = None
+        self._render()
+
+    def next_focus(self):
+        inputs = list(self.sprite_group)
+        idx = inputs.index(self) + 1
+        if idx >= len(inputs):
+            self.blur()
+        else:
+            inputs[idx].set_focus()
+
+    def prev_focus(self):
+        inputs = list(self.sprite_group)
+        idx = inputs.index(self) - 1
+        if idx >= 0:
+            inputs[idx].set_focus()
