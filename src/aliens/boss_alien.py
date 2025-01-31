@@ -27,7 +27,7 @@ class BossAlien(HpAlienMixin, Alien):
             (pos[0] - 100, pos[1] + 120),
         ]
         self.spawn_rate = [1, 1, 2, 1, 1.5]
-        self.spawn_players_rate = max(len(self.scene_groups["players"]) * 0.75, 1)
+        self.spawn_players_rate = max(len(self.scene_groups["players"]) * 0.60, 1)
         self.current_pos = 0
         self.next_pos_time = self.time + random.randint(6, 12)
         self.boss_next_online = 15
