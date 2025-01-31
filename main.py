@@ -4,6 +4,7 @@ import sys
 import pygame
 
 from src import settings
+from src.core.scores import create_db
 from src.scenes.boss_scene import BossScene
 from src.scenes.game_scene import GameScene
 from src.scenes.gameover_scene import GameOverScene
@@ -18,7 +19,11 @@ else:
     application_path = os.path.dirname(__file__)
 
 os.chdir(application_path)
+
+
 def main():
+    create_db()
+
     pygame.init()
     pygame.display.set_caption("Space Invaders: Новая угроза")
 

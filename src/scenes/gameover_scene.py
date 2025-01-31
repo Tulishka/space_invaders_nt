@@ -10,9 +10,10 @@ from src.core.scene import Scene
 
 
 class GameOverScene(Scene):
-    player_names = scores.load_player_names()
 
     def __init__(self, scene_manager, params=None):
+
+        self.player_names = scores.load_player_names()
 
         self.labels_images = []
         self.num_players = 1

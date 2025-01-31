@@ -118,6 +118,3 @@ def get_top_results(k=10, player_num = None) -> list[tuple[str, int, int]]:
 
     conn.close()
     return results
-
-
-create_db()
