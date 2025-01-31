@@ -22,9 +22,9 @@ class BossAlien(HpAlienMixin, Alien):
         self.positions = [
             pos,
             (pos[0] - 250, pos[1] - 100),
-            (pos[0] + 100, pos[1] + 150),
+            (pos[0] + 100, pos[1] + 120),
             (pos[0] + 250, pos[1] - 100),
-            (pos[0] - 100, pos[1] + 150),
+            (pos[0] - 100, pos[1] + 120),
         ]
         self.spawn_rate = [1, 1, 2, 1, 1.5]
         self.spawn_players_rate = max(len(self.scene_groups["players"]) * 0.75, 1)
@@ -121,16 +121,10 @@ class BossAlien(HpAlienMixin, Alien):
         elif self.minions_spawn_time < self.time:
             self.minions_spawn_time = self.time + settings.BOSS_RESPAWN_MINIONS_COOLDOWN
             if self.hp / self.max_hp * 100 <= settings.BOSS_SHIELD_UP_PRC:
-                sound.play_sound("alien_shield_up")
+                sound.play_sound("boss_shield_up")
                 self.shield_up()
 
     def update_minions(self, dt):
-
-        # if random.randint(1, 100) < 3:
-        #     a = random.choice(list(self.scene_groups["aliens"]))
-        #     if isinstance(a, MinionAlien):
-        #         sound.play_sound("alien_shield_up")
-        #         a.shield_up()
 
         players = [player for player in self.scene_groups["players"] if not player.dead]
         for alien in self.scene_groups["aliens"]:

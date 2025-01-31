@@ -244,5 +244,5 @@ class Swarm:
         if not self.acolyte and self.ls.acolyte and self.time > 3:
             ac = AcolyteAlien(self.scene_groups, (randint(100, 400), 100), 1)
             ac.hp /= 2
-            ac.protect_cooldown = 1.5
+            ac.protect_cooldown = 1.6
             self.acolyte = True

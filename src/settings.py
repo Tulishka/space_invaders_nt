@@ -19,17 +19,18 @@ ACOLYTE_ALIEN_TYPE = 6
 ACOLYTE_ALIEN_HP = 20
 BOSS_ALIEN_HP = 100
 BOSS_SHIELD_UP_PRC = 60
-BOSS_CALL_ACOLYTE_PRC = 99
+BOSS_CALL_ACOLYTE_PRC = 75
 
 ALIENS_REWARD = [0, 10, 20, 30, 100, 5, 15, 40, 10]
 MUSIC_END_EVENT = pygame.event.custom_type()
-KEY_COOLDOWN = 0.5
+KEY_COOLDOWN = 0.2
 
 MINIONS_COUNT = 15
 MINIONS_MAX_BOMBS = 2
 MINIONS_SPAWN_COOLDOWN = 0.4
+MINION_BASE_SHOT_COOLDOWN = 2
 BOSS_RESPAWN_MINIONS_COOLDOWN = 10
-
+BOSS_SPAWN_TIMELIMIT = 8
 SWARM_ALIEN_ACCURATE_SHOT_COUNT = 5
 
 PARTICLES_HIT_COUNT = 10
@@ -85,12 +86,13 @@ class PlayerKeys:
 
 level = [
     None,
-    LevelSettings(8, (7, 3, 2, 1, 1), (30, 250), 3.0, 0.3, (0, 0, 1, 0, 1, 1, 0, 1), 0, 0, 60, True),
-    LevelSettings(8, (3, 2, 2, 1, 1), (30, 250), 3.0, 0.3, (0, 0, 1, 0, 1, 1, 0, 1), 0, 0, 60, False),
-    LevelSettings(8, (3, 3, 2, 2, 1, 1), (40, 350), 2.5, 0.3, (0, 0, 1, 0, 1, 1, 0, 1), 0, 0, 80, False),
-    LevelSettings(8, (3, 3, 3, 2, 2, 1), (50, 360), 2.0, 0.3, (1, 0, 1, 1, 1, 1, 0, 1), 0, 0, 90, False),
-    LevelSettings(8, (3, 3, 3, 2, 2, 2), (60, 380), 1.7, 0.3, (1, 0, 1, 0, 1, 1, 0, 1), 0, 0, 100, False),
-    LevelSettings(4, (3, 3, 2, 2, 1, 1), (70, 400), 1.5, 0.3, (1, 0, 1, 0, 1, 1, 0, 1), 40, 5, 110, False),
+    LevelSettings(8, (2, 2, 1, 1), (30, 250), 3.0, 0.3, (0, 0, 1, 0, 1, 2, 0, 1), 0, 0, 60, False),
+    LevelSettings(8, (3, 2, 2, 1, 1), (40, 350), 2.5, 0.3, (0, 1, 2, 0, 1, 2, 0, 1), 0, 0, 70, False),
+    LevelSettings(8, (3, 3, 3, 2, 2, 1), (50, 360), 2.0, 0.3, (1, 0, 1, 2, 1, 2, 0, 1), 0, 0, 80, False),
+    LevelSettings(8, (7, 3, 3, 2, 2, 1), (50, 360), 2.0, 0.3, (1, 0, 2, 1, 2, 1, 0, 2), 0, 0, 90, False),
+    LevelSettings(8, (7, 3, 3, 2, 2, 2), (60, 360), 1.8, 0.3, (1, 1, 2, 1, 2, 1, 2, 1), 0, 0, 90, True),
+    LevelSettings(4, (3, 3, 2, 2, 1, 1), (70, 380), 1.7, 0.3, (0, 1, 2, 1, 2, 0, 1, 2), 20, 4, 60, True),
+    LevelSettings(4, (7, 3, 3, 2, 2, 2), (70, 400), 1.6, 0.3, (1, 1, 2, 2, 1, 1, 2, 1), 40, 5, 100, False),
 ]
 
 PLAYER_KEYS = [

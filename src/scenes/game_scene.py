@@ -183,6 +183,7 @@ class GameScene(Scene):
                 "gameover",
                 {
                     "text": "GAME OVER",
+                    "num_players": self.num_players,
                     "score": self.score,
                     "p1_score": self.player_score[0],
                     "p2_score": self.player_score[1]

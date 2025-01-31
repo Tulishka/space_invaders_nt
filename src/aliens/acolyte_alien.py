@@ -14,7 +14,7 @@ class AcolyteAlien(HpAlienMixin, Alien):
         self.spd = 100
         self.direction = direction
         self.boost_spd = 0
-        self.protect_cooldown = 1
+        self.protect_cooldown = 1.3
         self.give_shield_cooldown = 4
         self.animation_spd = 4
         self.set_rect_xy(self.x, self.y + self.warp_y)

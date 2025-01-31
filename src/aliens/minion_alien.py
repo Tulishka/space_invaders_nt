@@ -17,7 +17,7 @@ class MinionAlien(Alien):
         self.radius_spd = randint(2, 4) * 0.3
         self.radius_dir = choice((-1, 1))
         self.radius_k = - self.radius
-        self.shot_cooldown = 2
+        self.shot_cooldown = settings.MINION_BASE_SHOT_COOLDOWN
 
     def update(self, dt):
         super().update(dt)
@@ -44,7 +44,7 @@ class MinionAlien(Alien):
                 if not player.dead and abs(self.rect.centerx - player.rect.centerx) < player.rect.width // 2:
                     self.shot(0.5)
                     sound.play_sound("minion_shot")
-                    self.shot_cooldown = 2 + 2 * random()
+                    self.shot_cooldown = settings.MINION_BASE_SHOT_COOLDOWN * (1 + random())
                     break
         else:
             self.shot_cooldown -= dt
