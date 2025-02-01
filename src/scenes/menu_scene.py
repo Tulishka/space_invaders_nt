@@ -7,7 +7,7 @@ from functools import partial
 import pygame
 
 from src import music, settings
-from src.aliens import MenuAlien
+from src.aliens import SceneAlien
 from src.core.scene import Scene
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
 from src.sound import play_sound
@@ -85,7 +85,8 @@ class MenuScene(Scene):
                 alien_type = random.randint(1, 2)
                 spd = random.randint(50, 120)
 
-            MenuAlien(self.scene_groups, pos, alien_type, 0, spd, 0.2 * (self.time > 5))
+            SceneAlien(self.scene_groups, pos, alien_type, 0, (-spd, 0 * (1 - pos[1] / settings.SCREEN_HEIGHT)),
+                       0.2 * (self.time > 5))
 
         self.scene_groups["aliens"].update(dt)
         self.menu.update(dt)
@@ -123,8 +124,8 @@ class MenuScene(Scene):
         elif event.key == pygame.K_6:
             self.scene_manager.kill_scene("boss")
             self.scene_manager.set_scene("boss", {
-                "num_players": 2,
-                "level": 1,
+                "num_players": 1,
+                "level": 8,
                 "lives": settings.PLAYER_START_LIVES,
             })
         elif self.time > settings.KEY_COOLDOWN and event.key == pygame.K_ESCAPE:
