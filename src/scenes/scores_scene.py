@@ -30,7 +30,7 @@ class ScoresScene(Scene):
 
         results = scores.get_top_results(10)
 
-        table_width = 400
+        table_width = 550
 
         tab_rect = pygame.Rect(settings.SCREEN_WIDTH // 2 - table_width // 2, 300,
                                table_width, settings.SCREEN_HEIGHT - 400)
@@ -44,7 +44,7 @@ class ScoresScene(Scene):
         text1 = create_text_sprite(self.scene_groups["logo"], f"ТОП-10", font_size=32, color="green")
         text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 100
 
-        create_table(results, tab_rect, self.scene_groups["table"])
+        create_table(results, tab_rect, self.scene_groups["table"], spacing=8)
 
         self.menu = Menu()
         self.menu.top = settings.SCREEN_HEIGHT - 170
