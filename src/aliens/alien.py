@@ -198,6 +198,11 @@ class AlienLaserArm(Alien):
     def shot(self, spd_scale=1):
         pass
 
+    def die(self):
+        if self.kill_time == 0:
+            self.kill_time = self.time + 0.2
+
+
 
 class HpAlienMixin:
 
