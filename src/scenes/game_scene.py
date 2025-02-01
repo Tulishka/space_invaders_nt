@@ -288,11 +288,13 @@ class GameScene(Scene):
         # отладка
         if event.key == pygame.K_DELETE:
             self.scene_groups["aliens"].empty()
-        if event.key == pygame.K_PAGEDOWN:
+        elif event.key == pygame.K_PAGEDOWN:
             self.swarm.swarm_down_warp = 100
-
-        if event.key == pygame.K_BACKSPACE:
+        elif event.key == pygame.K_BACKSPACE:
             self.undead_players = not self.undead_players
+        elif event.key == pygame.K_g:
+            for player in self.players:
+                player.upgrade_gun()
 
     def create_menu(self):
         menu = Menu()
