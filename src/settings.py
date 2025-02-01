@@ -6,6 +6,7 @@ SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 850, 800
 
 PLAYER_START_LIVES = 3
 PLAYER_SPEED = 600
+PLAYER_UPGRADE_TIME = 7
 SHOT_COOLDOWN = 0.3
 PLAYER_STASIS_TIME = 1
 PLAYER_COLORS = ((0, 179, 243), (242, 45, 2))
@@ -91,8 +92,8 @@ level = [
     LevelSettings(8, (3, 3, 3, 2, 2, 1), (50, 360), 2.0, 0.3, (1, 0, 1, 2, 1, 2, 0, 1), 0, 0, 70, False),
     LevelSettings(8, (7, 3, 3, 2, 2, 1), (50, 360), 2.0, 0.3, (1, 0, 2, 1, 2, 1, 0, 2), 0, 0, 80, False),
     LevelSettings(8, (7, 3, 3, 2, 2, 2), (60, 360), 1.8, 0.3, (1, 1, 2, 1, 2, 1, 2, 1), 0, 0, 80, True),
-    LevelSettings(4, (3, 3, 2, 2, 1, 1), (70, 380), 1.7, 0.3, (0, 1, 2, 1, 2, 0, 1, 2), 20, 4, 60, True),
-    LevelSettings(4, (7, 3, 3, 2, 2, 2), (70, 400), 1.6, 0.3, (1, 1, 2, 2, 1, 1, 2, 1), 40, 5, 90, False),
+    LevelSettings(5, (3, 3, 2, 2, 1, 1), (70, 380), 1.6, 0.3, (0, 1, 2, 1, 2, 0, 1, 2), 20, 4, 60, True),
+    LevelSettings(5, (7, 3, 3, 2, 2, 2), (70, 400), 1.5, 0.3, (1, 1, 2, 2, 1, 1, 2, 1), 40, 5, 90, False),
 ]
 
 PLAYER_KEYS = [

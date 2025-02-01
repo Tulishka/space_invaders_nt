@@ -7,7 +7,6 @@ from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
 
 
-
 class Player(Sprite):
 
     def __init__(self, num: int, scene_groups, scene_manager: SceneManager, start_x: int):
@@ -31,7 +30,7 @@ class Player(Sprite):
         self.shot_cooldown = 1
         self.dead = False
         self.stasis = 0
-        self.gun_upgraded = False
+        self.gun_upgraded = 0
 
         self.sound_shot = sounds[f"player_shot{self.num}"]
 
@@ -49,6 +48,11 @@ class Player(Sprite):
 
         if self.dead:
             return
+
+        if self.gun_upgraded:
+            self.gun_upgraded -= dt
+            if self.gun_upgraded < 0:
+                self.gun_upgraded = 0
 
         if self.stasis > 0:
             self.image = self.images[int(self.time * 8) % len(self.images)]
@@ -74,9 +78,9 @@ class Player(Sprite):
 
     def do_stasis(self):
         self.stasis = settings.PLAYER_STASIS_TIME
-        self.gun_upgraded = False
+        self.gun_upgraded = 0
         play_sound("player_stasis")
 
     def upgrade_gun(self):
-        self.gun_upgraded = True
+        self.gun_upgraded = settings.PLAYER_UPGRADE_TIME
         play_sound("upgrade_gun")
