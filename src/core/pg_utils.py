@@ -21,6 +21,6 @@ def create_table(rows: list[tuple[str, int]], rect: pygame.Rect, sprite_group, s
         num.rect.topleft = rect.left, top
         val1 = create_text_sprite(sprite_group, f"{col1}", font_size=font_size)
         val1.rect.topleft = num.rect.right + 8, top
-        val2 = create_text_sprite(sprite_group, f"{col2:0>5}", font_size=font_size)
+        val2 = create_text_sprite(sprite_group, f"{col2}", font_size=font_size)
         val2.rect.topright = rect.right, top
         top += spacing + max(val1.image.get_height(), val2.image.get_height())
