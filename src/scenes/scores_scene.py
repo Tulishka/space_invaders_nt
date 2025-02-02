@@ -1,10 +1,16 @@
+import random
 from collections import defaultdict
 from functools import partial
 
 import pygame
 
 from src import settings, music
-from src.core import scores
+from src.aliens import SceneAlien
+from src.components.particles import create_particle_explosion
+from src.components.projectile import DarkBomb, Bullet
+from src.components.projectile_utils import collide_bullets
+from src.core import scores, pg_utils
+from src.core.cooldown import Cooldown
 from src.core.pg_utils import create_text_sprite, create_table, create_text_image
 from src.core.scene import Scene
 from src.menu import Menu, ImageMenuItem
@@ -16,6 +22,11 @@ class ScoresScene(Scene):
     def __init__(self, scene_manager, params=None):
 
         self.scene_groups = defaultdict(pygame.sprite.Group)
+        self.scene_groups["aliens"].empty()
+        self.scene_groups["bombs"].empty()
+        self.scene_groups["bullets"].empty()
+        self.scene_groups["table"].empty()
+        self.scene_groups["logo"].empty()
 
         super().__init__(scene_manager, params)
         self.back_image = pygame.image.load("img/game_back.jpg")
@@ -23,9 +34,6 @@ class ScoresScene(Scene):
         self.hidden_height = 0
 
         self.cursor_image = pygame.image.load('./img/cursor.png')
-
-        self.scene_groups["table"].empty()
-        self.scene_groups["logo"].empty()
 
         results = scores.get_top_results(10)
 
@@ -56,8 +64,19 @@ class ScoresScene(Scene):
                       partial(self.set_music_theme, "ost_eng"))
         ImageMenuItem(self.menu, create_text_image("выход", font_size=28, color="green"), self.exit)
 
+        self.alien_spawn_cd = Cooldown(self, 0.7, 0.3)
+        self.alien_shot_cd = Cooldown(self, 0.8, 0.2)
+        self.shot_cd = Cooldown(self, 0.5, 0.3)
+        self.accurate_shot_cd = Cooldown(self, 0.5, 0.3)
+
+
     def on_show(self, first_time):
+        super().on_show(first_time)
         music.play(ScoresScene.music_theme, 1, 0)
+        self.alien_spawn_cd.start()
+        self.alien_shot_cd.start()
+        self.shot_cd.start(10)
+        self.accurate_shot_cd.start(20)
 
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
@@ -70,6 +89,62 @@ class ScoresScene(Scene):
             screen.blit(self.cursor_image, mouse_pos)
 
         self.menu.draw(screen)
+
+    def add_alien(self, y):
+        alien = SceneAlien(
+            self.scene_groups,
+            (random.randint(100, settings.SCREEN_WIDTH - 100), y),
+            random.choice((1, 2, 3, 7)),
+            0,
+            (0, random.randint(30, 60))
+        )
+        alien.images = [pg_utils.darken_image(img, 0.7) for img in alien.images]
+        alien.image = alien.images[0]
+        alien.last_shot = 0
+
+    def update(self, dt):
+        super().update(dt)
+
+        for group in self.scene_groups.values():
+            group.update(dt)
+
+        if self.alien_spawn_cd:
+            self.alien_spawn_cd.start()
+            self.add_alien(-32)
+
+        if self.alien_shot_cd:
+            self.alien_shot_cd.start()
+            sh = []
+            for alien in self.scene_groups["aliens"]:
+                if settings.SCREEN_HEIGHT - 100 > alien.y >= 50:
+                    sh.append((alien.last_shot, alien))
+            if sh:
+                alien = sorted(sh, key=lambda x: x[0])[0][1]
+                DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], 2, 0.3)
+                alien.last_shot = self.time
+
+        if self.shot_cd:
+            self.shot_cd.start()
+            x = random.randint(100, settings.SCREEN_WIDTH - 100)
+            Bullet((x, settings.SCREEN_HEIGHT), self.scene_groups["bullets"], None)
+        elif self.accurate_shot_cd:
+            self.accurate_shot_cd.start()
+            bottom_alien = None
+            for alien in self.scene_groups["aliens"]:
+                if alien.y > settings.SCREEN_HEIGHT - 300 and (not bottom_alien or alien.y < bottom_alien.y):
+                    bottom_alien = alien
+            if bottom_alien:
+                Bullet((bottom_alien.rect.centerx, settings.SCREEN_HEIGHT), self.scene_groups["bullets"], None)
+
+        collide_bullets(self.scene_groups, self.hit_alien)
+
+    def hit_alien(self, alien, player=None):
+        alien.image = alien.spawn_image
+        alien.kill_time = alien.time + 0.1
+        create_particle_explosion(
+            self.scene_groups["particles"], alien, 12, (2, 5),
+            50, (0, 0), 1.5
+        )
 
     def process_event(self, event):
 

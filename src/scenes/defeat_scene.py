@@ -15,13 +15,14 @@ class DefeatScene(GameOverScene):
     def __init__(self, scene_manager, params=None):
         super().__init__(scene_manager, params)
         self.alien_spawn_cd = Cooldown(self, 0.8, 0.4)
-        self.alien_shot_cd = Cooldown(self, 0.4, 0.2)
+        self.alien_shot_cd = Cooldown(self, 0.7, 0.2)
 
     def on_show(self, first_time):
         super().on_show(first_time)
         self.alien_spawn_cd.start()
         self.alien_shot_cd.start()
         self.scene_groups["aliens"].empty()
+        self.scene_groups["bombs"].empty()
         for i in range(4):
             self.add_alien(random.randint(-80, 0))
 
@@ -35,6 +36,7 @@ class DefeatScene(GameOverScene):
         )
         alien.images = [pg_utils.darken_image(img, 0.9) for img in alien.images]
         alien.image = alien.images[0]
+        alien.last_shot = 0
 
     def update(self, dt):
         super().update(dt)
@@ -47,10 +49,11 @@ class DefeatScene(GameOverScene):
             sh = []
             for alien in self.scene_groups["aliens"]:
                 if settings.SCREEN_HEIGHT - 100 > alien.y >= 50:
-                    sh.append(alien)
+                    sh.append((alien.last_shot, alien))
             if sh:
-                alien = random.choice(sh)
+                alien = sorted(sh, key=lambda x: x[0])[0][1]
                 DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], 2, 0.3)
+                alien.last_shot = self.time
 
 
     def update_params(self, params):

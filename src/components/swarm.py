@@ -149,7 +149,7 @@ class Swarm:
             if alien.rect.bottom > self.max_y:
                 self.max_y = alien.rect.bottom
 
-            if can_shot[alien.column] is None or can_shot[alien.column].rect.y < alien.rect.y:
+            if not alien.is_dead() and (can_shot[alien.column] is None or can_shot[alien.column].rect.y < alien.rect.y):
                 can_shot[alien.column] = alien
 
         can_shot = [alien for alien in can_shot if alien is not None]
