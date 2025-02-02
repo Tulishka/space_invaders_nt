@@ -6,6 +6,7 @@ from src import music, settings
 from src.aliens import BonusAlien
 from src.components.particles import create_particle_explosion
 from src.components.player import Player
+from src.components.projectile_utils import collide_bullets, collide_bombs
 from src.components.swarm import Swarm
 from src.core.scene import Scene
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
@@ -116,42 +117,8 @@ class GameScene(Scene):
     def update_projectiles(self, dt):
         self.scene_groups["bombs"].update(dt)
         self.scene_groups["bullets"].update(dt)
-
-        collisions = pygame.sprite.groupcollide(
-            self.scene_groups["aliens"], self.scene_groups["bullets"], False, True, collided=pygame.sprite.collide_mask
-        )
-
-        for alien, bullets in collisions.items():
-            for bullet in bullets:
-                if alien.hit():
-                    if alien.is_dead():
-                        particles = settings.PARTICLES_KILL_COUNT.get(type(alien).__name__, 12)
-                        size = settings.PARTICLES_KILL_SIZE.get(type(alien).__name__, (2, 6))
-                    else:
-                        particles, size = settings.PARTICLES_HIT_COUNT, settings.PARTICLES_HIT_SIZE
-
-                    create_particle_explosion(
-                        self.scene_groups["particles"], alien, particles, size,
-                        40, (0, -30),
-                        2 if alien.type == settings.BONUS_ALIEN_TYPE else 1
-                    )
-                    self.hit_alien(alien, bullet.player)
-
-        collisions = pygame.sprite.groupcollide(
-            self.scene_groups["players"], self.scene_groups["bombs"], False, True, collided=pygame.sprite.collide_mask
-        )
-
-        for player, bombs in collisions.items():
-            if bombs and player.stasis <= 0 and not self.undead_players and not player.dead:
-                self.hit_player(player)
-                create_particle_explosion(
-                    self.scene_groups["particles"],
-                    player,
-                    12 * (1 + 2 * player.dead),
-                    (4, 12),
-                    60,
-                    (0, -50)
-                )
+        collide_bullets(self.scene_groups, self.hit_alien)
+        collide_bombs(self.scene_groups, self.hit_player)
 
     def swarm_crash_player(self, player):
         return self.swarm.max_y > player.rect.y
@@ -180,7 +147,7 @@ class GameScene(Scene):
 
         if self.gameover_time and self.gameover_time < self.time:
             self.scene_manager.set_scene(
-                "gameover",
+                "defeat",
                 {
                     "text": "GAME OVER",
                     "num_players": self.num_players,
@@ -191,6 +158,9 @@ class GameScene(Scene):
             )
 
     def hit_player(self, player, minus_lives=1):
+        if self.undead_players:
+            return
+
         self.wound = 1.0
         self.lives -= minus_lives
         if self.lives > 0:
@@ -198,15 +168,36 @@ class GameScene(Scene):
         else:
             player.die()
 
+        create_particle_explosion(
+            self.scene_groups["particles"],
+            player,
+            12 * (1 + 2 * player.dead),
+            (4, 12),
+            60,
+            (0, -50)
+        )
+
     def hit_alien(self, alien, player):
-        points = settings.ALIENS_REWARD[alien.type]
-        self.score += points
-        if not player:
-            return
-        self.player_score[player.num - 1] += points
-        self.text_score[player.num - 1] = self.render_score_text(player.num - 1)
-        if alien.type == settings.BONUS_ALIEN_TYPE:
-            player.upgrade_gun()
+        if alien.hit():
+            if alien.is_dead():
+                particles = settings.PARTICLES_KILL_COUNT.get(type(alien).__name__, 12)
+                size = settings.PARTICLES_KILL_SIZE.get(type(alien).__name__, (2, 6))
+            else:
+                particles, size = settings.PARTICLES_HIT_COUNT, settings.PARTICLES_HIT_SIZE
+
+            create_particle_explosion(
+                self.scene_groups["particles"], alien, particles, size,
+                40, (0, -30),
+                2 if alien.type == settings.BONUS_ALIEN_TYPE else 1
+            )
+
+            if player:
+                points = settings.ALIENS_REWARD[alien.type]
+                self.score += points
+                self.player_score[player.num - 1] += points
+                self.text_score[player.num - 1] = self.render_score_text(player.num - 1)
+                if alien.type == settings.BONUS_ALIEN_TYPE:
+                    player.upgrade_gun()
 
     def bonus_ship_should_arrive(self):
         return self.swarm.min_y > settings.SCREEN_HEIGHT // 5

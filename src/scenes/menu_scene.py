@@ -86,13 +86,14 @@ class MenuScene(Scene):
                 spd = random.randint(50, 120)
 
             SceneAlien(self.scene_groups, pos, alien_type, 0, (-spd, 0 * (1 - pos[1] / settings.SCREEN_HEIGHT)),
-                       0.2 * (self.time > 5))
+                       0.2 * (self.time > 5), random.randint(1000, 2000))
 
         self.scene_groups["aliens"].update(dt)
         self.menu.update(dt)
 
     def start_game(self, num_players, level=1):
         self.scene_manager.kill_scene("trailer")
+        self.scene_manager.kill_scene("game")
         self.scene_manager.set_scene("trailer", {
             "num_players": num_players,
             "level": level,
@@ -112,7 +113,7 @@ class MenuScene(Scene):
             return
 
         if event.key == pygame.K_t:
-            self.scene_manager.set_scene("gameover", {
+            self.scene_manager.set_scene("defeat", {
                 "num_players": 2,
                 "score": 1000,
                 "p1_score": 500,

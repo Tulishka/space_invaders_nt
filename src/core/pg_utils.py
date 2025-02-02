@@ -24,3 +24,10 @@ def create_table(rows: list[tuple[str, int]], rect: pygame.Rect, sprite_group, s
         val2 = create_text_sprite(sprite_group, f"{col2}", font_size=font_size)
         val2.rect.topright = rect.right, top
         top += spacing + max(val1.image.get_height(), val2.image.get_height())
+
+
+def darken_image(image: pygame.Surface, dark_koef: float) -> pygame.Surface:
+    image = image.copy()
+    image.fill((int(255 * dark_koef),) * 3, rect=image.get_rect(), special_flags=pygame.BLEND_RGB_SUB)
+    return image
+

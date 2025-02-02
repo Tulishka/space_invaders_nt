@@ -4,11 +4,10 @@ from functools import partial
 import pygame
 
 from src import settings, music
-from src.components.text_input import InputText
 from src.core import scores
 from src.core.pg_utils import create_text_sprite, create_table, create_text_image
 from src.core.scene import Scene
-from src.menu import Menu, ImageMenuItem, MarginMenuItem
+from src.menu import Menu, ImageMenuItem
 
 
 class ScoresScene(Scene):
@@ -42,12 +41,12 @@ class ScoresScene(Scene):
         label.rect.midtop = settings.SCREEN_WIDTH // 2, logo.rect.bottom
 
         text1 = create_text_sprite(self.scene_groups["logo"], f"ТОП-10", font_size=32, color="green")
-        text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 100
+        text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 80
 
         create_table(results, tab_rect, self.scene_groups["table"], spacing=8)
 
         self.menu = Menu()
-        self.menu.top = settings.SCREEN_HEIGHT - 170
+        self.menu.top = settings.SCREEN_HEIGHT - 180
         self.menu.no_back = True
         ImageMenuItem(self.menu, create_text_image("саундтреки созданные в рамках проекта", font_size=26, color="cyan"))
         self.menu.selected = ImageMenuItem(self.menu,

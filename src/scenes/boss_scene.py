@@ -38,11 +38,11 @@ class BossScene(GameScene):
     def go_next_level(self):
         music.play("victory")
         self.params["score"] = self.score
+        self.params["num_players"] = self.num_players
         self.params["p1_score"] = self.player_score[0]
         self.params["p2_score"] = self.player_score[1]
-        self.params["text"] = "VICTORY!"
         self.scene_manager.kill_scene("boss")
-        self.scene_manager.set_scene("gameover", self.params)
+        self.scene_manager.set_scene("victory", self.params)
 
     def update(self, dt):
         self.time += dt

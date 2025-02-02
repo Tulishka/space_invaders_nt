@@ -6,12 +6,13 @@ import pygame
 from src import settings
 from src.core.scores import create_db
 from src.scenes.boss_scene import BossScene
+from src.scenes.defeat_scene import DefeatScene
 from src.scenes.game_scene import GameScene
-from src.scenes.gameover_scene import GameOverScene
 from src.scenes.menu_scene import MenuScene
 from src.core.scene_manager import SceneManager
 from src.scenes.scores_scene import ScoresScene
 from src.scenes.trailer_scene import TrailerScene
+from src.scenes.victory_scene import VictoryScene
 
 if getattr(sys, 'frozen', False):
     application_path = os.path.dirname(sys.executable)
@@ -35,7 +36,8 @@ def main():
 
     scene_manager.add_scene("menu", MenuScene)
     scene_manager.add_scene("game", GameScene)
-    scene_manager.add_scene("gameover", GameOverScene)
+    scene_manager.add_scene("defeat", DefeatScene)
+    scene_manager.add_scene("victory", VictoryScene)
     scene_manager.add_scene("trailer", TrailerScene)
     scene_manager.add_scene("boss", BossScene)
     scene_manager.add_scene("scores", ScoresScene)

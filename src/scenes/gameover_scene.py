@@ -11,6 +11,9 @@ from src.core.scene import Scene
 
 class GameOverScene(Scene):
 
+    title = "GAME OVER"
+    title_color = (255, 255, 255)
+
     def __init__(self, scene_manager, params=None):
 
         self.player_names = scores.load_player_names()
@@ -23,7 +26,6 @@ class GameOverScene(Scene):
         self.back_image = pygame.image.load("img/game_back.jpg")
         self.back_image_top = 0
         self.hidden_height = 0
-
         self.name_input[0].set_focus()
         self.cursor_image = pygame.image.load('./img/cursor.png')
 
@@ -53,7 +55,7 @@ class GameOverScene(Scene):
         font_score = pygame.font.Font(None, 48)
         font_pscore = pygame.font.Font(None, 32)
 
-        text = font_title.render(self.params.get("text", "GAME OVER"), True, "white")
+        text = font_title.render(self.title, True, self.title_color)
         score_img = font_score.render(f"общий счёт: {self.score}", True, "white")
         scores_img = [
             font_pscore.render(f"{pnum + 1}-й игрок: {self.scores[pnum]:0>5}", True, settings.PLAYER_COLORS[pnum])
@@ -83,14 +85,14 @@ class GameOverScene(Scene):
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
 
+        for group in self.scene_groups.values():
+            group.draw(screen)
+
         y = 200
 
         for label, offset in self.labels_images:
             screen.blit(label, (settings.SCREEN_WIDTH // 2 - label.get_width() // 2, y))
             y += label.get_height() + offset
-
-        for group in self.scene_groups.values():
-            group.draw(screen)
 
         mouse_pos = pygame.mouse.get_pos()
         if mouse_pos[0] != 0 and mouse_pos[1] != 0:
@@ -109,7 +111,7 @@ class GameOverScene(Scene):
 
     def save_results(self):
         for i, ti in enumerate(self.name_input):
-            self.player_names[i] = ti.value.strip() or f"no_name_{i+1}"
+            self.player_names[i] = ti.value.strip() or f"no_name_{i + 1}"
 
         scores.save_player_names(self.player_names)
         scores.add_result(
