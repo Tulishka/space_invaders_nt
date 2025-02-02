@@ -4,7 +4,7 @@ import sys
 import pygame
 
 from src import settings
-from src.core.scores import create_db
+from src.core.db import create_db
 from src.scenes.boss_scene import BossScene
 from src.scenes.defeat_scene import DefeatScene
 from src.scenes.game_scene import GameScene

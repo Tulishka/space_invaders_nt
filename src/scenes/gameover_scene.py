@@ -4,7 +4,7 @@ import pygame
 
 from src import settings
 from src.components.text_input import InputText
-from src.core import scores
+from src.core import db
 from src.core.pg_utils import create_text_sprite
 from src.core.scene import Scene
 
@@ -16,7 +16,7 @@ class GameOverScene(Scene):
 
     def __init__(self, scene_manager, params=None):
 
-        self.player_names = scores.load_player_names()
+        self.player_names = db.load_player_names()
 
         self.labels_images = []
         self.num_players = 1
@@ -113,8 +113,8 @@ class GameOverScene(Scene):
         for i, ti in enumerate(self.name_input):
             self.player_names[i] = ti.value.strip() or f"no_name_{i + 1}"
 
-        scores.save_player_names(self.player_names)
-        scores.add_result(
+        db.save_player_names(self.player_names)
+        db.add_game_result(
             self.num_players,
             *((self.player_names[idx], self.scores[idx]) for idx in range(self.num_players))
         )

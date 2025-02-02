@@ -9,7 +9,7 @@ from src.aliens import SceneAlien
 from src.components.particles import create_particle_explosion
 from src.components.projectile import DarkBomb, Bullet
 from src.components.projectile_utils import collide_bullets
-from src.core import scores, pg_utils
+from src.core import db, pg_utils
 from src.core.cooldown import Cooldown
 from src.core.pg_utils import create_text_sprite, create_table, create_text_image
 from src.core.scene import Scene
@@ -35,7 +35,7 @@ class ScoresScene(Scene):
 
         self.cursor_image = pygame.image.load('./img/cursor.png')
 
-        results = scores.get_top_results(10)
+        results = db.get_top_results(10)
 
         table_width = 550
 
@@ -69,6 +69,8 @@ class ScoresScene(Scene):
         self.shot_cd = Cooldown(self, 0.5, 0.3)
         self.accurate_shot_cd = Cooldown(self, 0.5, 0.3)
 
+        ScoresScene.music_theme = db.get_var("music_theme") or ScoresScene.music_theme
+
 
     def on_show(self, first_time):
         super().on_show(first_time)
@@ -98,7 +100,7 @@ class ScoresScene(Scene):
             0,
             (0, random.randint(30, 60))
         )
-        alien.images = [pg_utils.darken_image(img, 0.7) for img in alien.images]
+        alien.images = [pg_utils.darken_image(img, 0.9) for img in alien.images]
         alien.image = alien.images[0]
         alien.last_shot = 0
 
@@ -157,6 +159,7 @@ class ScoresScene(Scene):
 
     def set_music_theme(self, theme_name):
         ScoresScene.music_theme = theme_name
+        db.set_var("music_theme", theme_name)
         self.on_show(0)
 
     def exit(self):

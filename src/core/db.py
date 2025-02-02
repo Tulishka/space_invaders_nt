@@ -2,6 +2,7 @@ import sqlite3
 
 DB_NAME = 'scores.db'
 
+
 def create_db():
     """Создает таблицы в БД если они не созданы"""
     conn = sqlite3.connect(DB_NAME)
@@ -24,11 +25,18 @@ def create_db():
         )
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS variables (
+            name TEXT PRIMARY KEY,
+            value TEXT NULL
+        )
+    ''')
+
     conn.commit()
     conn.close()
 
 
-def add_result(players_num: int, player1: tuple[str, int], player2: tuple[str, int] = ("", 0)):
+def add_game_result(players_num: int, player1: tuple[str, int], player2: tuple[str, int] = ("", 0)):
     """Сохраняет результат игры в базу данных"""
     if players_num not in (1, 2):
         raise ValueError("players_num must be 1 or 2")
@@ -78,17 +86,17 @@ def load_player_names() -> list[str]:
     cursor.execute('SELECT name FROM player_names ORDER BY player_num')
     names = [row[0] for row in cursor.fetchall()]
 
-    if len(names)<1:
+    if len(names) < 1:
         names.append('Player1')
 
-    if len(names)<2:
+    if len(names) < 2:
         names.append('Player2')
 
     conn.close()
     return names
 
 
-def get_top_results(k=10, player_num = None) -> list[tuple[str, int, int]]:
+def get_top_results(k=10, player_num=None) -> list[tuple[str, int, int]]:
     """Возвращает топ лучших результатов с учетом фильтров"""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
@@ -118,3 +126,29 @@ def get_top_results(k=10, player_num = None) -> list[tuple[str, int, int]]:
 
     conn.close()
     return results
+
+
+def set_var(name: str, value: str):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        INSERT OR REPLACE INTO variables 
+        (name, value) VALUES (?, ?)
+    ''', (name, value))
+
+    conn.commit()
+    conn.close()
+
+
+def get_var(name) -> str:
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT value FROM variables WHERE name = ?', (name,))
+    res = cursor.fetchall()
+    conn.close()
+    if len(res) == 0:
+        return ""
+
+    return res[0][0]
