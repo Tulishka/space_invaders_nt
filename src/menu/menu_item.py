@@ -1,13 +1,19 @@
 from typing import Callable
 
 import pygame
-from pygame import rect
 
 from .items_menu import ItemsMenu
 
 
 class MenuItem:
+    """Базовый класс для создания пункта меню"""
+
     def __init__(self, parent: ItemsMenu, action: Callable = None, key: int = None):
+        """Конструктор класса
+        :param parent: Меню к которому принадлежит создаваемый элемент.
+        :param action: Функция, которую необходимо вызвать при активации.
+        :param key: Клавиша на которую назначена активация действия.
+        """
         self.time = 0
         self.parent = parent
         self.parent.add_item(self)
@@ -35,16 +41,20 @@ class MenuItem:
         pass
 
     def activate(self):
+        """Метод активирует пункт меню"""
         if self.action:
             self.parent.item_activated(self)
             self.action()
 
     def select(self):
+        """Метод выбирает пункт меню"""
         if self.action:
             self.parent.item_selected(self)
 
 
 class MarginMenuItem(MenuItem):
+    """Вид элемента меню для создания отступа между пунктами"""
+
     def __init__(self, parent: ItemsMenu, y_margin: int):
         super().__init__(parent)
         self.rect.height = y_margin
@@ -52,6 +62,8 @@ class MarginMenuItem(MenuItem):
 
 
 class ImageMenuItem(MenuItem):
+    """Элемент меню - картинка"""
+
     def __init__(self, parent: ItemsMenu, image: pygame.Surface, action: Callable = None, key: int = None):
         super().__init__(parent, action, key)
         self.image = image

@@ -1,5 +1,6 @@
 import pygame
 
+# словарь композиций содержит файл с музыкой и громкость для воспроизведения
 music = {
     "next_level": ("music/next_level.mp3", 0.5),
     "boss": ("music/boss.mp3", 0.25),
@@ -12,7 +13,13 @@ music = {
 }
 
 
-def play(name, loops=0, start=0):
+def play(name: str, loops: int = 0, start=0):
+    """Воспроизводит нужную музыку
+    :param name: имя композиций
+    :param loops: число циклов повторения
+    :param start: время начала композиции
+    :return:
+    """
     file, volume = music[name]
     pygame.mixer_music.load(file)
     pygame.mixer_music.set_volume(volume)
@@ -20,4 +27,8 @@ def play(name, loops=0, start=0):
 
 
 def stop(stop_time=500):
+    """Останавливает воспроизведение музыки
+    :param stop_time: время затухания в мсек.
+    :return:
+    """
     pygame.mixer_music.fadeout(stop_time)

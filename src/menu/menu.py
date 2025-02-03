@@ -7,6 +7,7 @@ from ..sound import play_sound
 
 
 class Menu(ItemsMenu):
+    """Класс для создания меню"""
 
     def __init__(self):
         super().__init__()
@@ -14,9 +15,13 @@ class Menu(ItemsMenu):
         self.items: list[MenuItem] = []
         self.time = 0
         self.selected: MenuItem | None = None
+
+        # Параметры рамки для выделения элемента меню
         self.selection_extend_x = 25
         self.selection_extend_y = 5
         self.selection_radius = 25
+        self.selection_color = (0, 200, 0)
+
         self.spacing = 20
         self.back_padding = 20
         self.back_image = None
@@ -28,12 +33,16 @@ class Menu(ItemsMenu):
     def update(self, dt):
         self.time += dt
 
-    def process_event(self, event):
+    def process_event(self, event) -> bool:
+        """Метод обработчик pygame-событий меню: нажатие кнопок и событий мышки
+        """
 
+        # сначала попробуем обработать события с помощью элементов меню
         for item in self.items:
             if item.process_event(event):
                 return True
 
+        # Обработка событий мыши: выделение элемента под указателем и обработка клика по элементу
         if event.type == pygame.MOUSEMOTION or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
             mouse_pos = event.pos
             for item in self.items:
@@ -44,10 +53,10 @@ class Menu(ItemsMenu):
                         elif self.selected is not item:
                             item.select()
                     break
-            return
+            return False
 
         if event.type != pygame.KEYDOWN:
-            return
+            return False
 
         if event.key in (pygame.K_DOWN, pygame.K_s):
             self.select_next()
@@ -62,13 +71,22 @@ class Menu(ItemsMenu):
         return False
 
     def item_activated(self, item: MenuItem):
+        """Вызывается когда активирован элемент
+        :param item: активированный элемент
+        :return None:
+        """
         self.selected = item
 
     def item_selected(self, item: MenuItem):
+        """Вызывается при выборе элемента меню
+        :param item: выбранный элемент
+        :return None:
+        """
         self.selected = item
         play_sound("menu_beep")
 
     def select_next(self):
+        """Циклически выбирает следующий элемент меню"""
         new = was = self.selected
 
         if not new:
@@ -87,6 +105,7 @@ class Menu(ItemsMenu):
             new.select()
 
     def select_prev(self):
+        """Циклически выбирает предыдущий элемент меню"""
         new = was = self.selected
         if new is None:
             self.select_next()
@@ -106,6 +125,8 @@ class Menu(ItemsMenu):
             new.select()
 
     def draw(self, screen: pygame.Surface):
+        """Метод для отрисовки меню"""
+
         start_y = self.top
         y = start_y
         xc = settings.SCREEN_WIDTH // 2
@@ -124,7 +145,7 @@ class Menu(ItemsMenu):
                 bar_width = self.selected.get_width() + 2 * self.selection_extend_x
                 bar_height = self.selected.get_height() + 2 * self.selection_extend_y
                 pygame.draw.rect(
-                    screen, (0, 200, 0),
+                    screen, self.selection_color,
                     pygame.Rect(
                         x - self.selection_extend_x,
                         y - self.selection_extend_y,
@@ -134,6 +155,7 @@ class Menu(ItemsMenu):
 
             y += item.get_height() + self.spacing
 
+        # подготовка полупрозрачного фона
         if not self.no_back and not self.back_image:
             height = y - start_y + self.back_padding * 2
             width = max_width + self.back_padding * 2
@@ -148,6 +170,7 @@ class Menu(ItemsMenu):
             self.back_image = img
             self.back_rect = rect
 
+        # отрисовка курсора
         mouse_pos = pygame.mouse.get_pos()
         if mouse_pos[0] != 0 and mouse_pos[1] != 0:
             screen.blit(self.cursor_image, mouse_pos)

@@ -1,7 +1,12 @@
 import pygame
 
 
-def load(name, volume):
+def load(name: str, volume: float):
+    """Функция загружает саунд-эффект и задает ему громкость
+    :param name: имя саунд-эффекта
+    :param volume: громкость от 0.0 до 1.0
+    :return:
+    """
     sound = pygame.mixer.Sound(name)
     sound.set_volume(volume)
     return sound
@@ -46,8 +51,14 @@ sounds = {
 }
 
 
-def play_sound(name):
+def play_sound(name: str):
+    """Воспроизводит подготовленный саунд-эффект
+    :param name: имя
+    :return None:
+    """
     sounds[name].play()
 
+
 def stop_sound():
+    """Останавливает все звуки"""
     pygame.mixer.fadeout(500)

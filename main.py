@@ -14,6 +14,8 @@ from src.scenes.scores_scene import ScoresScene
 from src.scenes.trailer_scene import TrailerScene
 from src.scenes.victory_scene import VictoryScene
 
+# Получение пути исполняемого файла, что бы сменить текущую папку
+# т.к. исполняемый файл может быть запущен в неправильной папке
 if getattr(sys, 'frozen', False):
     application_path = os.path.dirname(sys.executable)
 else:
@@ -23,6 +25,7 @@ os.chdir(application_path)
 
 
 def main():
+    """Инициализация игры и основной игровой цикл"""
     create_db()
 
     pygame.init()
@@ -34,6 +37,7 @@ def main():
     scene_manager = SceneManager()
     screen = pygame.display.set_mode(settings.SCREEN_SIZE)
 
+    # Регистрация классов сцен
     scene_manager.add_scene_class("menu", MenuScene)
     scene_manager.add_scene_class("game", GameScene)
     scene_manager.add_scene_class("defeat", DefeatScene)
@@ -42,6 +46,7 @@ def main():
     scene_manager.add_scene_class("boss", BossScene)
     scene_manager.add_scene_class("scores", ScoresScene)
 
+    # Запуск начальной сцены
     scene_manager.push_scene("menu")
 
     run = True
