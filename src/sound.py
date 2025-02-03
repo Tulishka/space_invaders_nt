@@ -18,7 +18,6 @@ sounds = {
     "upgrade_gun": load("sound/upgrade_gun.mp3", 0.3),
 
     "laser_beam": load("sound/laser_beam.wav", 0.5),
-
     "alien_dead": load("sound/exp1.wav", 0.3),
     "alien_shot1": load("sound/easy_blaster.wav", 1),
     "alien_shot2": load("sound/blaster2.wav", 1),
@@ -27,9 +26,6 @@ sounds = {
     "alien_warp": load("sound/warp.wav", 0.2),
     "alien_shield_up": load("sound/give_shield.wav", 1),
     "alien_shield_down": load("sound/pop.wav", 1),
-
-
-
 
     "bonus_alien_lr": load("sound/bonus_alien_lr.wav", 1),
     "bonus_alien_rl": load("sound/bonus_alien_rl.wav", 1),
