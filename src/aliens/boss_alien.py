@@ -7,6 +7,7 @@ from src import settings, sound
 from .acolyte_alien import AcolyteAlien
 from .alien import Alien, HpAlienMixin
 from .minion_alien import MinionAlien
+from ..core.cooldown import Cooldown
 from ..sound import play_sound
 
 
@@ -26,11 +27,10 @@ class BossAlien(HpAlienMixin, Alien):
             (pos[0] + 250, pos[1] - 100),
             (pos[0] - 100, pos[1] + 120),
         ]
-        self.spawn_rate = [1, 1, 2, 1, 1.5]
-        self.spawn_players_rate = max(len(self.scene_groups["players"]) * 0.60, 1)
+        self.spawn_boost = [1, 1, 2, 1, 1.5]
+        self.minions_spawn_mult = max(len(self.scene_groups["players"]) * 0.60, 1)
         self.current_pos = 0
-        self.next_pos_time = self.time + random.randint(6, 12)
-        self.boss_next_online = 15
+        self.move_cd = Cooldown(self, 9, 6, started=True)
         self.spd = 0
         self.move_time = 0
         self.shield_energy = 20
@@ -51,6 +51,8 @@ class BossAlien(HpAlienMixin, Alien):
         return res
 
     def hit_shield(self) -> bool:
+        if not self.has_shield():
+            return False
         if self.shield_energy <= 0:
             return super().hit_shield()
         self.shield_energy -= 1
@@ -80,8 +82,8 @@ class BossAlien(HpAlienMixin, Alien):
             self.x = self.positions[self.current_pos][0]
             self.y = self.positions[self.current_pos][1]
 
-        if self.time > self.next_pos_time:
-            self.next_pos_time = self.time + random.randint(6, 12)
+        if self.move_cd:
+            self.move_cd.start()
             self.current_pos = (self.current_pos + 1) % len(self.positions)
             self.spd = 0
             sound.play_sound("boss_move")
@@ -96,15 +98,10 @@ class BossAlien(HpAlienMixin, Alien):
             sound.play_sound("boss_signal")
 
     def spawn_minion(self):
-        max_minions = settings.MINIONS_COUNT * self.spawn_players_rate
+        max_minions = settings.MINIONS_COUNT * self.minions_spawn_mult
         if self.minions_spawn_time < self.time and len(self.scene_groups["aliens"]) <= max_minions:
             x, y = self.rect.midbottom
             self.shield_down()
-
-            if self.time > self.boss_next_online:
-                sound.play_sound("boss_online")
-                self.boss_next_online = self.time + 30
-
             m = MinionAlien(
                 self.scene_groups,
                 (x, y),
@@ -117,7 +114,11 @@ class BossAlien(HpAlienMixin, Alien):
             m.y -= m.warp_y
             m.y = min(m.y, settings.SCREEN_HEIGHT - 150)
             self.minions_spawn_time = self.time + settings.MINIONS_SPAWN_COOLDOWN * (
-                    1 / (self.spawn_rate[self.current_pos] * self.spawn_players_rate))
+                    1 / (
+                    max(self.spawn_boost[self.current_pos], 1.5 * (self.hp < self.max_hp * 0.2)) *
+                    self.minions_spawn_mult
+            )
+            )
         elif self.minions_spawn_time < self.time:
             self.minions_spawn_time = self.time + settings.BOSS_RESPAWN_MINIONS_COOLDOWN
             if self.hp / self.max_hp * 100 <= settings.BOSS_SHIELD_UP_PRC:
@@ -131,7 +132,7 @@ class BossAlien(HpAlienMixin, Alien):
             if alien is not self:
                 alien.update(dt)
                 if alien.type in BossAlien.MINION_ALIEN_TYPES and alien.can_set_target() and players:
-                    min_d = alien.time - alien.target_time > 8 or min(
+                    min_d = alien.retarget_cooldown() or min(
                         abs(player.rect.center[0] - alien.x) for player in players) > 10
                     if min_d:
                         alien.set_target(random.choice(players).rect.center[0])
@@ -150,6 +151,7 @@ class BossAlien(HpAlienMixin, Alien):
 
             if not self.acolyte and self.hp / self.max_hp * 100 <= settings.BOSS_CALL_ACOLYTE_PRC:
                 self.acolyte = True
+                sound.play_sound("boss_signal")
                 AcolyteAlien(self.scene_groups, (100, 80), 1)
                 if len(self.scene_groups["players"]) > 1:
                     AcolyteAlien(self.scene_groups, (settings.SCREEN_WIDTH - 150, 100), -1)

@@ -4,6 +4,7 @@ from random import random, randint, choice
 
 from src import settings, sound
 from .alien import Alien
+from ..core.cooldown import Cooldown
 from ..sound import play_sound
 
 
@@ -11,13 +12,13 @@ class MinionAlien(Alien):
 
     def __init__(self, scene_groups, pos, type_, column, move_target_x):
         super().__init__(scene_groups, pos, type_, column, 0.2, size=0.5)
-        self.target_time = 0
+        self.shot_cooldown = Cooldown(self, settings.MINION_BASE_SHOT_COOLDOWN, 1)
+        self.retarget_cooldown = Cooldown(self, 4.5, 3)
         self.set_target(move_target_x)
         self.radius = randint(36, 80)
         self.radius_spd = randint(2, 4) * 0.3
         self.radius_dir = choice((-1, 1))
         self.radius_k = - self.radius
-        self.shot_cooldown = settings.MINION_BASE_SHOT_COOLDOWN
 
     def update(self, dt):
         super().update(dt)
@@ -38,16 +39,13 @@ class MinionAlien(Alien):
         )
         zones = Counter(b.rect.centerx // 333 for b in self.scene_groups["bombs"])
         zones.subtract(player.rect.centerx // 333 for player in self.scene_groups["players"] if not player.dead)
-        if self.shot_cooldown < 0 and zones[self.rect.centerx // 333] + 1 < settings.MINIONS_MAX_BOMBS:
+        if self.shot_cooldown and zones[self.rect.centerx // 333] + 1 < settings.MINIONS_MAX_BOMBS:
             for player in self.scene_groups["players"]:
-
                 if not player.dead and abs(self.rect.centerx - player.rect.centerx) < player.rect.width // 2:
                     self.shot(0.5)
                     sound.play_sound("minion_shot")
-                    self.shot_cooldown = settings.MINION_BASE_SHOT_COOLDOWN * (1 + random())
+                    self.shot_cooldown.start()
                     break
-        else:
-            self.shot_cooldown -= dt
 
     def shield_down(self):
         res = super().shield_down()
@@ -56,11 +54,11 @@ class MinionAlien(Alien):
         return res
 
     def can_set_target(self):
-        return self.target_time < self.time
+        return self.retarget_cooldown()
 
     def set_target(self, move_target_x):
         if abs(move_target_x - self.x) > 250:
             sound.play_sound("minion_relocate")
         self.warp_x = self.x - move_target_x
         self.x = move_target_x
-        self.target_time = self.time + 3 + 3 * random()
+        self.retarget_cooldown.start()

@@ -5,6 +5,7 @@ from src import settings
 from src.aliens import Alien, AlienLaserArm
 from src.aliens.acolyte_alien import AcolyteAlien
 from src.components.projectile import Beam
+from src.core.cooldown import Cooldown
 from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
 
@@ -32,7 +33,10 @@ class Swarm:
         self.shot_order = self.ls.swarm_shot_order
         self.acolyte = False
 
-        self.shot_cooldown = [self.ls.swarm_cd] * len(self.players_group)
+        self.shot_cooldown = [
+            Cooldown(self, self.ls.swarm_cd, started=True)
+            for _ in self.players_group
+        ]
         self.shot_order_pos = [0] * len(self.players_group)
 
         self.min_x = 0
@@ -194,11 +198,8 @@ class Swarm:
 
         if can_shot:
             for idx, player in enumerate(self.players_group):
-                self.shot_cooldown[idx] -= dt
-                if self.shot_cooldown[idx] < 0:
-                    self.shot_cooldown[idx] = 0
 
-                if player.dead or self.shot_cooldown[idx]:
+                if player.dead or not self.shot_cooldown[idx]():
                     continue
 
                 alien_closest_dist = 9999
@@ -216,7 +217,7 @@ class Swarm:
                 if (self.shot_order[
                         self.shot_order_pos[idx]] != 2 and not accurate) or alien_closest_dist < player.rect.width // 2:
                     alien_closest.shot()
-                    self.shot_cooldown[idx] = self.ls.swarm_cd
+                    self.shot_cooldown[idx].start()
                     self.sound_alien_shot[alien_closest.type - 1].play()
                     self.shot_order_pos[idx] = (self.shot_order_pos[idx] + 1) % len(self.shot_order)
 

@@ -3,13 +3,13 @@ from random import random
 
 class Cooldown:
 
-    def __init__(self, parent, interval=99999, random_delta: float = 0):
+    def __init__(self, parent, interval=99999, random_delta: float = 0, started=False):
         """
         :param parent: Объект - содержит свойство time float в секундах
         :param interval: время "остывания" в сек
         """
         self.random_delta = random_delta
-        self._start_time = parent.time - 99999
+        self._start_time = parent.time - 99999 * (not started)
         self.interval = interval
         self.parent = parent
         if not hasattr(self.parent, "time"):

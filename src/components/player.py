@@ -3,6 +3,7 @@ from pygame.sprite import Sprite
 
 from src import settings
 from src.components.projectile import Bullet
+from src.core.cooldown import Cooldown
 from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
 
@@ -27,7 +28,7 @@ class Player(Sprite):
         self.scene_manager = scene_manager
         self.keys = settings.PLAYER_KEYS[self.num]
         self.alt_keys = settings.PLAYER_KEYS[self.num]
-        self.shot_cooldown = 1
+        self.shot_cooldown = Cooldown(self, settings.SHOT_COOLDOWN)
         self.dead = False
         self.stasis = 0
         self.gun_upgraded = 0
@@ -35,7 +36,7 @@ class Player(Sprite):
         self.sound_shot = sounds[f"player_shot{self.num}"]
 
     def shot(self):
-        self.shot_cooldown = settings.SHOT_COOLDOWN
+        self.shot_cooldown.start()
         self.sound_shot.play()
         Bullet(self.rect.midtop, self.scene_groups["bullets"], self)
         if self.gun_upgraded:
@@ -44,7 +45,6 @@ class Player(Sprite):
 
     def update(self, dt):
         self.time += dt
-        self.shot_cooldown -= dt
 
         if self.dead:
             return
@@ -60,14 +60,12 @@ class Player(Sprite):
         else:
             self.image = self.images[0]
 
-        if self.shot_cooldown < 0:
-            self.shot_cooldown = 0
         keys = pygame.key.get_pressed()
         if (keys[self.keys.left] or keys[self.alt_keys.left]) and self.rect.left > 0:
             self.rect.x -= self.spd * dt
         if (keys[self.keys.right] or keys[self.alt_keys.right]) and self.rect.right < settings.SCREEN_WIDTH:
             self.rect.x += self.spd * dt
-        if (keys[self.keys.shot] or keys[self.alt_keys.shot]) and self.shot_cooldown == 0:
+        if (keys[self.keys.shot] or keys[self.alt_keys.shot]) and self.shot_cooldown():
             self.shot()
 
     def die(self):
