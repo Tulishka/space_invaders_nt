@@ -1,4 +1,5 @@
 import pygame
+from pygame import BLEND_ALPHA_SDL2
 
 
 def create_text_image(text, font_size=26, color="white") -> pygame.Surface:
@@ -28,6 +29,6 @@ def create_table(rows: list[tuple[str, int]], rect: pygame.Rect, sprite_group, s
 
 def darken_image(image: pygame.Surface, dark_koef: float) -> pygame.Surface:
     image = image.copy()
-    image.fill((int(255 * dark_koef),) * 3, rect=image.get_rect(), special_flags=pygame.BLEND_RGB_SUB)
+    image.fill((int(255*(1 -  dark_koef)),) * 3, rect=image.get_rect(), special_flags=pygame.BLEND_MULT)
     return image
 
