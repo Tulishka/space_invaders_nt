@@ -34,15 +34,15 @@ def main():
     scene_manager = SceneManager()
     screen = pygame.display.set_mode(settings.SCREEN_SIZE)
 
-    scene_manager.add_scene("menu", MenuScene)
-    scene_manager.add_scene("game", GameScene)
-    scene_manager.add_scene("defeat", DefeatScene)
-    scene_manager.add_scene("victory", VictoryScene)
-    scene_manager.add_scene("trailer", TrailerScene)
-    scene_manager.add_scene("boss", BossScene)
-    scene_manager.add_scene("scores", ScoresScene)
+    scene_manager.add_scene_class("menu", MenuScene)
+    scene_manager.add_scene_class("game", GameScene)
+    scene_manager.add_scene_class("defeat", DefeatScene)
+    scene_manager.add_scene_class("victory", VictoryScene)
+    scene_manager.add_scene_class("trailer", TrailerScene)
+    scene_manager.add_scene_class("boss", BossScene)
+    scene_manager.add_scene_class("scores", ScoresScene)
 
-    scene_manager.set_scene("menu")
+    scene_manager.push_scene("menu")
 
     run = True
     clock = pygame.time.Clock()

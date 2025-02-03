@@ -30,8 +30,6 @@ class GameOverScene(Scene):
         self.cursor_image = pygame.image.load('./img/cursor.png')
 
     def on_show(self, first_time):
-        self.scene_manager.kill_scene("game")
-        self.scene_manager.kill_scene("boss")
         self.time = 0
         self.back_image_top = settings.SCREEN_HEIGHT - self.back_image.get_height()
 
@@ -107,7 +105,7 @@ class GameOverScene(Scene):
         if self.time > settings.KEY_COOLDOWN and event.type == pygame.KEYDOWN and event.key in (
                 pygame.K_ESCAPE, pygame.K_SPACE, pygame.K_RETURN):
             self.save_results()
-            self.scene_manager.set_scene("menu")
+            self.scene_manager.pop_scene()
 
     def save_results(self):
         for i, ti in enumerate(self.name_input):

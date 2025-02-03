@@ -34,7 +34,7 @@ class DefeatScene(GameOverScene):
             0,
             (0, random.randint(30, 60))
         )
-        alien.images = [pg_utils.darken_image(img, 0.9) for img in alien.images]
+        alien.images = [pg_utils.darken_image(img, 0.7) for img in alien.images]
         alien.image = alien.images[0]
         alien.last_shot = 0
 

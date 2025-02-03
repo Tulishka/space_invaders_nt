@@ -1,4 +1,6 @@
 class Scene:
+    keep_alive = False
+
     def __init__(self, scene_manager, params=None):
         self.scene_manager = scene_manager
         self.params = {}

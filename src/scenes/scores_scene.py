@@ -70,15 +70,15 @@ class ScoresScene(Scene):
         self.accurate_shot_cd = Cooldown(self, 0.5, 0.3)
 
         ScoresScene.music_theme = db.get_var("music_theme") or ScoresScene.music_theme
-
+        self.music_theme_cd = Cooldown(self, 0.1)
 
     def on_show(self, first_time):
         super().on_show(first_time)
-        music.play(ScoresScene.music_theme, 1, 0)
+        self.music_theme_cd.start()
         self.alien_spawn_cd.start()
         self.alien_shot_cd.start()
         self.shot_cd.start(10)
-        self.accurate_shot_cd.start(20)
+        self.accurate_shot_cd.start(13)
 
     def draw(self, screen):
         screen.blit(self.back_image, (0, self.back_image_top))
@@ -100,12 +100,16 @@ class ScoresScene(Scene):
             0,
             (0, random.randint(30, 60))
         )
-        alien.images = [pg_utils.darken_image(img, 0.9) for img in alien.images]
+        alien.images = [pg_utils.darken_image(img, 0.75) for img in alien.images]
         alien.image = alien.images[0]
         alien.last_shot = 0
 
     def update(self, dt):
         super().update(dt)
+
+        if self.music_theme_cd:
+            music.play(ScoresScene.music_theme, 1, 0)
+            self.music_theme_cd.start(99999999)
 
         for group in self.scene_groups.values():
             group.update(dt)
@@ -160,7 +164,7 @@ class ScoresScene(Scene):
     def set_music_theme(self, theme_name):
         ScoresScene.music_theme = theme_name
         db.set_var("music_theme", theme_name)
-        self.on_show(0)
+        self.music_theme_cd.start()
 
     def exit(self):
-        self.scene_manager.set_scene("menu")
+        self.scene_manager.pop_scene()

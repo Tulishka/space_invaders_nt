@@ -18,7 +18,7 @@ class VictoryScene(GameOverScene):
         super().__init__(scene_manager, params)
         self.alien_spawn_cd = Cooldown(self, 1.4, 0.5)
         self.shot_cd = Cooldown(self, 1, 0.5)
-        self.accurate_shot_cd = Cooldown(self, 0.7, 0.3)
+        self.accurate_shot_cd = Cooldown(self, 0.5, 0.3)
         self.sounds = [sound.load(f"sound/fireworks{n + 1}.wav", 1 if n!=2 else 0.5) for n in range(5)]
 
     def on_show(self, first_time):
@@ -50,7 +50,7 @@ class VictoryScene(GameOverScene):
 
         if self.shot_cd:
             self.shot_cd.start()
-            x = random.randint(10, settings.SCREEN_WIDTH - 10)
+            x = random.randint(100, settings.SCREEN_WIDTH - 100)
             Bullet((x, settings.SCREEN_HEIGHT), self.scene_groups["bullets"], None)
         elif self.accurate_shot_cd:
             self.accurate_shot_cd.start()

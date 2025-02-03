@@ -76,8 +76,8 @@ class GameScene(Scene):
         # отладка
         self.undead_players = False
 
-    def on_kill(self):
-        stop_sound()
+    # def on_kill(self):
+    #     stop_sound()
 
     def create_swarm(self):
         return Swarm(self.level, self.scene_groups, self.scene_manager)
@@ -146,7 +146,7 @@ class GameScene(Scene):
             music.play("gameover")
 
         if self.gameover_time and self.gameover_time < self.time:
-            self.scene_manager.set_scene(
+            self.scene_manager.change_scene(
                 "defeat",
                 {
                     "text": "GAME OVER",
@@ -244,9 +244,7 @@ class GameScene(Scene):
         self.params["p2_pos"] = self.players[1 % self.num_players].rect.centerx
 
         self.params["lives"] = self.lives
-        self.scene_manager.kill_scene("game")
-        self.scene_manager.kill_scene("boss")
-        self.scene_manager.set_scene(next_scene, self.params)
+        self.scene_manager.change_scene(next_scene, self.params)
 
     def update(self, dt):
         if self.menu_opened:
@@ -308,8 +306,7 @@ class GameScene(Scene):
         return menu
 
     def game_exit(self):
-        self.scene_manager.kill_scene("game")
-        self.scene_manager.set_scene("menu")
+        self.scene_manager.pop_scene()
 
     def close_menu(self):
         self.menu_opened = False

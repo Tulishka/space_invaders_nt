@@ -1,4 +1,3 @@
-import os
 import random
 import sys
 from collections import defaultdict
@@ -14,6 +13,8 @@ from src.sound import play_sound
 
 
 class MenuScene(Scene):
+    keep_alive = True
+
     def __init__(self, scene_manager, params=None):
         super().__init__(scene_manager, params)
         font3 = pygame.font.Font(None, 40)
@@ -92,9 +93,7 @@ class MenuScene(Scene):
         self.menu.update(dt)
 
     def start_game(self, num_players, level=1):
-        self.scene_manager.kill_scene("trailer")
-        self.scene_manager.kill_scene("game")
-        self.scene_manager.set_scene("trailer", {
+        self.scene_manager.push_scene("trailer", {
             "num_players": num_players,
             "level": level,
             "lives": settings.PLAYER_START_LIVES,
@@ -113,7 +112,7 @@ class MenuScene(Scene):
             return
 
         if event.key == pygame.K_t:
-            self.scene_manager.set_scene("defeat", {
+            self.scene_manager.push_scene("defeat", {
                 "num_players": 2,
                 "score": 1000,
                 "p1_score": 500,
@@ -123,8 +122,7 @@ class MenuScene(Scene):
         elif event.key == pygame.K_5:
             self.start_game(1, 5)
         elif event.key == pygame.K_6:
-            self.scene_manager.kill_scene("boss")
-            self.scene_manager.set_scene("boss", {
+            self.scene_manager.push_scene("boss", {
                 "num_players": 1,
                 "level": 8,
                 "lives": settings.PLAYER_START_LIVES,
@@ -138,5 +136,5 @@ class MenuScene(Scene):
             return [float(i) for i in lines]
 
     def open_results(self):
-        self.scene_manager.kill_scene("scores")
-        self.scene_manager.set_scene("scores", {})
+        play_sound("menu_show")
+        self.scene_manager.push_scene("scores", {})

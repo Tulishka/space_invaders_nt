@@ -41,13 +41,12 @@ class TrailerScene(Scene):
                                 settings.SCREEN_HEIGHT // 2 - self.text.get_height() // 2))
 
     def run_game(self):
-        self.scene_manager.set_scene("game", self.params)
+        self.scene_manager.change_scene("game", self.params)
 
     def process_event(self, event):
         if event.type != pygame.KEYDOWN or self.time < settings.KEY_COOLDOWN:
             return
         if event.key == pygame.K_ESCAPE:
-            self.scene_manager.kill_scene("trailer")
-            self.scene_manager.set_scene("menu")
+            self.scene_manager.change_scene("menu")
 
         self.run_game()

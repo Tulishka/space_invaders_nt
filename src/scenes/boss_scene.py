@@ -19,7 +19,6 @@ class BossScene(GameScene):
 
     def on_hide(self):
         super().on_hide()
-        self.scene_manager.kill_scene("boss")
 
     def create_swarm(self):
         boss = BossAlien(
@@ -41,8 +40,7 @@ class BossScene(GameScene):
         self.params["num_players"] = self.num_players
         self.params["p1_score"] = self.player_score[0]
         self.params["p2_score"] = self.player_score[1]
-        self.scene_manager.kill_scene("boss")
-        self.scene_manager.set_scene("victory", self.params)
+        self.scene_manager.change_scene("victory", self.params)
 
     def update(self, dt):
         self.time += dt
