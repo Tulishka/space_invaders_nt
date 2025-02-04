@@ -28,6 +28,7 @@ class VictoryScene(GameOverScene):
         self.accurate_shot_cd.start()
         self.scene_groups["aliens"].empty()
         self.scene_groups["bullets"].empty()
+        self.scene_groups["particles"].empty()
         for i in range(4):
             self.add_alien(settings.SCREEN_HEIGHT + random.randint(10, 60))
 
@@ -68,8 +69,8 @@ class VictoryScene(GameOverScene):
         alien.image = alien.spawn_image
         alien.kill_time = alien.time + 0.1
         create_particle_explosion(
-            self.scene_groups["particles"], alien, 24, (2, 5),
-            50, (0, -50), 2
+            self.scene_groups["particles"], alien, 64, (1, 4),
+            75, (0, -alien.spd), 2
         )
 
     def update_params(self, params):

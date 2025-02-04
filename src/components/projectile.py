@@ -43,4 +43,4 @@ class Beam(Projectile):
 
 class DarkBomb(Bomb):
     def after_init(self):
-        self.image = pg_utils.darken_image(self.image, 0.8)
+        self.image = pg_utils.darken_image(self.image, 0.5)

@@ -22,8 +22,9 @@ class ScoresScene(Scene):
     def __init__(self, scene_manager, params=None):
 
         self.scene_groups = defaultdict(pygame.sprite.Group)
-        self.scene_groups["aliens"].empty()
         self.scene_groups["bombs"].empty()
+        self.scene_groups["aliens"].empty()
+        self.scene_groups["particles"].empty()
         self.scene_groups["bullets"].empty()
         self.scene_groups["table"].empty()
         self.scene_groups["logo"].empty()
@@ -42,31 +43,40 @@ class ScoresScene(Scene):
         tab_rect = pygame.Rect(settings.SCREEN_WIDTH // 2 - table_width // 2, 300,
                                table_width, settings.SCREEN_HEIGHT - 400)
 
-        logo = create_text_sprite(self.scene_groups["logo"], f"SPACE INVADERS", font_size=60, color="yellow")
+        logo = create_text_sprite(self.scene_groups["logo"], "SPACE INVADERS", font_size=60, color="yellow")
         logo.rect.center = (settings.SCREEN_WIDTH // 2, 100)
 
-        label = create_text_sprite(self.scene_groups["logo"], f"НОВАЯ УГРОЗА", font_size=40)
+        label = create_text_sprite(self.scene_groups["logo"], "НОВАЯ УГРОЗА", font_size=40)
         label.rect.midtop = settings.SCREEN_WIDTH // 2, logo.rect.bottom
 
-        text1 = create_text_sprite(self.scene_groups["logo"], f"ТОП-10", font_size=32, color="green")
-        text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 80
+        if results:
+            text1 = create_text_sprite(self.scene_groups["logo"], "ТОП-10", font_size=32, color="green")
+            text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 80
 
-        create_table(results, tab_rect, self.scene_groups["table"], spacing=8)
+            create_table(results, tab_rect, self.scene_groups["table"], spacing=8)
+        else:
+            no_results = create_text_sprite(self.scene_groups["logo"], "пока нет результатов игр", font_size=28,
+                                            color="white")
+            no_results.rect.midtop = tab_rect.midtop
 
         self.menu = Menu()
         self.menu.top = settings.SCREEN_HEIGHT - 180
         self.menu.no_back = True
         ImageMenuItem(self.menu, create_text_image("саундтреки созданные в рамках проекта", font_size=26, color="cyan"))
-        self.menu.selected = ImageMenuItem(self.menu,
-                                           create_text_image("Вторжение пришельцев (rus)", font_size=28, color="green"),
-                                           partial(self.set_music_theme, "ost_rus"))
-        ImageMenuItem(self.menu, create_text_image("Space Invaders (eng)", font_size=28, color="green"),
-                      partial(self.set_music_theme, "ost_eng"))
+        self.menu.selected = ImageMenuItem(
+            self.menu,
+            create_text_image("Вторжение пришельцев (rus)", font_size=28, color="green"),
+            partial(self.set_music_theme, "ost_rus")
+        )
+        ImageMenuItem(
+            self.menu, create_text_image("Space Invasion (eng)", font_size=28, color="green"),
+            partial(self.set_music_theme, "ost_eng")
+        )
         ImageMenuItem(self.menu, create_text_image("выход", font_size=28, color="green"), self.exit)
 
-        self.alien_spawn_cd = Cooldown(self, 0.7, 0.3)
+        self.alien_spawn_cd = Cooldown(self, 0.5, 0.2)
         self.alien_shot_cd = Cooldown(self, 0.8, 0.2)
-        self.shot_cd = Cooldown(self, 0.5, 0.3)
+        self.shot_cd = Cooldown(self, 0.3, 0.2)
         self.accurate_shot_cd = Cooldown(self, 0.5, 0.3)
 
         ScoresScene.music_theme = db.get_var("music_theme") or ScoresScene.music_theme
@@ -126,7 +136,7 @@ class ScoresScene(Scene):
                     sh.append((alien.last_shot, alien))
             if sh:
                 alien = sorted(sh, key=lambda x: x[0])[0][1]
-                DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], 2, 0.3)
+                DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], alien.type, 0.3)
                 alien.last_shot = self.time
 
         if self.shot_cd:
@@ -148,8 +158,8 @@ class ScoresScene(Scene):
         alien.image = alien.spawn_image
         alien.kill_time = alien.time + 0.1
         create_particle_explosion(
-            self.scene_groups["particles"], alien, 12, (2, 5),
-            50, (0, 0), 1.5
+            self.scene_groups["particles"], alien, 24, (2, 5),
+            50, (0, alien.spd), 1.5
         )
 
     def process_event(self, event):

@@ -12,7 +12,7 @@ class MinionAlien(Alien):
 
     def __init__(self, scene_groups, pos, type_, column, move_target_x):
         super().__init__(scene_groups, pos, type_, column, 0.2, size=0.5)
-        self.shot_cooldown = Cooldown(self, settings.MINION_BASE_SHOT_COOLDOWN, 1)
+        self.shot_cooldown = Cooldown(self, settings.MINION_BASE_SHOT_COOLDOWN, 1, started=True)
         self.retarget_cooldown = Cooldown(self, 4.5, 3)
         self.set_target(move_target_x)
         self.radius = randint(36, 80)

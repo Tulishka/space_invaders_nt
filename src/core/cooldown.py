@@ -9,7 +9,7 @@ class Cooldown:
         :param interval: время "остывания" в сек
         """
         self.random_delta = random_delta
-        self._start_time = parent.time - 99999 * (not started)
+        self._start_time = parent.time + 99999 * (not started)
         self.interval = interval
         self.parent = parent
         if not hasattr(self.parent, "time"):

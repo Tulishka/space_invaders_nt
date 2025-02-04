@@ -27,10 +27,12 @@ class Particle(Sprite):
 
         self.spd.y += self.gravity * dt
         self.pos += self.spd * dt
+        self.spd *= 0.99
         self.rect.center = self.pos
 
 
-def create_particle_explosion(group, target, num_particles, size_range, initial_spd, add_spd=(0, 0), life_time_mult=1):
+def create_particle_explosion(group, target, num_particles, size_range, initial_spd, add_spd=(0, 0), life_time_mult=1,
+                              spawn_area_size=(0, 0)):
     image = target.image
     rect = image.get_rect(center=target.rect.center)
 
@@ -38,8 +40,12 @@ def create_particle_explosion(group, target, num_particles, size_range, initial_
         size = random.randint(*size_range)
         particle_img = pygame.Surface((size, size), pygame.SRCALPHA)
 
-        x = random.randint(0, max(0, rect.width - size))
-        y = random.randint(0, max(0, rect.height - size))
+        if spawn_area_size != (0, 0):
+            x = rect.width // 2 + random.randint(0, spawn_area_size[0]) - spawn_area_size[0] // 2
+            y = rect.height // 2 + random.randint(0, spawn_area_size[1]) - spawn_area_size[1] // 2
+        else:
+            x = random.randint(0, max(0, rect.width - size))
+            y = random.randint(0, max(0, rect.height - size))
         area = pygame.Rect(x, y, size, size)
         particle_img.blit(image, (0, 0), area)
 
@@ -54,7 +60,7 @@ def create_particle_explosion(group, target, num_particles, size_range, initial_
         Particle(
             sprite_group=group,
             image=particle_img,
-            pos=(rect.left+x, rect.top+y),
+            pos=(rect.left + x, rect.top + y),
             spd=spd,
             lifetime=lifetime,
             gravity=98

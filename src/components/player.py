@@ -28,7 +28,7 @@ class Player(Sprite):
         self.scene_manager = scene_manager
         self.keys = settings.PLAYER_KEYS[self.num]
         self.alt_keys = settings.PLAYER_KEYS[self.num]
-        self.shot_cooldown = Cooldown(self, settings.SHOT_COOLDOWN)
+        self.shot_cooldown = Cooldown(self, settings.SHOT_COOLDOWN, started=True)
         self.dead = False
         self.stasis = 0
         self.gun_upgraded = 0

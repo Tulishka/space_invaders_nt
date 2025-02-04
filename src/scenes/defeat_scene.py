@@ -21,10 +21,8 @@ class DefeatScene(GameOverScene):
         super().on_show(first_time)
         self.alien_spawn_cd.start()
         self.alien_shot_cd.start()
-        self.scene_groups["aliens"].empty()
         self.scene_groups["bombs"].empty()
-        for i in range(4):
-            self.add_alien(random.randint(-80, 0))
+        self.scene_groups["aliens"].empty()
 
     def add_alien(self, y):
         alien = SceneAlien(
@@ -52,7 +50,7 @@ class DefeatScene(GameOverScene):
                     sh.append((alien.last_shot, alien))
             if sh:
                 alien = sorted(sh, key=lambda x: x[0])[0][1]
-                DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], 2, 0.3)
+                DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], alien.type, 0.3)
                 alien.last_shot = self.time
 
 
