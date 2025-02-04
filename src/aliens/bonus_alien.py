@@ -3,7 +3,9 @@ from .alien import Alien
 
 
 class BonusAlien(Alien):
-    def __init__(self, pos, spd, scene_groups, kill_x):
+    """Класс бонусного пришельца"""
+
+    def __init__(self, pos , spd, scene_groups, kill_x):
         super().__init__(scene_groups, pos, settings.BONUS_ALIEN_TYPE, -1)
         self.spd = spd
         self.kill_x = kill_x

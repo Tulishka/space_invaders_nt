@@ -102,7 +102,7 @@ class GameOverScene(Scene):
             if text.process_event(event):
                 return
 
-        if self.time > settings.KEY_COOLDOWN and event.type == pygame.KEYDOWN and event.key in (
+        if self.time > settings.SCENE_KEY_COOLDOWN and event.type == pygame.KEYDOWN and event.key in (
                 pygame.K_ESCAPE, pygame.K_SPACE, pygame.K_RETURN):
             self.save_results()
             self.scene_manager.pop_scene()

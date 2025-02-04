@@ -8,12 +8,12 @@ class Cooldown:
         :param parent: Объект - содержит свойство time float в секундах
         :param interval: время "остывания" в сек
         """
+        if not hasattr(parent, "time"):
+            raise TypeError("parent должен содержать свойство 'time'")
         self.random_delta = random_delta
         self._start_time = parent.time + 99999 * (not started)
         self.interval = interval
         self.parent = parent
-        if not hasattr(self.parent, "time"):
-            raise TypeError("parent должен содержать свойство 'time'")
 
     def reset(self):
         """ Сброс процесса остывания """
@@ -26,7 +26,7 @@ class Cooldown:
         """ Остывание завершено? """
         return self._start_time + self.interval < self.parent.time
 
-    def get_progress(self):
+    def get_progress(self) -> float:
         """ Прогресс остывание - число от 0 до 1 """
         if self.interval == 0:
             return 1

@@ -127,7 +127,7 @@ class MenuScene(Scene):
                 "level": 8,
                 "lives": settings.PLAYER_START_LIVES,
             })
-        elif self.time > settings.KEY_COOLDOWN and event.key == pygame.K_ESCAPE:
+        elif self.time > settings.SCENE_KEY_COOLDOWN and event.key == pygame.K_ESCAPE:
             return "exit"
 
     def load_markers(self, filename):

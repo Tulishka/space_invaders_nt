@@ -7,7 +7,7 @@ import pygame
 from src import settings, music
 from src.aliens import SceneAlien
 from src.components.particles import create_particle_explosion
-from src.components.projectile import DarkBomb, Bullet
+from src.components.projectile import Bomb, Bullet
 from src.components.projectile_utils import collide_bullets
 from src.core import db, pg_utils
 from src.core.cooldown import Cooldown
@@ -136,7 +136,8 @@ class ScoresScene(Scene):
                     sh.append((alien.last_shot, alien))
             if sh:
                 alien = sorted(sh, key=lambda x: x[0])[0][1]
-                DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], alien.type, 0.3)
+                b = Bomb(alien.rect.midbottom, self.scene_groups["bombs"], alien.type, 0.3)
+                b.image = pg_utils.darken_image(b.image, 0.5)
                 alien.last_shot = self.time
 
         if self.shot_cd:
@@ -167,7 +168,7 @@ class ScoresScene(Scene):
         if self.menu.process_event(event):
             return
 
-        if self.time > settings.KEY_COOLDOWN and event.type == pygame.KEYDOWN and event.key in (
+        if self.time > settings.SCENE_KEY_COOLDOWN and event.type == pygame.KEYDOWN and event.key in (
                 pygame.K_ESCAPE, pygame.K_SPACE, pygame.K_RETURN):
             self.exit()
 

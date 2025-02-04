@@ -2,10 +2,11 @@ import pygame
 from pygame.sprite import Sprite
 
 from src import settings
-from src.core import pg_utils
 
 
 class Projectile(Sprite):
+    """Базовый класс для снарядов"""
+
     def __init__(self, pos: tuple, img_name, spd, sprite_group):
         super().__init__(sprite_group)
         self.image = pygame.image.load(f'./img/{img_name}.png')
@@ -19,6 +20,8 @@ class Projectile(Sprite):
 
 
 class Bullet(Projectile):
+    """Снаряд выпускаемый игроком"""
+
     BULLET_SPEED = -1000
 
     def __init__(self, pos: tuple, sprite_group, player):
@@ -27,20 +30,16 @@ class Bullet(Projectile):
 
 
 class Bomb(Projectile):
+    """Снаряд выпускаемый пришельцем"""
+
     BULLET_SPEED = 300
     MAX_BULLET_SPEED = 1200
 
     def __init__(self, pos: tuple, sprite_group, alient_type, spd_scale=1):
-        super().__init__(pos, f'bomb{alient_type}', min(self.MAX_BULLET_SPEED, (self.BULLET_SPEED + 110 * alient_type) * spd_scale), sprite_group)
-        self.after_init()
-
-    def after_init(self):
-        pass
+        super().__init__(pos, f'bomb{alient_type}',
+                         min(self.MAX_BULLET_SPEED, (self.BULLET_SPEED + 110 * alient_type) * spd_scale), sprite_group)
 
 
 class Beam(Projectile):
+    """Класс для реализации энергетического луча"""
     pass
-
-class DarkBomb(Bomb):
-    def after_init(self):
-        self.image = pg_utils.darken_image(self.image, 0.5)

@@ -3,20 +3,27 @@ import random
 import pygame
 
 from src import music, settings
-from src.aliens import BonusAlien
+from src.aliens import BonusAlien, Alien
 from src.components.particles import create_particle_explosion
 from src.components.player import Player
 from src.components.projectile_utils import collide_bullets, collide_bombs
-from src.components.swarm import Swarm
+from src.aliens.swarm import Swarm
 from src.core.scene import Scene
+from src.core.scene_manager import SceneManager
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
 from src.sound import play_sound, stop_sound
 
 
 class GameScene(Scene):
+    """Класс, который реализует основной игровой процесс - сцену уровня"""
+
     GAME_OVER_DELAY = 7
 
-    def __init__(self, scene_manager, params):
+    def __init__(self, scene_manager: SceneManager, params: dict):
+        """
+        :param scene_manager: Менеджер сцен
+        :param params: Параметры сцены
+        """
         super().__init__(scene_manager, params)
         self.lives = self.params.get("lives", settings.PLAYER_START_LIVES)
         self.score = self.params.get("score", 0)
@@ -41,15 +48,14 @@ class GameScene(Scene):
 
         self.num_players = self.params.get("num_players", 1)
 
-        self.live_img = pygame.image.load("img/life.png")
+        self.life_img = pygame.image.load("img/life.png")
         self.back_image = pygame.image.load("img/game_back.jpg")
         self.back_image_top = settings.SCREEN_HEIGHT - self.back_image.get_height()
 
         self.font_obj = pygame.font.Font(None, 30)
-        self.text_score = [self.render_score_text(idx) for idx in range(self.num_players)]
-        self.text_lvl = self.font_obj.render(f"Ур: {self.level}", True, "yellow")
+        self.player_score_img = [self.render_score_image(idx) for idx in range(self.num_players)]
+        self.current_level_img = self.font_obj.render(f"Ур: {self.level}", True, "yellow")
 
-        self.time = 0
         self.gameover_time = 0
         self.next_level_time = 0
 
@@ -61,6 +67,7 @@ class GameScene(Scene):
         if self.num_players == 1:
             player.alt_keys = settings.PLAYER_KEYS[2]
 
+        # Переменные для отрисовки попадания в игрока (красный экран)
         self.wound = 0
         self.wound_image = None
         self.wound_image_alpha = 0
@@ -71,33 +78,39 @@ class GameScene(Scene):
 
         self.menu_opened = False
         self.menu = self.create_menu()
-        self.menu_dt_slowing = 0
+        self.menu_dt_slowing = 0  # Параметр замедления времени, при открытом меню
 
         # отладка
         self.undead_players = False
 
-    # def on_kill(self):
-    #     stop_sound()
-
     def create_swarm(self):
+        """Создает рой
+        :return None:
+        """
         return Swarm(self.level, self.scene_groups, self.scene_manager)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
+        """Отрисовка уровня
+        :param screen: Поверхность на которой рисовать
+        :return bool:
+        """
         screen.blit(self.back_image, (0, self.back_image_top))
 
         for group in self.scene_groups.values():
             group.draw(screen)
 
-        sx = (5 + self.text_score[0].get_width(), settings.SCREEN_WIDTH - 5)
+        # отрисовка счета игроков
+        sx = (5 + self.player_score_img[0].get_width(), settings.SCREEN_WIDTH - 5)
         for idx in range(self.num_players):
-            screen.blit(self.text_score[idx], (sx[idx] - self.text_score[idx].get_width(), 10))
+            screen.blit(self.player_score_img[idx], (sx[idx] - self.player_score_img[idx].get_width(), 10))
 
-        screen.blit(self.text_lvl, (settings.SCREEN_WIDTH // 2 - self.text_lvl.get_width() // 2, 10))
+        screen.blit(self.current_level_img, (settings.SCREEN_WIDTH // 2 - self.current_level_img.get_width() // 2, 10))
 
+        # отрисовка жизней игрока
         x, y = 180, 5
         for i in range(self.lives):
-            screen.blit(self.live_img, (x, y))
-            x += self.live_img.get_width() + 7
+            screen.blit(self.life_img, (x, y))
+            x += self.life_img.get_width() + 7
 
         if self.wound:
             new_alpha = round(self.wound * 200)
@@ -114,16 +127,28 @@ class GameScene(Scene):
             self.menu.draw(screen)
             return True
 
-    def update_projectiles(self, dt):
+    def update_projectiles(self, dt: float):
+        """Обновление состояния снарядов
+        :param dt: Время с прошлого выполнения этой функции
+        :return None:
+        """
         self.scene_groups["bombs"].update(dt)
         self.scene_groups["bullets"].update(dt)
         collide_bullets(self.scene_groups, self.hit_alien)
         collide_bombs(self.scene_groups, self.hit_player)
 
-    def swarm_crash_player(self, player):
+    def swarm_crash_player(self, player: Player):
+        """Проверка столкновения роя с игроком
+        :param player: игрок
+        :return bool:
+        """
         return self.swarm.max_y > player.rect.y
 
-    def update_players(self, dt):
+    def update_players(self, dt: float):
+        """Обновление состояния игроков
+        :param dt: Время с прошлого выполнения этой функции
+        :return None:
+        """
         count = 0
         self.scene_groups["players"].update(dt)
 
@@ -157,7 +182,12 @@ class GameScene(Scene):
                 }
             )
 
-    def hit_player(self, player, minus_lives=1):
+    def hit_player(self, player: Player, minus_lives: int = 1):
+        """Обработка получения урона игроком
+        :param player: Игрок
+        :param minus_lives: Количество потерянных жизней
+        :return None:
+        """
         if self.undead_players:
             return
 
@@ -177,7 +207,12 @@ class GameScene(Scene):
             (0, -50)
         )
 
-    def hit_alien(self, alien, player):
+    def hit_alien(self, alien: Alien, player: Player):
+        """Обработка получения урона пришельцем
+        :param alien: Пришелец получивший урон
+        :param player: Игрок нанёсший урон
+        :return None:
+        """
         if alien.hit():
             if alien.is_dead():
                 particles = settings.PARTICLES_KILL_COUNT.get(type(alien).__name__, 12)
@@ -195,14 +230,21 @@ class GameScene(Scene):
                 points = settings.ALIENS_REWARD[alien.type]
                 self.score += points
                 self.player_score[player.num - 1] += points
-                self.text_score[player.num - 1] = self.render_score_text(player.num - 1)
+                self.player_score_img[player.num - 1] = self.render_score_image(player.num - 1)
                 if alien.type == settings.BONUS_ALIEN_TYPE:
                     player.upgrade_gun()
 
     def bonus_ship_should_arrive(self):
+        """Определяет, должен ли появится бонусный пришелец
+        :return bool:
+        """
         return self.swarm.min_y > settings.SCREEN_HEIGHT // 5
 
-    def update_swarm(self, dt):
+    def update_swarm(self, dt: float):
+        """Обновление роя
+        :param dt: Время с прошлого выполнения этой функции
+        :return None:
+        """
         self.swarm.update(dt)
 
         if not self.bonus_ship and self.bonus_ship_should_arrive():
@@ -219,14 +261,20 @@ class GameScene(Scene):
             play_sound(f"bonus_alien_{'lr' if spd > 0 else 'rl'}")
 
     def check_next_level(self):
+        """Проверяет условие перехода на следующий уровень
+        :return None:
+        """
         if self.next_level_time == 0 and len(self.scene_groups["aliens"]) == 0:
             self.next_level_time = self.time + 2
             music.play("next_level")
 
-        if not self.gameover_time and self.next_level_time and self.next_level_time < self.time:
+        if self.gameover_time == 0 and self.next_level_time and self.next_level_time < self.time:
             self.go_next_level()
 
     def go_next_level(self):
+        """Переходит на новый уровень
+        :return None:
+        """
         if self.level + 1 >= len(settings.level):
             next_scene = "boss"
             bonus_for_no_dead = 100 * (self.lives == 3)
@@ -246,7 +294,11 @@ class GameScene(Scene):
         self.params["lives"] = self.lives
         self.scene_manager.change_scene(next_scene, self.params)
 
-    def update(self, dt):
+    def update(self, dt: float):
+        """Запускает обновление всех составляющих сцены
+        :param dt: Время с прошлого выполнения этой функции
+        :return:
+        """
         if self.menu_opened:
             self.menu.update(dt)
             self.menu_dt_slowing *= 0.95
@@ -263,6 +315,10 @@ class GameScene(Scene):
         self.scene_groups["particles"].update(dt)
 
     def process_event(self, event):
+        """Обработка событий
+        :param event: pygame событие
+        :return None:
+        """
 
         if self.menu_opened:
             self.menu.process_event(event)
@@ -286,6 +342,9 @@ class GameScene(Scene):
                 player.upgrade_gun()
 
     def create_menu(self):
+        """Создание внутри-игрового меню
+        :return Menu:
+        """
         menu = Menu()
         font1 = pygame.font.Font(None, 60)
         font3 = pygame.font.Font(None, 40)
@@ -306,19 +365,32 @@ class GameScene(Scene):
         return menu
 
     def game_exit(self):
+        """Обработчик нажатия кнопки выход
+        :return None:
+        """
         self.scene_manager.pop_scene()
 
     def close_menu(self):
+        """Обработчик закрытия меню
+        :return None:
+        """
         self.menu_opened = False
         self.menu_dt_slowing = 0
 
     def open_menu(self):
+        """Обработчик открытия меню
+        :return:
+        """
         stop_sound()
         play_sound("menu_show")
         self.menu_opened = True
         self.menu_dt_slowing = 1
 
-    def render_score_text(self, player_idx):
+    def render_score_image(self, player_idx: int):
+        """Отрисовка картинки со счётом игрока
+        :param player_idx: Индекс игрока
+        :return pygame.Surface:
+        """
         return self.font_obj.render(
             f"{player_idx + 1}P: {self.player_score[player_idx]}",
             True,

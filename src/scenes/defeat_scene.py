@@ -2,7 +2,7 @@ import random
 
 from src import settings
 from src.aliens import SceneAlien
-from src.components.projectile import DarkBomb
+from src.components.projectile import Bomb
 from src.core import pg_utils
 from src.core.cooldown import Cooldown
 from src.scenes.gameover_scene import GameOverScene
@@ -50,9 +50,9 @@ class DefeatScene(GameOverScene):
                     sh.append((alien.last_shot, alien))
             if sh:
                 alien = sorted(sh, key=lambda x: x[0])[0][1]
-                DarkBomb(alien.rect.midbottom, self.scene_groups["bombs"], alien.type, 0.3)
+                b = Bomb(alien.rect.midbottom, self.scene_groups["bombs"], alien.type, 0.3)
+                b.image = pg_utils.darken_image(b.image, 0.5)
                 alien.last_shot = self.time
-
 
     def update_params(self, params):
         self.scene_groups["bombs"].empty()

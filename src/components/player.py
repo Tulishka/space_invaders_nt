@@ -9,8 +9,15 @@ from src.sound import sounds, play_sound
 
 
 class Player(Sprite):
+    """Класс реализует игрока"""
 
-    def __init__(self, num: int, scene_groups, scene_manager: SceneManager, start_x: int):
+    def __init__(self, num: int, scene_groups: dict, scene_manager: SceneManager, start_x: int):
+        """
+        :param num: Номер игрока (1 или 2)
+        :param scene_groups: Группы спрайтов
+        :param scene_manager: Менеджер сцен
+        :param start_x: Стартовая координата x
+        """
         super().__init__(scene_groups["players"])
         self.scene_groups = scene_groups
         self.num = num
@@ -28,7 +35,7 @@ class Player(Sprite):
         self.scene_manager = scene_manager
         self.keys = settings.PLAYER_KEYS[self.num]
         self.alt_keys = settings.PLAYER_KEYS[self.num]
-        self.shot_cooldown = Cooldown(self, settings.SHOT_COOLDOWN, started=True)
+        self.shot_cooldown = Cooldown(self, settings.PLAYER_SHOT_COOLDOWN, started=True)
         self.dead = False
         self.stasis = 0
         self.gun_upgraded = 0
@@ -36,14 +43,20 @@ class Player(Sprite):
         self.sound_shot = sounds[f"player_shot{self.num}"]
 
     def shot(self):
-        self.shot_cooldown.start()
+        """Обработчик выстрела игрока
+        :return None:
+        """
         self.sound_shot.play()
         Bullet(self.rect.midtop, self.scene_groups["bullets"], self)
         if self.gun_upgraded:
             Bullet(self.rect.topleft, self.scene_groups["bullets"], self)
             Bullet(self.rect.topright, self.scene_groups["bullets"], self)
 
-    def update(self, dt):
+    def update(self, dt: float):
+        """Обновление состояния игрока
+        :param dt: Время с прошлого выполнения
+        :return None:
+        """
         self.time += dt
 
         if self.dead:
@@ -67,18 +80,29 @@ class Player(Sprite):
             self.rect.x += self.spd * dt
         if (keys[self.keys.shot] or keys[self.alt_keys.shot]) and self.shot_cooldown():
             self.shot()
+            self.shot_cooldown.start()
 
     def die(self):
+        """Метод убивает игрока
+        :return None:
+        """
         if not self.dead:
             self.image = self.kill_image
             self.dead = True
             play_sound("player_dead")
 
     def do_stasis(self):
+        """Включает состояние неуязвимости на settings.PLAYER_STASIS_TIME сек.
+        Сбрасывает апгрейд пушек
+        :return None:
+        """
         self.stasis = settings.PLAYER_STASIS_TIME
         self.gun_upgraded = 0
         play_sound("player_stasis")
 
     def upgrade_gun(self):
+        """Апгрейдит пушки игрока на settings.PLAYER_UPGRADE_TIME сек.
+        :return None:
+        """
         self.gun_upgraded = settings.PLAYER_UPGRADE_TIME
         play_sound("upgrade_gun")
