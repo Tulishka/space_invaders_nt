@@ -9,11 +9,11 @@ from src.aliens import SceneAlien
 from src.components.particles import create_particle_explosion
 from src.components.projectile import Bomb, Bullet
 from src.components.projectile_utils import collide_bullets
-from src.core import db, pg_utils
+from src.core import db, pg_utils, web_results
 from src.core.cooldown import Cooldown
 from src.core.pg_utils import create_text_sprite, create_table, create_text_image
 from src.core.scene import Scene
-from src.menu import Menu, ImageMenuItem
+from src.menu import Menu, ImageMenuItem, MarginMenuItem
 
 
 class ScoresScene(Scene):
@@ -40,7 +40,7 @@ class ScoresScene(Scene):
 
         table_width = 550
 
-        tab_rect = pygame.Rect(settings.SCREEN_WIDTH // 2 - table_width // 2, 300,
+        tab_rect = pygame.Rect(settings.SCREEN_WIDTH // 2 - table_width // 2, 260,
                                table_width, settings.SCREEN_HEIGHT - 400)
 
         logo = create_text_sprite(self.scene_groups["logo"], "SPACE INVADERS", font_size=60, color="yellow")
@@ -51,7 +51,7 @@ class ScoresScene(Scene):
 
         if results:
             text1 = create_text_sprite(self.scene_groups["logo"], "ТОП-10", font_size=32, color="green")
-            text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 80
+            text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 40
 
             create_table(results, tab_rect, self.scene_groups["table"], spacing=8)
         else:
@@ -60,10 +60,18 @@ class ScoresScene(Scene):
             no_results.rect.midtop = tab_rect.midtop
 
         self.menu = Menu()
-        self.menu.top = settings.SCREEN_HEIGHT - 180
+        self.menu.spacing = 12
+        self.menu.top = settings.SCREEN_HEIGHT - 220
         self.menu.no_back = True
-        ImageMenuItem(self.menu, create_text_image("саундтреки созданные в рамках проекта", font_size=26, color="cyan"))
         self.menu.selected = ImageMenuItem(
+            self.menu, create_text_image(
+                "ОТКРЫТЬ МИРОВЫЕ РЕКОРДЫ", font_size=26,
+                color=(200, 200, 255)
+            ),
+            action=web_results.open_world_records)
+        MarginMenuItem(self.menu, 2)
+        ImageMenuItem(self.menu, create_text_image("саундтрек написанный для игры", font_size=26, color="gray"))
+        ImageMenuItem(
             self.menu,
             create_text_image("Вторжение пришельцев (rus)", font_size=28, color="green"),
             partial(self.set_music_theme, "ost_rus")
@@ -72,7 +80,8 @@ class ScoresScene(Scene):
             self.menu, create_text_image("Space Invasion (eng)", font_size=28, color="green"),
             partial(self.set_music_theme, "ost_eng")
         )
-        ImageMenuItem(self.menu, create_text_image("выход", font_size=28, color="green"), self.exit)
+        MarginMenuItem(self.menu, 0)
+        ImageMenuItem(self.menu, create_text_image("ВЫХОД", font_size=28, color=(200, 200, 255)), self.exit)
 
         self.alien_spawn_cd = Cooldown(self, 0.5, 0.2)
         self.alien_shot_cd = Cooldown(self, 0.8, 0.2)

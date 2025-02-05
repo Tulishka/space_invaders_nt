@@ -4,13 +4,12 @@ import pygame
 
 from src import settings
 from src.components.text_input import InputText
-from src.core import db
+from src.core import db, web_results
 from src.core.pg_utils import create_text_sprite
 from src.core.scene import Scene
 
 
 class GameOverScene(Scene):
-
     title = "GAME OVER"
     title_color = (255, 255, 255)
 
@@ -115,4 +114,9 @@ class GameOverScene(Scene):
         db.add_game_result(
             self.num_players,
             *((self.player_names[idx], self.scores[idx]) for idx in range(self.num_players))
+        )
+        web_results.send_world_record(
+            ", ".join(sorted(self.player_names[:self.num_players])),
+            sum(self.scores),
+            "👑" if type(self).__name__ == "VictoryScene" else "💀"
         )
