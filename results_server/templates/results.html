@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Space Invaders: новая угроза</h1>
+        <h4 class="text-center mb-4">ЛУЧШИЕ ИГРОКИ</h4>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th class="text-start" style="max-width: 40px" >№</th>
+                <th class="text-start">ИМЯ ИГРОКА</th>
+                <th class="text-end">СЧЁТ</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in results %}
+            <tr class="{{ 'table-success' if result.hl else '' }}">
+                <td class="text-start" style="max-width: 40px">{{ result.position }}</td>
+                <td class="text-start">{{ result.player_name }}</td>
+                <td class="text-end">{{ result.score }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
