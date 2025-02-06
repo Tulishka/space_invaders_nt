@@ -132,7 +132,6 @@ class AlienLaserArm(Alien):
             self.spawn_image = pygame.transform.flip(self.spawn_image, True, False)
             self.image = self.images[0]
         self.left_side = left_side
-        self.extended = 0
         self.extend_range = 13
         self.parent = None
         self.type = 8

@@ -13,8 +13,7 @@ class AcolyteAlien(HpAlienMixin, Alien):
         self.warp_y = -200
         self.spd = 100
         self.direction = direction
-        self.boost_spd = 0
-        self.protect_cooldown = 1.3
+        self.protect_interval = 1.3
         self.give_shield_cooldown = 4
         self.animation_spd = 4
         self.set_rect_xy(self.x, self.y + self.warp_y)
@@ -24,7 +23,7 @@ class AcolyteAlien(HpAlienMixin, Alien):
     def protect_minions(self, dt):
         self.give_shield_cooldown -= dt
         if self.give_shield_cooldown <= 0:
-            self.give_shield_cooldown = self.protect_cooldown
+            self.give_shield_cooldown = self.protect_interval
 
             minions = [alien for alien in self.scene_groups["aliens"] if
                        not alien.is_dead() and not alien.has_shield() and alien.type in self.protect_alien_types]

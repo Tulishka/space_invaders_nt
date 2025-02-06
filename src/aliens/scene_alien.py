@@ -14,10 +14,6 @@ class SceneAlien(Alien):
         self.direction = Vector2(spd).normalize()
         self.warp_spd = warp_spd
         self.animation_spd = 6 if type_ == 4 else 2
-        self.after_init()
-
-    def after_init(self):
-        pass
 
     def update(self, dt):
         super().update(dt)

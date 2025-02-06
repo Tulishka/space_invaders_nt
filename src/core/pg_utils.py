@@ -14,8 +14,13 @@ def create_text_sprite(sprite_group, text, pos=(10, 10), font_size=26, color="wh
     return sprite
 
 
-def create_table(rows: list[tuple[str, int]], rect: pygame.Rect, sprite_group, spacing=6,
-                 font_size=28) -> list:
+def create_table(
+        rows: list[tuple[str, int]],
+        rect: pygame.Rect,
+        sprite_group,
+        spacing=6,
+        font_size=28
+) -> list:
     top = rect.top
     for idx, (col1, col2, *rem) in enumerate(rows):
         num = create_text_sprite(sprite_group, f"{idx + 1: >3}.", font_size=font_size, color="grey")
@@ -29,6 +34,5 @@ def create_table(rows: list[tuple[str, int]], rect: pygame.Rect, sprite_group, s
 
 def darken_image(image: pygame.Surface, dark_koef: float) -> pygame.Surface:
     image = image.copy()
-    image.fill((int(255*(1 -  dark_koef)),) * 3, rect=image.get_rect(), special_flags=pygame.BLEND_MULT)
+    image.fill((int(255 * (1 - dark_koef)),) * 3, rect=image.get_rect(), special_flags=pygame.BLEND_MULT)
     return image
-

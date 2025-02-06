@@ -42,13 +42,6 @@ class BossScene(GameScene):
         self.params["p2_score"] = self.player_score[1]
         self.scene_manager.change_scene("victory", self.params)
 
-    def update(self, dt):
-        self.time += dt
-        super().update(dt)
-        if self.time > 30 and not self.music_on and self.gameover_time == 0:
-            self.music_on = True
-            # music.play("boss", 10, 1.5)
-
     def draw(self, screen):
         if super().draw(screen):
             return True
