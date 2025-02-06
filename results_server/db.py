@@ -5,6 +5,7 @@ DB_FILENAME = "space_invaders_nt.db"
 
 
 def init_db():
+    """Создание таблиц в БД"""
     conn = sqlite3.connect(DB_FILENAME)
     cursor = conn.cursor()
     cursor.execute("""
@@ -22,6 +23,9 @@ def init_db():
 
 
 def insert_result(data) -> bool:
+    """Функция добавляет результат в БД, если у игрока уже есть результат
+    он будет обновлен на новый счет если он лучше старого"""
+
     station_uid = data["station_uid"]
     user_name = data["user_name"]
     score = data["score"]
@@ -49,7 +53,13 @@ def insert_result(data) -> bool:
     return True
 
 
-def get_results(top: int = 200):
+def get_results(top: int = 200) -> list[dict]:
+    """Получение top лучших результатов
+
+    :param top: число, макс количество строк в результатах
+    :return list[dict]: возвращает поля station_uid, user_name, score, achievements
+    """
+
     conn = sqlite3.connect(DB_FILENAME)
     cursor = conn.cursor()
     cursor.execute("""

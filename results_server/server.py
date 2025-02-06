@@ -11,6 +11,7 @@ db.init_db()
 
 @app.post("/space_invaders_nt/results")
 def post_result():
+    """Функция добавляет результат в БД, если новый счет у игрока лучше"""
     data = request.get_json()
     required_fields = ["station_uid", "user_name", "score", "achievements"]
     if not all(field in data for field in required_fields):
@@ -23,6 +24,14 @@ def post_result():
 
 @app.get("/space_invaders_nt/top")
 def get_top():
+    """Функция возвращает страницу 'лучшие игроки'.
+
+    GET-параметры:
+    top - максимальное количество строк в таблице результатов
+    highlight - station_uid - код станции, для подсветки ее результатов
+
+    Так же подсвечиваются результаты отправленные с машины с uid == highlight
+    """
     top = request.args.get("top", default=200, type=int)
     if top <= 0:
         top = 200
