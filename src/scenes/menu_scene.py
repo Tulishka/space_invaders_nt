@@ -119,6 +119,8 @@ class MenuScene(Scene):
                 "p2_score": 500,
                 "text": "VICTORY!",
             })
+        elif event.key == pygame.K_4:
+            self.start_game(1, 4)
         elif event.key == pygame.K_5:
             self.start_game(1, 5)
         elif event.key == pygame.K_6:
