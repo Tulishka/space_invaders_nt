@@ -70,7 +70,7 @@ class ScoresScene(Scene):
             ),
             action=web_results.open_world_records)
         MarginMenuItem(self.menu, 2)
-        ImageMenuItem(self.menu, create_text_image("саундтрек написанный для игры", font_size=26, color="gray"))
+        ImageMenuItem(self.menu, create_text_image("саундтреки написанные для игры", font_size=26, color="gray"))
         ImageMenuItem(
             self.menu,
             create_text_image("Вторжение пришельцев (rus)", font_size=28, color="green"),

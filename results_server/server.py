@@ -9,7 +9,7 @@ app = Flask(__name__)
 db.init_db()
 
 
-@app.post("/results")
+@app.post("/space_invaders_nt/results")
 def post_result():
     data = request.get_json()
     required_fields = ["station_uid", "user_name", "score", "achievements"]
@@ -21,8 +21,8 @@ def post_result():
     return "", (200 if result else 500)
 
 
-@app.get("/results")
-def get_results():
+@app.get("/space_invaders_nt/top")
+def get_top():
     top = request.args.get("top", default=200, type=int)
     if top <= 0:
         top = 200

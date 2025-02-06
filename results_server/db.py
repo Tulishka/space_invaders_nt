@@ -1,7 +1,7 @@
 import sqlite3
 import datetime
 
-DB_FILENAME = "results.db"
+DB_FILENAME = "space_invaders_nt.db"
 
 
 def init_db():

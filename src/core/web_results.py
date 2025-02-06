@@ -6,7 +6,7 @@ from threading import Thread
 import requests
 
 station_uid = None
-SERVER_URL = "https://tulishka.pythonanywhere.com"
+SERVER_URL = "https://tulishka.pythonanywhere.com/space_invaders_nt"
 
 
 def create_station_uid():
@@ -34,7 +34,7 @@ def get_station_uid():
 
 def open_world_records():
     webbrowser.open(
-        f"{SERVER_URL}/results?highlight={get_station_uid()}",
+        f"{SERVER_URL}/top?highlight={get_station_uid()}",
         new=0, autoraise=True
     )
 
