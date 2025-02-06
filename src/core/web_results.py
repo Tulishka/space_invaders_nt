@@ -23,9 +23,12 @@ def create_station_uid():
 def get_station_uid():
     if not os.path.exists("station"):
         return create_station_uid()
+
+    global station_uid
+    if station_uid:
+        return station_uid
     try:
         with open("station", "r") as file:
-            global station_uid
             station_uid = file.readline().strip()
             return station_uid
     except:
