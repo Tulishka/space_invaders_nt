@@ -108,12 +108,14 @@ class Swarm:
             for x in range(self.ls.alien_in_line):
                 pos = (x0 + x * self.ALIEN_X_DISTANCE, y0 + y * self.ALIEN_Y_DISTANCE)
                 if typ == settings.HEAVY_ALIEN_TYPE:
-                    l_arm = AlienLaserArm(self.scene_groups, pos, "7_arm", x, 0)
-                    r_arm = AlienLaserArm(self.scene_groups, pos, "7_arm", x, 0, left_side=False)
+                    l_arm = AlienLaserArm(self.scene_groups)
+                    r_arm = AlienLaserArm(self.scene_groups, left_side=False)
                 alien = Alien(self.scene_groups, pos, typ, x, 0)
                 alien.warp_y = -alien.y - 60
+
                 # задержка появления пришельцев (в виде отрицательного времени)
                 alien.time -= (lines - y) * 0.2 + x * 0.1
+
                 if typ == settings.HEAVY_ALIEN_TYPE:
                     l_arm.set_parent(alien)
                     r_arm.set_parent(alien)
@@ -167,7 +169,7 @@ class Swarm:
         if not self.acolyte and self.ls.acolyte and self.time > 3:
             ac = AcolyteAlien(self.scene_groups, (randint(100, 400), 100), 1)
             ac.hp /= 2
-            ac.protect_interval = 1.6
+            ac.give_shield_cooldown.interval = 1.6
             self.acolyte = True
 
     def move(self, swarm_spd: float, dt: float):

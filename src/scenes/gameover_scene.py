@@ -7,13 +7,16 @@ from src.components.text_input import InputText
 from src.core import db, web_results
 from src.core.pg_utils import create_text_sprite
 from src.core.scene import Scene
+from src.core.scene_manager import SceneManager
 
 
 class GameOverScene(Scene):
+    """Базовый класс финальной сцены"""
+
     title = "GAME OVER"
     title_color = (255, 255, 255)
 
-    def __init__(self, scene_manager, params=None):
+    def __init__(self, scene_manager: SceneManager, params: dict = None):
 
         self.player_names = db.load_player_names()
 
@@ -28,11 +31,19 @@ class GameOverScene(Scene):
         self.name_input[0].set_focus()
         self.cursor_image = pygame.image.load('./img/cursor.png')
 
-    def on_show(self, first_time):
+    def on_show(self, first_time: bool):
+        """Обработчик события включения сцены.
+        :param first_time: True если сцена появилась первый раз.
+        :return None:
+        """
         self.time = 0
         self.back_image_top = settings.SCREEN_HEIGHT - self.back_image.get_height()
 
     def update(self, dt):
+        """Обновление состояния сцены.
+        :param dt: Время с прошлого выполнения этой функции.
+        :return None:
+        """
         super().update(dt)
         self.back_image_top *= 0.97
         if self.back_image_top > 0:
@@ -41,7 +52,8 @@ class GameOverScene(Scene):
         for group in self.scene_groups.values():
             group.update(dt)
 
-    def update_params(self, params):
+    def update_params(self, params: dict):
+        """Обновление сцены без её пересоздания"""
         super().update_params(params)
         self.num_players = params.get("num_players", 1)
 
@@ -79,7 +91,11 @@ class GameOverScene(Scene):
 
         self.name_input[0].set_focus()
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
+        """Отрисовка сцены.
+        :param screen: Поверхность на которой рисовать.
+        :return None:
+        """
         screen.blit(self.back_image, (0, self.back_image_top))
 
         for group in self.scene_groups.values():
@@ -96,7 +112,10 @@ class GameOverScene(Scene):
             screen.blit(self.cursor_image, mouse_pos)
 
     def process_event(self, event):
-
+        """Обработка событий pygame
+        :param event: Событие pygame
+        :return None:
+        """
         for text in self.scene_groups["text"]:
             if text.process_event(event):
                 return
@@ -107,6 +126,7 @@ class GameOverScene(Scene):
             self.scene_manager.pop_scene()
 
     def save_results(self):
+        """Сохранение результатов"""
         for i, ti in enumerate(self.name_input):
             self.player_names[i] = ti.value.strip() or f"no_name_{i + 1}"
 

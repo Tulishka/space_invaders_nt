@@ -2,11 +2,14 @@ import pygame
 
 from src import music, settings
 from src.aliens import BossAlien
+from src.core.scene_manager import SceneManager
 from src.scenes.game_scene import GameScene
 
 
 class BossScene(GameScene):
-    def __init__(self, scene_manager, params):
+    """Сцена с боссом"""
+
+    def __init__(self, scene_manager: SceneManager, params: dict):
         super().__init__(scene_manager, params)
         self.music_on = False
 
@@ -17,10 +20,8 @@ class BossScene(GameScene):
         for i, player in enumerate(self.players):
             player.rect.centerx = players_start_pos[i]
 
-    def on_hide(self):
-        super().on_hide()
-
     def create_swarm(self):
+        """Создание роя, на данном уровне это босс"""
         boss = BossAlien(
             self.scene_groups,
             (settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 3)
@@ -29,12 +30,17 @@ class BossScene(GameScene):
         return boss
 
     def swarm_crash_player(self, player):
+        """На этой сцене рой не раздавливает игрока"""
         return False
 
     def bonus_ship_should_arrive(self):
+        """Определяет пора ли прилететь бонусной тарелке
+        :return bool: True, когда пора
+        """
         return self.time > 60
 
     def go_next_level(self):
+        """Переход на следующий уровень - экран победы"""
         music.play("victory")
         self.params["score"] = self.score
         self.params["num_players"] = self.num_players
@@ -42,7 +48,11 @@ class BossScene(GameScene):
         self.params["p2_score"] = self.player_score[1]
         self.scene_manager.change_scene("victory", self.params)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
+        """Отрисовка уровня.
+        :param screen: Поверхность на которой рисовать.
+        :return bool:
+        """
         if super().draw(screen):
             return True
 

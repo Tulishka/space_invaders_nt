@@ -8,14 +8,17 @@ import pygame
 from src import music, settings
 from src.aliens import SceneAlien
 from src.core.scene import Scene
+from src.core.scene_manager import SceneManager
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
 from src.sound import play_sound
 
 
 class MenuScene(Scene):
+    """Класс сцены меню"""
+
     keep_alive = True
 
-    def __init__(self, scene_manager, params=None):
+    def __init__(self, scene_manager: SceneManager, params: dict = None):
         super().__init__(scene_manager, params)
         font3 = pygame.font.Font(None, 40)
 
@@ -45,11 +48,16 @@ class MenuScene(Scene):
         self.back_image = pygame.image.load("img/menu_back.jpg")
 
     def replay_scene(self):
+        """Перезапуск музыки"""
         music.play("menu")
         self.time = 0
         self.cur_marker = 0
 
     def on_show(self, first_time):
+        """Обработчик события включения сцены.
+        :param first_time: True если сцена появилась первый раз.
+        :return None:
+        """
         play_sound("menu_show")
 
         # для анимации фона
@@ -59,9 +67,14 @@ class MenuScene(Scene):
         self.time = 0
 
     def on_hide(self):
+        """Обработчик закрытия сцены (отключает музыку)"""
         music.stop()
 
     def draw(self, screen):
+        """Отрисовка сцены.
+        :param screen: Поверхность на которой рисовать.
+        :return None:
+        """
         screen.blit(self.back_image, (0, 0))
 
         for group in self.scene_groups.values():
@@ -71,6 +84,10 @@ class MenuScene(Scene):
         self.menu.draw(screen)
 
     def update(self, dt):
+        """Обновление состояния сцены.
+        :param dt: Время с прошлого выполнения этой функции.
+        :return None:
+        """
         super().update(dt)
 
         self.beat_value *= 0.95 - (0.2 * dt)
@@ -93,6 +110,7 @@ class MenuScene(Scene):
         self.menu.update(dt)
 
     def start_game(self, num_players, level=1):
+        """Запускает игру"""
         self.scene_manager.push_scene("trailer", {
             "num_players": num_players,
             "level": level,
@@ -101,7 +119,10 @@ class MenuScene(Scene):
         play_sound("menu_start")
 
     def process_event(self, event):
-
+        """Обработка событий pygame
+        :param event: Событие pygame
+        :return None:
+        """
         if event.type == settings.MUSIC_END_EVENT:
             self.replay_scene()
 
@@ -111,6 +132,7 @@ class MenuScene(Scene):
         if event.type != pygame.KEYDOWN:
             return
 
+        # Кнопки для тестирования и отладки
         if event.key == pygame.K_t:
             self.scene_manager.push_scene("defeat", {
                 "num_players": 2,
@@ -133,10 +155,12 @@ class MenuScene(Scene):
             return "exit"
 
     def load_markers(self, filename):
+        """Загрузка маркеров для музыки"""
         with open(filename, "r") as f:
             lines = f.readlines()
             return [float(i) for i in lines]
 
     def open_results(self):
+        """Открывает сцену результатов (Зал славы)"""
         play_sound("menu_show")
         self.scene_manager.push_scene("scores", {})

@@ -1,8 +1,9 @@
 import random
 
 from src import settings, sound
-from src.aliens import SceneAlien
+from src.aliens import SceneAlien, Alien
 from src.components.particles import create_particle_explosion
+from src.components.player import Player
 from src.components.projectile import Bullet
 from src.components.projectile_utils import collide_bullets
 from src.core import pg_utils
@@ -11,6 +12,7 @@ from src.scenes.gameover_scene import GameOverScene
 
 
 class VictoryScene(GameOverScene):
+    """Класс сцены Победы"""
     title = "ПОБЕДА!"
     title_color = "green"
 
@@ -21,7 +23,11 @@ class VictoryScene(GameOverScene):
         self.accurate_shot_cd = Cooldown(self, 0.5, 0.3)
         self.sounds = [sound.load(f"sound/fireworks{n + 1}.wav", 1 if n!=2 else 0.5) for n in range(5)]
 
-    def on_show(self, first_time):
+    def on_show(self, first_time: bool):
+        """Обработчик события включения сцены.
+        :param first_time: True если сцена появилась первый раз.
+        :return None:
+        """
         super().on_show(first_time)
         self.alien_spawn_cd.start()
         self.shot_cd.start()
@@ -33,6 +39,7 @@ class VictoryScene(GameOverScene):
             self.add_alien(settings.SCREEN_HEIGHT + random.randint(10, 60))
 
     def add_alien(self, y):
+        """Добавление пришельца в сцену"""
         alien = SceneAlien(
             self.scene_groups,
             (random.randint(100, settings.SCREEN_WIDTH - 100), y),
@@ -44,6 +51,10 @@ class VictoryScene(GameOverScene):
         alien.image = alien.images[0]
 
     def update(self, dt):
+        """Обновление состояния сцены.
+        :param dt: Время с прошлого выполнения этой функции.
+        :return None:
+        """
         super().update(dt)
         if self.alien_spawn_cd:
             self.alien_spawn_cd.start()
@@ -64,7 +75,8 @@ class VictoryScene(GameOverScene):
 
         collide_bullets(self.scene_groups, self.hit_alien)
 
-    def hit_alien(self, alien, player=None):
+    def hit_alien(self, alien: Alien, player: Player = None):
+        """Обработка попадания в пришельца"""
         random.choice(self.sounds).play()
         alien.image = alien.spawn_image
         alien.kill_time = alien.time + 0.1
@@ -73,6 +85,7 @@ class VictoryScene(GameOverScene):
             75, (0, -alien.spd), 2
         )
 
-    def update_params(self, params):
+    def update_params(self, params: dict):
+        """Обновление сцены без её пересоздания"""
         self.scene_groups["aliens"].empty()
         super().update_params(params)

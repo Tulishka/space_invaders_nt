@@ -7,19 +7,23 @@ import pygame
 from src import settings, music
 from src.aliens import SceneAlien
 from src.components.particles import create_particle_explosion
+from src.components.player import Player
 from src.components.projectile import Bomb, Bullet
 from src.components.projectile_utils import collide_bullets
 from src.core import db, pg_utils, web_results
 from src.core.cooldown import Cooldown
 from src.core.pg_utils import create_text_sprite, create_table, create_text_image
 from src.core.scene import Scene
+from src.core.scene_manager import SceneManager
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
 
 
 class ScoresScene(Scene):
+    """Класс сцены зал славы"""
+
     music_theme = "ost_rus"
 
-    def __init__(self, scene_manager, params=None):
+    def __init__(self, scene_manager: SceneManager, params: dict = None):
 
         self.scene_groups = defaultdict(pygame.sprite.Group)
         self.scene_groups["bombs"].empty()
@@ -92,6 +96,10 @@ class ScoresScene(Scene):
         self.music_theme_cd = Cooldown(self, 0.1)
 
     def on_show(self, first_time):
+        """Обработчик события включения сцены.
+        :param first_time: True если сцена появилась первый раз.
+        :return None:
+        """
         super().on_show(first_time)
         self.music_theme_cd.start()
         self.alien_spawn_cd.start()
@@ -100,6 +108,10 @@ class ScoresScene(Scene):
         self.accurate_shot_cd.start(13)
 
     def draw(self, screen):
+        """Отрисовка сцены.
+        :param screen: Поверхность на которой рисовать.
+        :return None:
+        """
         screen.blit(self.back_image, (0, self.back_image_top))
 
         for group in self.scene_groups.values():
@@ -112,6 +124,7 @@ class ScoresScene(Scene):
         self.menu.draw(screen)
 
     def add_alien(self, y):
+        """Добавление пришельца в сцену"""
         alien = SceneAlien(
             self.scene_groups,
             (random.randint(100, settings.SCREEN_WIDTH - 100), y),
@@ -124,6 +137,10 @@ class ScoresScene(Scene):
         alien.last_shot = 0
 
     def update(self, dt):
+        """Обновление состояния сцены.
+        :param dt: Время с прошлого выполнения этой функции.
+        :return None:
+        """
         super().update(dt)
 
         if self.music_theme_cd:
@@ -164,7 +181,8 @@ class ScoresScene(Scene):
 
         collide_bullets(self.scene_groups, self.hit_alien)
 
-    def hit_alien(self, alien, player=None):
+    def hit_alien(self, alien, player: Player = None):
+        """Обработка попадания в пришельца"""
         alien.image = alien.spawn_image
         alien.kill_time = alien.time + 0.1
         create_particle_explosion(
@@ -173,7 +191,10 @@ class ScoresScene(Scene):
         )
 
     def process_event(self, event):
-
+        """Обработка событий pygame
+        :param event: Событие pygame
+        :return None:
+        """
         if self.menu.process_event(event):
             return
 
@@ -182,9 +203,11 @@ class ScoresScene(Scene):
             self.exit()
 
     def set_music_theme(self, theme_name):
+        """Сменяет музыку"""
         ScoresScene.music_theme = theme_name
         db.set_var("music_theme", theme_name)
         self.music_theme_cd.start()
 
     def exit(self):
+        """Выходит из сцены"""
         self.scene_manager.pop_scene()

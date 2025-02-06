@@ -1,15 +1,17 @@
 import string
 
 import pygame
-from pygame.locals import *
 
 
 class InputText(pygame.sprite.Sprite):
+    """Класс реализует текстовое поле ввода"""
+
     active_input = None
 
     def __init__(self, sprite_group, pos, value="", width=250, height=60, bg_color=(10, 20, 40),
                  border_color=(20, 40, 80),
-                 max_length=20, cursor_width=6, cursor_color=(255, 255, 255), font_size=28, font_color=(255, 255, 255)):
+                 max_length=20, cursor_width=6,
+                 cursor_color=(255, 255, 255), font_size=28, font_color=(255, 255, 255)):
         super().__init__(sprite_group)
         self.font_color = font_color
         self.sprite_group = sprite_group
@@ -33,35 +35,41 @@ class InputText(pygame.sprite.Sprite):
 
         self.on_change = None
         self.allowed_chars = string.ascii_letters + string.digits + "_@.!- йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ"
-        self._render()
+        self.render_image()
 
     def set_focus(self):
+        """Устанавливает фокус ввода на это текстовое поле"""
         if InputText.active_input:
             InputText.active_input.has_focus = False
-            InputText.active_input._render()
+            InputText.active_input.render_image()
 
         InputText.active_input = self
         self.has_focus = True
         self.cursor_visible = True
         self.cursor_timer = 0.0
-        self._render()
+        self.render_image()
 
-    def process_event(self, event):
-        if event.type == MOUSEBUTTONDOWN and event.button == 1:
+    def process_event(self, event) -> bool:
+        """Обработчик события
+        :param event: событие pygame
+        :return bool: True - если событие обработано
+        """
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
                 self.set_focus()
                 return True
             elif self.has_focus:
                 self.blur()
-        elif self.has_focus and event.type == KEYDOWN:
+        elif self.has_focus and event.type == pygame.KEYDOWN:
             value = self.value
-            if event.key == K_ESCAPE:
+            if event.key == pygame.K_ESCAPE:
                 self.blur()
-            elif event.key in (K_RETURN, K_DOWN, K_KP_ENTER) or (event.key == K_TAB and not event.mod & KMOD_SHIFT):
+            elif event.key in (pygame.K_RETURN, pygame.K_DOWN, pygame.K_KP_ENTER) or (
+                    event.key == pygame.K_TAB and not event.mod & pygame.KMOD_SHIFT):
                 return self.next_focus()
-            elif event.key == K_UP or (event.key == K_TAB and event.mod & KMOD_SHIFT):
+            elif event.key == pygame.K_UP or (event.key == pygame.K_TAB and event.mod & pygame.KMOD_SHIFT):
                 self.prev_focus()
-            elif event.key == K_BACKSPACE:
+            elif event.key == pygame.K_BACKSPACE:
                 self.set_value(value[:-1])
             else:
                 char = event.unicode
@@ -69,27 +77,36 @@ class InputText(pygame.sprite.Sprite):
                     value += char
                 if char and len(value) < self.max_length:
                     self.set_value(value)
-
             return True
-
         return False
 
-    def set_value(self, value, emit_on_change=False):
+    def set_value(self, value: str, emit_on_change=False):
+        """Задает новое значение текстовому полю
+        :param value: новое значение
+        :param emit_on_change: флаг - вызывать обработчик (колбек) при измении
+        :return None:
+        """
         if self.value != value:
             self.value = value
-            self._render()
+            self.render_image()
             if emit_on_change and self.on_change:
                 self.on_change()
 
     def update(self, dt):
+        """Обновление состояния текстового поля
+        - Мигание курсором
+        :param dt: время, сек
+        :return None:
+        """
         if self.has_focus:
             self.cursor_timer += dt
             if self.cursor_timer >= self.blink_interval:
                 self.cursor_timer = 0.0
                 self.cursor_visible = not self.cursor_visible
-                self._render()
+                self.render_image()
 
-    def _render(self):
+    def render_image(self):
+        """Функция отрисовывает поле в image"""
         self.image.fill((0, 0, 0, 0))
         pygame.draw.rect(
             self.image, self.bg_color,
@@ -120,11 +137,13 @@ class InputText(pygame.sprite.Sprite):
             )
 
     def blur(self):
+        """Снять фокус ввода с поля"""
         self.has_focus = False
         InputText.active_input = None
-        self._render()
+        self.render_image()
 
     def next_focus(self):
+        """Фокус на следующее поле ввода"""
         inputs = list(self.sprite_group)
         idx = inputs.index(self) + 1
         if idx >= len(inputs):
@@ -135,6 +154,7 @@ class InputText(pygame.sprite.Sprite):
         return True
 
     def prev_focus(self):
+        """Фокус на предыдущее поле ввода"""
         inputs = list(self.sprite_group)
         idx = inputs.index(self) - 1
         if idx >= 0:

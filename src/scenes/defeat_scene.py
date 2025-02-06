@@ -5,19 +5,26 @@ from src.aliens import SceneAlien
 from src.components.projectile import Bomb
 from src.core import pg_utils
 from src.core.cooldown import Cooldown
+from src.core.scene_manager import SceneManager
 from src.scenes.gameover_scene import GameOverScene
 
 
 class DefeatScene(GameOverScene):
+    """Класс сцены Поражения"""
+
     title = "ПОРАЖЕНИЕ"
     title_color = "red"
 
-    def __init__(self, scene_manager, params=None):
+    def __init__(self, scene_manager: SceneManager, params: dict = None):
         super().__init__(scene_manager, params)
         self.alien_spawn_cd = Cooldown(self, 0.8, 0.4)
         self.alien_shot_cd = Cooldown(self, 0.7, 0.2)
 
-    def on_show(self, first_time):
+    def on_show(self, first_time: bool):
+        """Обработчик события включения сцены.
+        :param first_time: True если сцена появилась первый раз.
+        :return None:
+        """
         super().on_show(first_time)
         self.alien_spawn_cd.start()
         self.alien_shot_cd.start()
@@ -25,6 +32,7 @@ class DefeatScene(GameOverScene):
         self.scene_groups["aliens"].empty()
 
     def add_alien(self, y):
+        """Добавление пришельца в сцену"""
         alien = SceneAlien(
             self.scene_groups,
             (random.randint(100, settings.SCREEN_WIDTH - 100), y),
@@ -37,6 +45,10 @@ class DefeatScene(GameOverScene):
         alien.last_shot = 0
 
     def update(self, dt):
+        """Обновление состояния сцены.
+        :param dt: Время с прошлого выполнения этой функции.
+        :return None:
+        """
         super().update(dt)
         if self.alien_spawn_cd:
             self.alien_spawn_cd.start()
@@ -54,7 +66,8 @@ class DefeatScene(GameOverScene):
                 b.image = pg_utils.darken_image(b.image, 0.5)
                 alien.last_shot = self.time
 
-    def update_params(self, params):
+    def update_params(self, params: dict):
+        """Обновление сцены без её пересоздания"""
         self.scene_groups["bombs"].empty()
         self.scene_groups["aliens"].empty()
         super().update_params(params)
