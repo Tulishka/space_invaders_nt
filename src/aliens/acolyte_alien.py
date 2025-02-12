@@ -2,11 +2,11 @@ import math
 import random
 
 from src import settings, sound
-from .alien import Alien, HpAlienMixin
+from .alien import Alien
 from ..core.cooldown import Cooldown
 
 
-class AcolyteAlien(HpAlienMixin, Alien):
+class AcolyteAlien(Alien):
     """Класс прислужника"""
 
     def __init__(self, scene_groups: dict, pos: tuple[float, float], direction: int = 1):
@@ -48,10 +48,10 @@ class AcolyteAlien(HpAlienMixin, Alien):
 
     def update(self, dt):
         """Обновление состояния прислужника"""
-        warp = self.time < self.spawn_time
+        warp = self.time < self.warp_time
         super().update(dt)
 
-        if warp and self.time >= self.spawn_time:
+        if warp and self.time >= self.warp_time:
             sound.play_sound("alien_warp")
         self.warp_y *= 0.99
 

@@ -3,6 +3,7 @@ import pygame
 from .items_menu import ItemsMenu
 from .menu_item import MenuItem
 from .. import settings
+from ..core import images
 from ..sound import play_sound
 
 
@@ -28,7 +29,7 @@ class Menu(ItemsMenu):
         self.back_rect = None
         self.top = settings.SCREEN_HEIGHT // 2 - 200
         self.opacity = 200
-        self.cursor_image = pygame.image.load('./img/cursor.png')
+        self.cursor_image = images.load('cursor.png')
 
     def update(self, dt):
         self.time += dt

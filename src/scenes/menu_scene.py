@@ -7,6 +7,7 @@ import pygame
 
 from src import music, settings
 from src.aliens import SceneAlien
+from src.core import images
 from src.core.scene import Scene
 from src.core.scene_manager import SceneManager
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
@@ -30,7 +31,7 @@ class MenuScene(Scene):
         p1 = p3
 
         self.menu = Menu()
-        ImageMenuItem(self.menu, pygame.image.load(f'./img/logo.png'))
+        ImageMenuItem(self.menu, images.load(f'logo.png'))
         MarginMenuItem(self.menu, 10)
         self.menu.selected = ImageMenuItem(self.menu, p1, partial(self.start_game, 1), pygame.K_1)
         ImageMenuItem(self.menu, p2, partial(self.start_game, 2), pygame.K_2)
@@ -45,7 +46,7 @@ class MenuScene(Scene):
 
         self.scene_groups["aliens"].empty()
 
-        self.back_image = pygame.image.load("img/menu_back.jpg")
+        self.back_image = images.load("menu_back.jpg")
 
     def replay_scene(self):
         """Перезапуск музыки"""

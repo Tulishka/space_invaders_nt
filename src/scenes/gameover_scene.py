@@ -4,7 +4,7 @@ import pygame
 
 from src import settings
 from src.components.text_input import InputText
-from src.core import db, web_results
+from src.core import db, web_results, images
 from src.core.pg_utils import create_text_sprite
 from src.core.scene import Scene
 from src.core.scene_manager import SceneManager
@@ -25,11 +25,11 @@ class GameOverScene(Scene):
         self.scene_groups = defaultdict(pygame.sprite.Group)
 
         super().__init__(scene_manager, params)
-        self.back_image = pygame.image.load("img/game_back.jpg")
+        self.back_image = images.load("game_back.jpg")
         self.back_image_top = 0
         self.hidden_height = 0
         self.name_input[0].set_focus()
-        self.cursor_image = pygame.image.load('./img/cursor.png')
+        self.cursor_image = images.load('cursor.png')
 
     def on_show(self, first_time: bool):
         """Обработчик события включения сцены.

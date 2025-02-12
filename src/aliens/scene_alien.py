@@ -10,9 +10,9 @@ class SceneAlien(Alien):
     """Класс реализует пришельца для анимаций в меню"""
 
     def __init__(self, scene_groups: dict, pos: tuple[int, int], type_: str, column,
-                 spd: tuple[int, int], spawn_time: float = 0,
+                 spd: tuple[int, int], warp_time: float = 0,
                  warp_spd: int = 0):
-        super().__init__(scene_groups, pos, type_, column, spawn_time)
+        super().__init__(scene_groups, pos, type_, column, warp_time)
         self.spd = math.hypot(spd[0], spd[1])
         self.direction = Vector2(spd).normalize()
         self.warp_spd = warp_spd

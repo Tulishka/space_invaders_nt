@@ -3,6 +3,7 @@ from pygame.sprite import Sprite
 
 from src import settings
 from src.components.projectile import Bullet
+from src.core import images
 from src.core.cooldown import Cooldown
 from src.core.scene_manager import SceneManager
 from src.sound import sounds, play_sound
@@ -21,9 +22,9 @@ class Player(Sprite):
         super().__init__(scene_groups["players"])
         self.scene_groups = scene_groups
         self.num = num
-        self.image = pygame.image.load(f'./img/player{self.num}.png')
-        self.images = [pygame.image.load(f'./img/player{self.num}.png'), pygame.image.load(f'./img/player_stasis.png')]
-        self.kill_image = pygame.image.load(f'./img/player{self.num}k.png')
+        self.image = images.load(f'player{self.num}.png')
+        self.images = [images.load(f'player{self.num}.png'), images.load('player_stasis.png')]
+        self.kill_image = images.load(f'player{self.num}k.png')
         self.rect = self.image.get_rect(
             center=(
                 start_x,

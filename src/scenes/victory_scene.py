@@ -2,6 +2,8 @@ import random
 
 from src import settings, sound
 from src.aliens import SceneAlien, Alien
+from src.aliens.alien import AlienState
+from src.core.animation import update_animations_images
 from src.components.particles import create_particle_explosion
 from src.components.player import Player
 from src.components.projectile import Bullet
@@ -47,8 +49,10 @@ class VictoryScene(GameOverScene):
             0,
             (0, -random.randint(60, 120))
         )
-        alien.images = [pg_utils.darken_image(img, 0.6) for img in alien.images]
-        alien.image = alien.images[0]
+        for image, set_image in update_animations_images(alien.animations, AlienState.IDLE):
+            set_image(pg_utils.darken_image(image, 0.6))
+
+        alien.image = alien.animations[alien.state][0]
 
     def update(self, dt):
         """Обновление состояния сцены.
@@ -78,8 +82,9 @@ class VictoryScene(GameOverScene):
     def hit_alien(self, alien: Alien, player: Player = None):
         """Обработка попадания в пришельца"""
         random.choice(self.sounds).play()
-        alien.image = alien.spawn_image
-        alien.kill_time = alien.time + 0.1
+        alien.image = alien.animations[AlienState.WARP][0]
+        alien.kill_time = alien.time + 0.2
+        alien.state = AlienState.DEAD
         create_particle_explosion(
             self.scene_groups["particles"], alien, 64, (1, 4),
             75, (0, -alien.spd), 2

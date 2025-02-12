@@ -1,6 +1,7 @@
 import pygame
 
 from src import settings
+from src.core import images
 from src.core.scene import Scene
 from src.core.scene_manager import SceneManager
 
@@ -13,7 +14,7 @@ class TrailerScene(Scene):
 
     def __init__(self, scene_manager: SceneManager, params: dict = None):
         super().__init__(scene_manager, params)
-        self.back_image = pygame.image.load("img/game_back.jpg")
+        self.back_image = images.load("game_back.jpg")
         self.back_image_top = 0
         self.hidden_height = self.back_image.get_height() - settings.SCREEN_HEIGHT
 

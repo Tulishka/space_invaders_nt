@@ -2,6 +2,8 @@ import random
 
 from src import settings
 from src.aliens import SceneAlien
+from src.aliens.alien import AlienState
+from src.core.animation import update_animations_images
 from src.components.projectile import Bomb
 from src.core import pg_utils
 from src.core.cooldown import Cooldown
@@ -40,8 +42,10 @@ class DefeatScene(GameOverScene):
             0,
             (0, random.randint(30, 60))
         )
-        alien.images = [pg_utils.darken_image(img, 0.7) for img in alien.images]
-        alien.image = alien.images[0]
+        for image, set_image in update_animations_images(alien.animations, AlienState.IDLE):
+            set_image(pg_utils.darken_image(image, 0.7))
+
+        alien.image = alien.animations[alien.state][0]
         alien.last_shot = 0
 
     def update(self, dt):

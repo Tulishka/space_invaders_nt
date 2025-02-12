@@ -8,6 +8,7 @@ from src.components.particles import create_particle_explosion
 from src.components.player import Player
 from src.components.projectile_utils import collide_bullets, collide_bombs
 from src.aliens.swarm import Swarm
+from src.core import images
 from src.core.scene import Scene
 from src.core.scene_manager import SceneManager
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
@@ -48,8 +49,8 @@ class GameScene(Scene):
 
         self.num_players = self.params.get("num_players", 1)
 
-        self.life_img = pygame.image.load("img/life.png")
-        self.back_image = pygame.image.load("img/game_back.jpg")
+        self.life_img = images.load("life.png")
+        self.back_image = images.load("game_back.jpg")
         self.back_image_top = settings.SCREEN_HEIGHT - self.back_image.get_height()
 
         self.font_obj = pygame.font.Font(None, 30)
@@ -352,9 +353,9 @@ class GameScene(Scene):
         MarginMenuItem(menu, 10)
         menu.selected = ImageMenuItem(menu, font3.render("продолжить", True, "green"), self.close_menu, pygame.K_ESCAPE)
         ImageMenuItem(menu, font3.render("выход", True, "green"), self.game_exit)
-        p = p1 = pygame.image.load(f'./img/p1_keys.png')
+        p = p1 = images.load('p1_keys.png')
         if self.num_players > 1:
-            p2 = pygame.image.load(f'./img/p2_keys.png')
+            p2 = images.load('p2_keys.png')
             p = pygame.Surface((p1.get_width() + p2.get_width() + 30, p1.get_height()), flags=pygame.SRCALPHA)
             p.blit(p1, (0, 0))
             p.blit(p2, (p1.get_width() + 30, 0))

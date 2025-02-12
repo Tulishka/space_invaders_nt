@@ -5,13 +5,14 @@ import pygame
 
 from src import settings, sound
 from .acolyte_alien import AcolyteAlien
-from .alien import Alien, HpAlienMixin
+from .alien import Alien
 from .minion_alien import MinionAlien
+from ..core import images
 from ..core.cooldown import Cooldown
 from ..sound import play_sound
 
 
-class BossAlien(HpAlienMixin, Alien):
+class BossAlien(Alien):
     """Класс босса"""
 
     MINION_ALIEN_TYPES = (1, 2, 3)
@@ -41,7 +42,7 @@ class BossAlien(HpAlienMixin, Alien):
 
     def create_shield_image(self) -> pygame.Surface:
         """Создание картинки щита"""
-        return pygame.image.load('./img/boss_shield.png')
+        return images.load('boss_shield.png')
 
     def shield_up(self):
         """Включение щита"""
@@ -149,9 +150,9 @@ class BossAlien(HpAlienMixin, Alien):
 
     def update(self, dt):
         """Обновление состояния босса"""
-        warp = self.time < self.spawn_time
+        warp = self.time < self.warp_time
         super().update(dt)
-        if warp and self.time >= self.spawn_time:
+        if warp and self.time >= self.warp_time:
             sound.play_sound("boss_online")
         self.warp_y *= 0.99
 

@@ -34,7 +34,11 @@ class InputText(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
         self.on_change = None
-        self.allowed_chars = string.ascii_letters + string.digits + "_@.!- йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ"
+        self.allowed_chars = (
+            string.ascii_letters +
+            string.digits +
+            "_@.!- йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ"
+        )
         self.render_image()
 
     def set_focus(self):

@@ -2,6 +2,7 @@ import pygame
 from pygame.sprite import Sprite
 
 from src import settings
+from src.core import images
 
 
 class Projectile(Sprite):
@@ -9,7 +10,7 @@ class Projectile(Sprite):
 
     def __init__(self, pos: tuple, img_name, spd, sprite_group):
         super().__init__(sprite_group)
-        self.image = pygame.image.load(f'./img/{img_name}.png')
+        self.image = images.load(f'{img_name}.png')
         self.rect = self.image.get_rect(center=pos)
         self.spd = spd
 

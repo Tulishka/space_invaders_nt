@@ -53,7 +53,10 @@ class MinionAlien(Alien):
         zones = Counter(b.rect.centerx // self.BOMB_ZONE_WIDTH for b in self.scene_groups["bombs"])
 
         # Наличие дополнительного игрока в зоне увеличивает ограничение на количество бомб в зоне
-        zones.subtract(player.rect.centerx // self.BOMB_ZONE_WIDTH for player in self.scene_groups["players"] if not player.dead)
+        zones.subtract(
+            player.rect.centerx // self.BOMB_ZONE_WIDTH
+            for player in self.scene_groups["players"] if not player.dead
+        )
 
         if self.shot_cooldown and zones[self.rect.centerx // self.BOMB_ZONE_WIDTH] + 1 < settings.MINIONS_MAX_BOMBS:
             for player in self.scene_groups["players"]:

@@ -6,11 +6,12 @@ import pygame
 
 from src import settings, music
 from src.aliens import SceneAlien
+from src.aliens.alien import AlienState
 from src.components.particles import create_particle_explosion
 from src.components.player import Player
 from src.components.projectile import Bomb, Bullet
 from src.components.projectile_utils import collide_bullets
-from src.core import db, pg_utils, web_results
+from src.core import db, pg_utils, web_results, images
 from src.core.cooldown import Cooldown
 from src.core.pg_utils import create_text_sprite, create_table, create_text_image
 from src.core.scene import Scene
@@ -34,11 +35,11 @@ class ScoresScene(Scene):
         self.scene_groups["logo"].empty()
 
         super().__init__(scene_manager, params)
-        self.back_image = pygame.image.load("img/game_back.jpg")
+        self.back_image = images.load("game_back.jpg")
         self.back_image_top = 0
         self.hidden_height = 0
 
-        self.cursor_image = pygame.image.load('./img/cursor.png')
+        self.cursor_image = images.load('cursor.png')
 
         results = db.get_top_results(10)
 
@@ -132,8 +133,11 @@ class ScoresScene(Scene):
             0,
             (0, random.randint(30, 60))
         )
-        alien.images = [pg_utils.darken_image(img, 0.75) for img in alien.images]
-        alien.image = alien.images[0]
+
+        alien.animations[AlienState.IDLE].images = [
+            pg_utils.darken_image(img, 0.75) for img in alien.animations[AlienState.IDLE].images
+        ]
+        alien.image = alien.animations[alien.state][0]
         alien.last_shot = 0
 
     def update(self, dt):
@@ -183,8 +187,9 @@ class ScoresScene(Scene):
 
     def hit_alien(self, alien, player: Player = None):
         """Обработка попадания в пришельца"""
-        alien.image = alien.spawn_image
-        alien.kill_time = alien.time + 0.1
+        alien.image = alien.animations[AlienState.WARP][0]
+        alien.kill_time = alien.time + 0.15
+        alien.state = AlienState.DEAD
         create_particle_explosion(
             self.scene_groups["particles"], alien, 24, (2, 5),
             50, (0, alien.spd), 1.5

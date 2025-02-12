@@ -1,11 +1,21 @@
 import random
+from enum import Enum
 
 import pygame
 from pygame.sprite import Sprite
 from pygame.transform import scale
 
 from src.components.projectile import Bomb, Beam
+from src.core import images
+from src.core.animation import Animation, update_animations_images
+from src.core.images import load
 from src.sound import play_sound
+
+
+class AlienState(str, Enum):
+    IDLE = "idle"
+    DEAD = "dead"
+    WARP = "warp"
 
 
 class Alien(Sprite):
@@ -18,47 +28,47 @@ class Alien(Sprite):
             pos: tuple[float, float],
             type_: str,
             column: int,
-            spawn_time: float = 0,
+            warp_time: float = 0,
             size: float = 1
     ):
         super().__init__(scene_groups["aliens"])
+        self.hp = 1
         self.scene_groups = scene_groups
         self.type = type_
-        self.images = [
-            pygame.image.load(f'./img/enemy{self.type}.png'),
-            pygame.image.load(f'./img/enemy{self.type}b.png'),
-        ]
-        self.kill_image = pygame.image.load(f'./img/enemy{self.type}k.png')
+        self.animations: dict[AlienState, Animation] = {
+            AlienState.IDLE: Animation([load(f"enemy{self.type}.png"), load(f"enemy{self.type}b.png")]),
+            AlienState.DEAD: Animation([load(f"enemy{self.type}k.png")]),
+        }
+
         if size != 1:
-            self.kill_image = scale(
-                self.kill_image, (self.kill_image.get_width() * size, self.kill_image.get_height() * size)
-            )
-            self.images = [
-                scale(image, (image.get_width() * size, image.get_height() * size))
-                for image in self.images
-            ]
+            for image, set_image in update_animations_images(self.animations):
+                set_image(scale(image, (image.get_width() * size, image.get_height() * size)))
+
+        warp_image = self.animations[AlienState.IDLE][0].copy()
+        warp_image.fill((255, 255, 255, 200), rect=warp_image.get_rect(), special_flags=pygame.BLEND_ADD)
+
+        self.state = AlienState.IDLE
+        self.animations[AlienState.WARP] = Animation([warp_image])
 
         self.shield_sprite = None
 
-        self.image = self.images[0]
+        self.image = self.animations[self.state][0]
         self.rect = self.image.get_rect(center=pos)
+
         self.time = random.random()
         self.kill_time = 0
         self.column = column
         self.x, self.y = pos
-        self.spawn_time = self.time + spawn_time
-        self.spawn_image = self.images[0].copy()
-        self.spawn_image.fill((255, 255, 255, 200), rect=self.spawn_image.get_rect(), special_flags=pygame.BLEND_ADD)
+        self.warp_time = self.time + warp_time
         self.warp_x = 0
         self.warp_y = 0
-        self.animation_spd = 2
         self.special1 = 0  # 1 флаг для управления спец средствами, например лазерными пушками
         self.special2 = 0  # 2 флаг для управления спец средствами, например лазерными пушками
         self.size = size
 
     def create_shield_image(self) -> pygame.Surface:
         """Создает и возвращает изображение щита"""
-        return pygame.image.load('./img/shield.png')
+        return images.load('shield.png')
 
     def hit_shield(self) -> bool:
         """Обработчик попадания по щиту
@@ -103,33 +113,39 @@ class Alien(Sprite):
         """Обновление состояния пришельца"""
         self.time += dt
 
-        if self.time < self.spawn_time:
-            self.image = self.spawn_image
-            return
-
-        if self.kill_time > 0:
-            self.image = self.kill_image
-            if self.time > self.kill_time:
-                self.kill()
+        if self.time < self.warp_time:
+            self.state = AlienState.WARP
         else:
-            self.image = self.images[int(self.time * self.animation_spd + self.type * 0.5) % len(self.images)]
+            if self.kill_time > 0:
+                if self.time > self.kill_time:
+                    self.kill()
+            else:
+                self.state = "idle"
+
+        self.image = self.animations[self.state].get_frame(self.time)
 
     def die(self):
         """Убивает пришельца"""
-        if self.kill_time == 0:
-            play_sound("alien_dead")
+        if self.state != AlienState.DEAD:
+            self.state = AlienState.DEAD
+            if self.hp <= 0:
+                play_sound("alien_dead")
             self.kill_time = self.ALIEN_DEAD_TIME + self.time
 
     def hit(self):
         """Обработчик попадания в пришельца"""
+        if self.time < self.warp_time:
+            return False
+
         if self.hit_shield():
             return False
 
-        if self.kill_time == 0:
+        self.hp -= 1
+        if self.kill_time == 0 and self.hp <= 0:
             self.die()
             return True
 
-        return False
+        return self.hp > 0
 
     def shot(self, spd_scale=1):
         """Создает выстрел пришельцем"""
@@ -156,17 +172,17 @@ class AlienLaserArm(Alien):
         """
         super().__init__(scene_groups, (0, 0), "7_arm", 0)
         if not left_side:
-            self.images = [pygame.transform.flip(img, True, False) for img in self.images]
-            self.kill_image = pygame.transform.flip(self.kill_image, True, False)
-            self.spawn_image = pygame.transform.flip(self.spawn_image, True, False)
-            self.image = self.images[0]
+            for image, set_image in update_animations_images(self.animations):
+                set_image(pygame.transform.flip(image, True, False))
+
+            self.image = self.animations[self.state][0]
 
         # левая "рука"
         self.left_side = left_side
         self.extend_range = 13
         self.parent = None
         self.type = 8
-        self.animation_spd = 4
+        self.animations[AlienState.IDLE].fps = 4
 
         # Beam
         self.laser = None
@@ -232,38 +248,8 @@ class AlienLaserArm(Alien):
         self.parent = alien
         self.warp_y = alien.warp_y
         self.time = alien.time
-        self.spawn_time = alien.spawn_time
+        self.warp_time = alien.warp_time
 
     def shot(self, spd_scale: float = 1):
         """Для лазерной руки этот метод ничего не делает"""
         pass
-
-    def die(self):
-        """Убивает руку-пушку"""
-        if self.kill_time == 0:
-            self.kill_time = self.time + 0.2
-
-
-class HpAlienMixin:
-    """Класс mixin для пришельца.
-    Нужен, что бы использовать hp пришельца, а не сразу его убивать.
-    Используется в классах босса и прислужника"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.hp = 1
-
-    def hit(self):
-        """Переопределим обработчик попадания в пришельца"""
-        if self.time < self.spawn_time:
-            return False
-
-        if self.hit_shield():
-            return False
-
-        self.hp -= 1
-        if self.kill_time == 0 and self.hp <= 0:
-            self.die()
-            return True
-
-        return self.hp > 0
