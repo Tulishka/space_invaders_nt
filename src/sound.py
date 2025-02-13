@@ -30,7 +30,7 @@ sounds = {
     "alien_shot7": load("sound/blaster2.wav", 1),
     "alien_warp": load("sound/warp.wav", 0.2),
     "alien_shield_up": load("sound/give_shield.wav", 1),
-    "alien_shield_down": load("sound/pop.wav", 1),
+    "alien_shield_down": load("sound/start.wav", 0.2),
 
     "bonus_alien_lr": load("sound/bonus_alien_lr.wav", 1),
     "bonus_alien_rl": load("sound/bonus_alien_rl.wav", 1),

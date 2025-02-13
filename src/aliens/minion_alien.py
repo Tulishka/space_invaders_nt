@@ -66,13 +66,6 @@ class MinionAlien(Alien):
                     self.shot_cooldown.start()
                     break
 
-    def shield_down(self):
-        """Выключает щит"""
-        res = super().shield_down()
-        if res:
-            play_sound("alien_shield_down")
-        return res
-
     def can_set_target(self):
         """Проверка возможности сменить цель"""
         return self.retarget_cooldown()

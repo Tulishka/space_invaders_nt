@@ -1,4 +1,5 @@
-from .alien import Alien, AlienLaserArm
+from .alien import Alien
+from .laser_arm_alien import AlienLaserArm
 from .bonus_alien import BonusAlien
 from .boss_alien import BossAlien
 from .scene_alien import SceneAlien
