@@ -2,7 +2,7 @@ from random import random
 
 
 class Cooldown:
-
+    """Класс для реализации механики остывания"""
     def __init__(self, parent, interval=99999, random_delta: float = 0, started=False):
         """
         :param parent: Объект - содержит свойство time float в секундах

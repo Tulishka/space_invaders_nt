@@ -16,10 +16,10 @@ class SceneAlien(Alien):
         self.spd = math.hypot(spd[0], spd[1])
         self.direction = Vector2(spd).normalize()
         self.warp_spd = warp_spd
-        self.animation_spd = 6 if type_ == 4 else 2
 
     def update(self, dt):
         """Обновление состояния пришельца
+
         :param dt: время, сек
         :return None:
         """

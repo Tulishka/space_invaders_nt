@@ -5,7 +5,6 @@ from random import randint, choice
 from src import settings, sound
 from .alien import Alien
 from ..core.cooldown import Cooldown
-from ..sound import play_sound
 
 
 class MinionAlien(Alien):
@@ -66,8 +65,11 @@ class MinionAlien(Alien):
                     self.shot_cooldown.start()
                     break
 
-    def can_set_target(self):
-        """Проверка возможности сменить цель"""
+    def can_set_target(self) -> bool:
+        """Проверка возможности сменить цель
+
+        :return: True - если миньону можно задать новую цель
+        """
         return self.retarget_cooldown()
 
     def set_target(self, move_target_x):

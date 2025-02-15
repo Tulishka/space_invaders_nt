@@ -45,6 +45,7 @@ class Player(Sprite):
 
     def shot(self):
         """Обработчик выстрела игрока
+
         :return None:
         """
         self.sound_shot.play()
@@ -55,6 +56,7 @@ class Player(Sprite):
 
     def update(self, dt: float):
         """Обновление состояния игрока
+
         :param dt: Время с прошлого выполнения
         :return None:
         """
@@ -85,6 +87,7 @@ class Player(Sprite):
 
     def die(self):
         """Метод убивает игрока
+
         :return None:
         """
         if not self.dead:
@@ -94,7 +97,8 @@ class Player(Sprite):
 
     def do_stasis(self):
         """Включает состояние неуязвимости на settings.PLAYER_STASIS_TIME сек.
-        Сбрасывает апгрейд пушек
+
+        Функция так же сбрасывает апгрейд пушек
         :return None:
         """
         self.stasis = settings.PLAYER_STASIS_TIME
@@ -103,6 +107,7 @@ class Player(Sprite):
 
     def upgrade_gun(self):
         """Апгрейдит пушки игрока на settings.PLAYER_UPGRADE_TIME сек.
+
         :return None:
         """
         self.gun_upgraded = settings.PLAYER_UPGRADE_TIME

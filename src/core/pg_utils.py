@@ -3,6 +3,7 @@ import pygame
 
 def create_text_image(text, font_size=26, color="white") -> pygame.Surface:
     """Функция создает изображение текста по строке
+
     :param text: текст
     :param font_size: размер шрифта
     :param color: цвет шрифта
@@ -14,6 +15,7 @@ def create_text_image(text, font_size=26, color="white") -> pygame.Surface:
 
 def create_text_sprite(sprite_group, text, pos=(10, 10), font_size=26, color="white") -> pygame.sprite.Sprite:
     """Функция создает Sprite по строке текста
+
     :param sprite_group: группа спрайтов куда добавить создаваемый спрайт
     :param text: текст
     :param pos: позиция, где разместить спрайт
@@ -35,6 +37,7 @@ def create_table(
         font_size=28
 ):
     """Функция создает множество спрайтов, составляющих таблицу, из 2-х колонок.
+
     :param rows: строки таблицы, в виде списка кортежей
     :param rect: Rect для позиционирования спрайтов
     :param sprite_group: группа спрайтов куда добавлять создаваемые спрайты
@@ -55,6 +58,7 @@ def create_table(
 
 def darken_image(image: pygame.Surface, dark_koef: float) -> pygame.Surface:
     """Функция затемняет картинку, на указанную степень
+
     :param image: исходная картинка
     :param dark_koef: коэф. от 0 до 1. 1 - максимальная степень затемнения
     :return:

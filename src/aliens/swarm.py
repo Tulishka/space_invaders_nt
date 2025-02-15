@@ -66,7 +66,7 @@ class Swarm:
         self.beam_on = False
 
     def special_weapon_init(self):
-        """Подготовка специального оружия (например выстрелы лазера дваарма)"""
+        """Инициализация специального оружия (например выстрелы лазера дваарма)"""
         for alien in self.special_aliens:
             alien.special1 = 0
             alien.special2 = 0
@@ -80,7 +80,8 @@ class Swarm:
             alien.special2 = state
 
     def special_weapon_prepare(self, aliens: list[Alien]):
-        """Подготовка специального оружия.
+        """Подготовка специального оружия к выстрелу.
+
         Выбирает из списка доступных пришельцев двоих избранных.
         Эти пришельцы начнут выдвигать лазерные пушки
         :param aliens: Список доступных пришельцев для применения специального оружия
@@ -96,7 +97,7 @@ class Swarm:
 
     def create(self) -> int:
         """Метод создаёт рой пришельцев
-        :return int: количество пришельцев в рое
+        :return int: количество созданных пришельцев в рое
         """
         x0 = self.SWARM_START_X
         y0 = self.SWARM_START_Y
@@ -174,6 +175,7 @@ class Swarm:
 
     def move(self, swarm_spd: float, dt: float):
         """Движение роя.
+
         :param swarm_spd: Скорость роя.
         :param dt: Время в сек.
         :return None:
@@ -212,6 +214,7 @@ class Swarm:
 
     def shot(self, aliens: list[Alien]):
         """Выбирает пришельца и производит выстрел.
+
         :param aliens: Пришельцы готовые к стрельбе
         :return None:
         """

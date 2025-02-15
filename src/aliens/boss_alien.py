@@ -15,7 +15,9 @@ from ..sound import play_sound
 class BossAlien(Alien):
     """Класс босса"""
 
+    # типы пришельцев, которых будет спавнить босс
     MINION_ALIEN_TYPES = (1, 2, 3)
+    SHIELD_MAX_HP = 20
 
     def __init__(self, scene_groups: dict, pos: tuple[float, float]):
         super().__init__(scene_groups, pos, settings.BOSS_ALIEN_TYPE, -1, 0.3)
@@ -36,7 +38,7 @@ class BossAlien(Alien):
         self.move_cd = Cooldown(self, 9, 6, started=True)
         self.spd = 0
         self.move_time = 0
-        self.shield_energy = 20
+        self.shield_hp = self.SHIELD_MAX_HP
         self.acolyte = False
         self.set_rect_xy(self.x, self.y + self.warp_y)
 
@@ -47,7 +49,7 @@ class BossAlien(Alien):
     def shield_up(self):
         """Включение щита"""
         super().shield_up()
-        self.shield_energy = 20
+        self.shield_hp = self.SHIELD_MAX_HP
 
     def shield_down(self):
         """Выключение щита"""
@@ -58,13 +60,14 @@ class BossAlien(Alien):
 
     def hit_shield(self) -> bool:
         """Попадание по щиту
+
         :return bool: истина когда щит защитил от урона
         """
         if not self.has_shield():
             return False
-        if self.shield_energy <= 0:
+        if self.shield_hp <= 0:
             return super().hit_shield()
-        self.shield_energy -= 1
+        self.shield_hp -= 1
         return True
 
     def move(self, dt):
@@ -137,7 +140,8 @@ class BossAlien(Alien):
 
     def update_minions(self, dt):
         """Обновление состояния миньонов.
-        Перенацеливание миньонов если требуется"""
+        Перенацеливание миньонов если требуется
+        """
         players = [player for player in self.scene_groups["players"] if not player.dead]
         for alien in self.scene_groups["aliens"]:
             if alien is not self:

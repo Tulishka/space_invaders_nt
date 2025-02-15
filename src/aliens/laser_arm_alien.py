@@ -16,6 +16,7 @@ class AlienLaserArm(Alien):
         """
         super().__init__(scene_groups, (0, 0), "7_arm", 0)
         if not left_side:
+            # Если это не левая сторона (рука), перевернем все изображения вдоль X
             for image, set_image in update_animations_images(self.animations):
                 set_image(pygame.transform.flip(image, True, False))
 
@@ -23,15 +24,17 @@ class AlienLaserArm(Alien):
 
         # левая "рука"
         self.left_side = left_side
+
+        # расстояния на которое выдвигается пушка
         self.extend_range = 13
         self.parent = None
         self.type = 8
         self.animations[AlienState.IDLE].fps = 4
 
-        # Beam
+        # храним спрайт луча (тип Beam)
         self.laser = None
 
-        # подготовка к выстрелу от 0 до 1
+        # подготовка к выстрелу, изменяется от 0 до 1
         self.charge = 0
 
     def update(self, dt):

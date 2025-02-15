@@ -55,6 +55,7 @@ class InputText(pygame.sprite.Sprite):
 
     def process_event(self, event) -> bool:
         """Обработчик события
+
         :param event: событие pygame
         :return bool: True - если событие обработано
         """
@@ -86,6 +87,7 @@ class InputText(pygame.sprite.Sprite):
 
     def set_value(self, value: str, emit_on_change=False):
         """Задает новое значение текстовому полю
+
         :param value: новое значение
         :param emit_on_change: флаг - вызывать обработчик (колбек) при измении
         :return None:
@@ -98,7 +100,8 @@ class InputText(pygame.sprite.Sprite):
 
     def update(self, dt):
         """Обновление состояния текстового поля
-        - Мигание курсором
+
+        Мигание курсором
         :param dt: время, сек
         :return None:
         """

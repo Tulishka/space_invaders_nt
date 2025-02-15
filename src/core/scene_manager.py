@@ -3,6 +3,7 @@ from src.core.scene import Scene
 
 class SceneManager:
     """Класс для работы со сценами: создание, переключения, обновления.
+
     В классе одна текущая (активная) сцена - она получает обновления, события
     и используется для отрисовки на экран.
     Класс работает как стек. При добавлении новой сцены она добавляется на вершину стека
@@ -16,6 +17,7 @@ class SceneManager:
 
     def current_scene(self) -> Scene:
         """Метод возвращает текущую сцену
+
         :return Scene:
         """
         if not self.scenes_stack:
@@ -24,6 +26,7 @@ class SceneManager:
 
     def pop_scene(self, call_prev=True) -> Scene:
         """Удаляет сцену с вершины стека, возвращаясь к предыдущей.
+
         :param call_prev: Уведомить новую сцену о том, что она стала активна
         :return Scene:
         """
@@ -37,6 +40,7 @@ class SceneManager:
 
     def push_scene(self, scene_name: str, params: dict = None, call_prev=True):
         """Метод добавляет новую сцену на вершину стека
+
         :param scene_name: Имя сцены.
         :param params: Параметры для сцены.
         :param call_prev: Уведомить предыдущую сцену, что она стала неактивна.
@@ -56,6 +60,7 @@ class SceneManager:
 
     def change_scene(self, scene_name: str, params: dict = None):
         """Сменить сцену на вершине стека
+
         :param scene_name: имя новой сцены
         :param params: параметры для сцены
         :return:
@@ -69,6 +74,7 @@ class SceneManager:
 
     def kill_scene(self, scene: str | Scene):
         """Уничтожает сцену.
+
         :param scene: Имя или объект сцены
         :return:
         """
@@ -85,6 +91,7 @@ class SceneManager:
 
     def update(self, dt):
         """Обновление текущей сцены
+
         :param dt: время с прошлого раза в сек.
         :return None:
         """
@@ -92,6 +99,7 @@ class SceneManager:
 
     def draw(self, screen):
         """Вызывается для отрисовки текущей сцены
+
         :param screen: поверхность куда рисовать
         :return None:
         """
@@ -99,6 +107,7 @@ class SceneManager:
 
     def process_event(self, event):
         """Передает в текущую сцену событие для обработки
+
         :param event: объект событие
         :return bool: возвращает True если событие обработано
         """

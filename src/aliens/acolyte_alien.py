@@ -7,7 +7,10 @@ from ..core.cooldown import Cooldown
 
 
 class AcolyteAlien(Alien):
-    """Класс прислужника"""
+    """Класс реализует пришельца-прислужника
+
+    Пришелец включает щиты определенным видам пришельцев (self.protect_alien_types).
+    """
 
     def __init__(self, scene_groups: dict, pos: tuple[float, float], direction: int = 1):
         super().__init__(scene_groups, pos, settings.ACOLYTE_ALIEN_TYPE, -1, 0.3)
@@ -15,7 +18,6 @@ class AcolyteAlien(Alien):
         self.warp_y = -200
         self.spd = 100
         self.direction = direction
-        self.animation_spd = 4
         self.set_rect_xy(self.x, self.y + self.warp_y)
 
         # типы пришельцев кому выдается щит
@@ -29,9 +31,10 @@ class AcolyteAlien(Alien):
 
 
     def give_shields_to_aliens(self, dt):
-        """Основная функция прислужника (раздача щитов).
+        """Основная функция прислужника (раздача щитов)
+
         :param dt: Время с прошлого выполнения этой функции
-        :return None:
+        :return: None
         """
         if self.give_shield_cooldown:
             self.give_shield_cooldown.start()

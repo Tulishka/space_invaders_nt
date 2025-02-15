@@ -8,6 +8,7 @@ from src.components.player import Player
 
 def collide_bullets(scene_groups: dict, hit_alien: Callable[[Alien, Player], None]):
     """Находит столкновения пуль с пришельцами.
+
     Вызывает колбэк hit_alien, для каждого пришельца в которого попала пуля
     :param scene_groups: Группы спрайтов сцены
     :param hit_alien: функция-колбэк
@@ -23,8 +24,9 @@ def collide_bullets(scene_groups: dict, hit_alien: Callable[[Alien, Player], Non
             break
 
 
-def collide_bombs(scene_groups: dict, hit_player: Callable[[Alien, Player], None]):
+def collide_bombs(scene_groups: dict, hit_player: Callable[[Player], None]):
     """Находит столкновения бомб с игроками.
+
     Вызывает колбэк hit_player, для каждого пришельца в которого попала пуля
     :param scene_groups:
     :param hit_player:

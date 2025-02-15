@@ -130,6 +130,7 @@ def get_top_results(k=10, player_num=None) -> list[tuple[str, int, int]]:
 
 def set_var(name: str, value: str):
     """Сохраняет значение переменной в БД
+
     :param name: имя переменной
     :param value: значение
     :return None:
@@ -148,6 +149,7 @@ def set_var(name: str, value: str):
 
 def get_var(name) -> str:
     """Получает значение переменной из БД
+
     :param name: имя переменной
     :return str: возвращает значение
     """

@@ -67,12 +67,16 @@ class Alien(Sprite):
         self.size = size
 
     def create_shield_image(self) -> pygame.Surface:
-        """Создает и возвращает изображение щита"""
+        """Создает и возвращает изображение щита
+
+        :return: Surface - изображение щита
+        """
         return images.load('shield.png')
 
     def hit_shield(self) -> bool:
         """Обработчик попадания по щиту
-        :return bool: вернуть True - если щит защитил, False - если нет.
+
+        :return: Возвращает True - если щит защитил, False - если нет.
         """
         if self.has_shield():
             self.shield_down()
@@ -96,7 +100,7 @@ class Alien(Sprite):
             self.update_shield()
 
     def update_shield(self):
-        """Обновляет позицию щита"""
+        """Обновляет позицию щита для отрисовки"""
         if self.shield_sprite:
             self.shield_sprite.rect = self.shield_sprite.image.get_rect(center=self.rect.center)
 
@@ -106,8 +110,11 @@ class Alien(Sprite):
             self.shield_sprite.kill()
             self.shield_sprite = None
 
-    def is_dead(self):
-        """Проверяет, убит ли пришелец"""
+    def is_dead(self) -> bool:
+        """Проверяет, убит ли пришелец
+
+        :return: True если пришелец жив.
+        """
         return self.kill_time > 0
 
     def update(self, dt) -> None:
@@ -133,8 +140,11 @@ class Alien(Sprite):
                 play_sound("alien_dead")
             self.kill_time = self.ALIEN_DEAD_TIME + self.time
 
-    def hit(self):
-        """Обработчик попадания в пришельца"""
+    def hit(self) -> bool:
+        """Обработчик попадания снаряда в пришельца
+
+        :return: True если попадание засчитано
+        """
         if self.time < self.warp_time:
             return False
 
@@ -158,6 +168,9 @@ class Alien(Sprite):
         self.rect.x, self.rect.y = (x, y)
         self.update_shield()
 
-    def has_shield(self):
-        """Проверка активен ли щит"""
+    def has_shield(self) -> bool:
+        """Проверка активен ли щит
+
+        :return: True если щит активен
+        """
         return self.shield_sprite is not None
