@@ -1,5 +1,6 @@
 import math
 import random
+from collections import Counter
 
 import pygame
 
@@ -18,6 +19,9 @@ class BossAlien(Alien):
     # типы пришельцев, которых будет спавнить босс
     MINION_ALIEN_TYPES = (1, 2, 3)
     SHIELD_MAX_HP = 20
+
+    # ширина зоны, для учета ограничения на количество бомб миньонов (не более 2-х в 1 зоне)
+    BOMB_ZONE_WIDTH = 333
 
     def __init__(self, scene_groups: dict, pos: tuple[float, float]):
         super().__init__(scene_groups, pos, settings.BOSS_ALIEN_TYPE, -1, 0.3)
@@ -142,10 +146,31 @@ class BossAlien(Alien):
         """Обновление состояния миньонов.
         Перенацеливание миньонов если требуется
         """
+
+        # Расчет количества бомб по зонам шириной BOMB_ZONE_WIDTH
+        zones = Counter(b.rect.centerx // self.BOMB_ZONE_WIDTH for b in self.scene_groups["bombs"])
+
+        # Наличие дополнительного игрока в зоне увеличивает ограничение на количество бомб в зоне
+        zones.subtract(
+            player.rect.centerx // self.BOMB_ZONE_WIDTH
+            for player in self.scene_groups["players"] if not player.dead
+        )
+
         players = [player for player in self.scene_groups["players"] if not player.dead]
         for alien in self.scene_groups["aliens"]:
             if alien is not self:
                 alien.update(dt)
+
+                if isinstance(alien, MinionAlien) and alien.shot_cooldown and zones[
+                    alien.rect.centerx // self.BOMB_ZONE_WIDTH] + 1 < settings.MINIONS_MAX_BOMBS:
+                    for player in players:
+                        if abs(alien.rect.centerx - player.rect.centerx) < player.rect.width // 2:
+                            alien.shot(0.5)
+                            sound.play_sound("minion_shot")
+                            alien.shot_cooldown.start()
+                            zones[alien.rect.centerx // self.BOMB_ZONE_WIDTH] += 1
+                            break
+
                 if alien.type in BossAlien.MINION_ALIEN_TYPES and alien.can_set_target() and players:
                     min_d = alien.retarget_cooldown() or min(
                         abs(player.rect.center[0] - alien.x) for player in players) > 10

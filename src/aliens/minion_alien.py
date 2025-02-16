@@ -1,5 +1,4 @@
 import math
-from collections import Counter
 from random import randint, choice
 
 from src import settings, sound
@@ -9,9 +8,6 @@ from ..core.cooldown import Cooldown
 
 class MinionAlien(Alien):
     """Класс миньона"""
-
-    # ширина зоны, для учета ограничения на количество бомб (не более 2-х в 1 зоне)
-    BOMB_ZONE_WIDTH = 333
 
     def __init__(self, scene_groups: dict, pos: tuple[float, float], type_: str, move_target_x: float):
         """
@@ -47,23 +43,6 @@ class MinionAlien(Alien):
             self.x + self.warp_x + radius * math.cos(a) - self.image.get_width() // 2,
             self.y + self.warp_y + radius * math.sin(a) - self.image.get_height() // 2,
         )
-
-        # Расчет количества бомб по зонам шириной BOMB_ZONE_WIDTH
-        zones = Counter(b.rect.centerx // self.BOMB_ZONE_WIDTH for b in self.scene_groups["bombs"])
-
-        # Наличие дополнительного игрока в зоне увеличивает ограничение на количество бомб в зоне
-        zones.subtract(
-            player.rect.centerx // self.BOMB_ZONE_WIDTH
-            for player in self.scene_groups["players"] if not player.dead
-        )
-
-        if self.shot_cooldown and zones[self.rect.centerx // self.BOMB_ZONE_WIDTH] + 1 < settings.MINIONS_MAX_BOMBS:
-            for player in self.scene_groups["players"]:
-                if not player.dead and abs(self.rect.centerx - player.rect.centerx) < player.rect.width // 2:
-                    self.shot(0.5)
-                    sound.play_sound("minion_shot")
-                    self.shot_cooldown.start()
-                    break
 
     def can_set_target(self) -> bool:
         """Проверка возможности сменить цель
