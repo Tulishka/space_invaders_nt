@@ -37,7 +37,7 @@ class SettingsScene(Scene):
                 self.menu,
                 ["в окне", "полный экран"], action=lambda: None,
                 font_color="yellow",
-                changed_callback=self.select_mode
+                changed_callback=self.select_display_mode
             )
             self.mode.min_height = self.mode.max_text_size()[1]
             self.menu.selected = self.mode
@@ -71,7 +71,10 @@ class SettingsScene(Scene):
         self.back_image = images.load("menu_back.jpg")
 
     def on_show(self, first_time):
+        """Обработчик активации сцены"""
+
         if self.mode:
+            # задает отображаемые значения для переключателей режима отображения
             self.mode.set_current_index(int(display_manager.fullscreen_enabled))
             curr = tuple(display_manager.fullscreen_size or (0,0))
             for idx, resolution in enumerate(display_manager.display_modes()):
@@ -81,7 +84,7 @@ class SettingsScene(Scene):
             else:
                 self.resolution.set_current_index(0)
 
-            self.resolution.set_enabled(self.mode.current_index == 1)
+            self.select_display_mode()
 
     def draw(self, screen):
         """Отрисовка сцены.
@@ -89,10 +92,6 @@ class SettingsScene(Scene):
         :return None:
         """
         screen.blit(self.back_image, (0, 0))
-
-        for group in self.scene_groups.values():
-            group.draw(screen)
-
         self.menu.draw(screen)
 
     def update(self, dt):
@@ -129,6 +128,10 @@ class SettingsScene(Scene):
 
     @staticmethod
     def load_display_settings():
+        """Загружает настройки дисплея из БД
+
+        :return:
+        """
         display_params = {}
         try:
             values = json.loads(db.get_var("display_settings"))
@@ -139,5 +142,14 @@ class SettingsScene(Scene):
         print("Настройки дисплея загружены из БД: ", display_params)
         return display_params
 
-    def select_mode(self, current_index: int):
-        self.resolution.set_enabled(current_index == 1)
+    def select_display_mode(self):
+        """Обработчик выбора режима отображения
+
+        Метод отслеживает изменения режима отображения, что бы обновить состояние переключателя
+        для выбора разрешения, а именно - отключить его если выбран режим отображения "в окне".
+
+        :param current_index: Индекс выбранного режима
+        :return:
+        """
+        self.resolution.set_enabled(self.mode.current_index == 1)
+        self.resolution.action = None if self.mode.current_index == 0 else lambda: None

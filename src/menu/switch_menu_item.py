@@ -12,7 +12,7 @@ class SwitchMenuItem(ImageMenuItem):
     def __init__(self, parent: ItemsMenu, switch_values: list, start_index: int = 0,
                  action: Callable = None, key: int = None,
                  template: str = "{}",
-                 changed_callback: Callable[[int], None] = None,
+                 changed_callback: Callable[[], None] = None,
                  font_color="green", font_size: int = 32):
         self.switch_values = switch_values
         self.current_index = start_index
@@ -30,6 +30,7 @@ class SwitchMenuItem(ImageMenuItem):
         super().__init__(parent, initial_image, action, key)
 
     def max_text_size(self) -> tuple[int, int]:
+        """Измеряет все значения которые могут отображаться в переключателе и возвращает максимальный размер"""
         max_height = max_width = 0
         for text in self.switch_values:
             w, h = self.font.size(text)
@@ -38,6 +39,7 @@ class SwitchMenuItem(ImageMenuItem):
         return max_width, max_height
 
     def render_image(self) -> pygame.Surface:
+        """Отрисовывает изображение переключателя в текущем состоянии"""
         value = self.switch_values[self.current_index]
         text_img = self.font.render(self.template.format(value), True,
                                     self.font_color if self.enabled else self.disabled_color)
@@ -71,6 +73,14 @@ class SwitchMenuItem(ImageMenuItem):
         return image
 
     def process_event(self, event) -> bool:
+        """Обработчик событий переключателя
+
+        Обрабатывает события кнопок клавиатуры и нажатия мыши, что бы управлять
+        выбором текущего значения из списка значений.
+        Обработка идет, только если это текущий элемент меню и он не отключен.
+
+        :return: Возвращает True если событие было обработано.
+        """
         if self.enabled and self.parent.selected is self:
             change = 0
             if event.type == pygame.KEYDOWN:
@@ -88,15 +98,23 @@ class SwitchMenuItem(ImageMenuItem):
             if change:
                 self.current_index += change
                 self.update_image()
+                if self.changed_callback:
+                    self.changed_callback()
                 return True
 
         return super().process_event(event)
 
-    def set_current_index(self, index):
+    def set_current_index(self, index: int):
+        """Метод устанавливает текущее значение переключателя и обновляет отображение.
+
+        :param index: Индекс выбираемого элемента (из self.switch_values)
+        :return: None
+        """
         self.current_index = max(0, min(index, len(self.switch_values) - 1))
         self.update_image()
 
     def set_enabled(self, enabled: bool):
+        """Метод устанавливает признак переключателя enabled (включен)"""
         if self.enabled != enabled:
             self.enabled = enabled
             self.update_image()
@@ -104,8 +122,6 @@ class SwitchMenuItem(ImageMenuItem):
     def update_image(self):
         self.image = self.render_image()
         self.rect.size = self.image.get_size()
-        if self.changed_callback:
-            self.changed_callback(self.current_index)
 
     def is_changed(self) -> bool:
         return self.current_index != self.start_index
