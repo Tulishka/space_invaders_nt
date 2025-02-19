@@ -128,7 +128,7 @@ def get_top_results(k=10, player_num=None) -> list[tuple[str, int, int]]:
     return results
 
 
-def set_var(name: str, value: str):
+def set_var(name: str, value):
     """Сохраняет значение переменной в БД
 
     :param name: имя переменной
