@@ -73,7 +73,7 @@ class SettingsScene(Scene):
     def on_show(self, first_time):
         if self.mode:
             self.mode.set_current_index(int(display_manager.fullscreen_enabled))
-            curr = tuple(display_manager.fullscreen_size)
+            curr = tuple(display_manager.fullscreen_size or (0,0))
             for idx, resolution in enumerate(display_manager.display_modes()):
                 if resolution == curr:
                     self.resolution.set_current_index(idx)
