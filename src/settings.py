@@ -6,7 +6,12 @@ import platform
 
 import pygame
 
+from src.core.display import DisplayManager
+
+# Размер игровой области на экране (не разрешение)
+# Другие значения приведут к изменению геймплея!
 SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 850, 800
+
 SCENE_KEY_COOLDOWN = 0.2
 
 MUSIC_END_EVENT = pygame.event.custom_type()
@@ -39,6 +44,7 @@ BONUS_ALIEN_SPEED = 400
 ALIENS_REWARD = [0, 10, 20, 30, 100, 5, 15, 40, 10]
 SWARM_ALIEN_ACCURATE_SHOT_COUNT = 3
 
+# Настройки частиц (количество при попадании и убийстве)
 PARTICLES_HIT_COUNT = 10
 PARTICLES_KILL_COUNT = {
     "Alien": 12,
@@ -58,47 +64,12 @@ PARTICLES_KILL_SIZE = {
 }
 
 
-class LevelSettings:
-    def __init__(self,
-                 alien_in_line: int,
-                 alien_types: tuple,
-                 swarm_spd: tuple,
-                 swarm_cd: float,
-                 swarm_shot_order: tuple,
-                 swarm_rot_amp: int,
-                 swarm_rot_spd: int,
-                 swarm_down_spd: int,
-                 acolyte: bool,
-                 ):
-        self.alien_types = alien_types
-        self.swarm_spd = swarm_spd
-        self.alien_in_line = alien_in_line
-        self.swarm_cd = swarm_cd
-        self.swarm_shot_order = swarm_shot_order
-        self.swarm_rot_amp = swarm_rot_amp
-        self.swarm_rot_spd = swarm_rot_spd
-        self.swarm_down_spd = swarm_down_spd
-        self.acolyte = acolyte
-
-
 class PlayerKeys:
     def __init__(self, left, right, shot):
         self.left = left
         self.right = right
         self.shot = shot
 
-
-# Настройки уровней
-level = [
-    None,
-    LevelSettings(8, (2, 2, 1, 1), (30, 250), 3.0, (0, 0, 1, 0, 1, 2, 0, 1), 0, 0, 50, False),
-    LevelSettings(8, (3, 2, 2, 1, 1), (40, 320), 2.5, (0, 1, 2, 0, 1, 2, 0, 1), 0, 0, 60, False),
-    LevelSettings(8, (3, 3, 3, 2, 2, 1), (50, 340), 2.0, (1, 0, 1, 2, 1, 2, 0, 1), 0, 0, 70, False),
-    LevelSettings(8, (7, 3, 3, 2, 1), (50, 350), 2.0, (1, 0, 2, 1, 1, 1, 0, 2), 0, 0, 80, False),
-    LevelSettings(8, (7, 3, 3, 2, 2), (60, 360), 1.8, (1, 1, 2, 1, 1, 1, 2, 1), 0, 0, 70, True),
-    LevelSettings(5, (3, 3, 2, 2, 1, 1), (70, 380), 1.6, (0, 1, 2, 1, 2, 0, 1, 2), 20, 4, 60, True),
-    LevelSettings(5, (7, 3, 3, 2, 2, 2), (70, 400), 1.5, (1, 1, 2, 2, 1, 1, 2, 1), 40, 5, 90, False),
-]
 
 # Кнопки для управления игроками
 PLAYER_KEYS = [
@@ -114,3 +85,6 @@ PLAYER_KEYS = [
         shot=1073742055 if platform.system() == "Darwin" else pygame.K_RCTRL
     )
 ]
+
+# Настройки дисплея
+display_manager = DisplayManager(SCREEN_SIZE)

@@ -7,6 +7,7 @@ from src.aliens.acolyte_alien import AcolyteAlien
 from src.components.projectile import Beam
 from src.core.cooldown import Cooldown
 from src.core.scene_manager import SceneManager
+from src.levels import LEVELS
 from src.sound import sounds, play_sound
 
 
@@ -26,7 +27,7 @@ class Swarm:
     def __init__(self, level: int, scene_groups: dict, scene_manager: SceneManager):
         self.time = 0
         self.scene_groups = scene_groups
-        self.ls = settings.level[level]
+        self.ls = LEVELS[level]
         self.ALIEN_X_DISTANCE = self.LINE_WIDTH // self.ls.alien_in_line
         self.dir = 0
         self.scene_manager = scene_manager

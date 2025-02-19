@@ -11,6 +11,7 @@ from src.aliens.swarm import Swarm
 from src.core import images
 from src.core.scene import Scene
 from src.core.scene_manager import SceneManager
+from src.levels import LEVELS
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
 from src.sound import play_sound, stop_sound
 
@@ -276,7 +277,7 @@ class GameScene(Scene):
         """Переходит на новый уровень
         :return None:
         """
-        if self.level + 1 >= len(settings.level):
+        if self.level + 1 >= len(LEVELS):
             next_scene = "boss"
             bonus_for_no_dead = 100 * (self.lives == 3)
             self.lives = min(self.lives + 1, 3)

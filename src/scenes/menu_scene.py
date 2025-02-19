@@ -35,8 +35,10 @@ class MenuScene(Scene):
         MarginMenuItem(self.menu, 10)
         self.menu.selected = ImageMenuItem(self.menu, p1, partial(self.start_game, 1), pygame.K_1)
         ImageMenuItem(self.menu, p2, partial(self.start_game, 2), pygame.K_2)
-        ImageMenuItem(self.menu, font3.render("зал славы", True, "green"), self.open_results)
-        ImageMenuItem(self.menu, font3.render("выход", True, "green"), sys.exit)
+        ImageMenuItem(self.menu, font3.render("зал славы", True, "gold"), self.open_results)
+        ImageMenuItem(self.menu, font3.render("настройки", True, (200, 200, 255)), self.open_settings)
+        ImageMenuItem(self.menu, font3.render("выход", True, (200, 200, 255)), sys.exit)
+
 
         self.markers = self.load_markers("music/menu1_markers.txt")
         self.cur_marker = 0
@@ -165,3 +167,8 @@ class MenuScene(Scene):
         """Открывает сцену результатов (Зал славы)"""
         play_sound("menu_show")
         self.scene_manager.push_scene("scores", {})
+
+    def open_settings(self):
+        """Открывает сцену настроек"""
+        play_sound("menu_show")
+        self.scene_manager.push_scene("settings", {})
