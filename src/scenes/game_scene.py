@@ -330,7 +330,10 @@ class GameScene(Scene):
             return
 
         if event.key == pygame.K_ESCAPE:
-            self.open_menu()
+            if self.gameover_time > 0:
+                self.gameover_time = self.time + 1
+            else:
+                self.open_menu()
 
         # отладка
         if event.key == pygame.K_DELETE:
