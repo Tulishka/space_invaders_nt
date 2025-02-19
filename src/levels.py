@@ -1,24 +1,18 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class LevelSettings:
-    def __init__(self,
-                 alien_in_line: int,
-                 alien_types: tuple,
-                 swarm_spd: tuple,
-                 swarm_cd: float,
-                 swarm_shot_order: tuple,
-                 swarm_rot_amp: int,
-                 swarm_rot_spd: int,
-                 swarm_down_spd: int,
-                 acolyte: bool,
-                 ):
-        self.alien_types = alien_types
-        self.swarm_spd = swarm_spd
-        self.alien_in_line = alien_in_line
-        self.swarm_cd = swarm_cd
-        self.swarm_shot_order = swarm_shot_order
-        self.swarm_rot_amp = swarm_rot_amp
-        self.swarm_rot_spd = swarm_rot_spd
-        self.swarm_down_spd = swarm_down_spd
-        self.acolyte = acolyte
+    """Класс для описания уровня"""
+    alien_in_line: int
+    alien_types: tuple
+    swarm_spd: tuple
+    swarm_cd: float
+    swarm_shot_order: tuple
+    swarm_rot_amp: int
+    swarm_rot_spd: int
+    swarm_down_spd: int
+    acolyte: bool
 
 
 LEVELS = [
