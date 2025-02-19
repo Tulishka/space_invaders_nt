@@ -68,8 +68,5 @@ class TrailerScene(Scene):
         """
         if event.type != pygame.KEYDOWN or self.time < settings.SCENE_KEY_COOLDOWN:
             return
-        if event.key == pygame.K_ESCAPE:
-            self.scene_manager.pop_scene()
-            return True
 
         self.run_game()
