@@ -5,14 +5,16 @@ import pygame
 
 from src import settings
 from src.core.db import create_db
+from src.core.scene_manager import SceneManager
 from src.scenes.boss_scene import BossScene
 from src.scenes.defeat_scene import DefeatScene
 from src.scenes.game_scene import GameScene
 from src.scenes.menu_scene import MenuScene
-from src.core.scene_manager import SceneManager
 from src.scenes.scores_scene import ScoresScene
+from src.scenes.settings_scene import SettingsScene
 from src.scenes.trailer_scene import TrailerScene
 from src.scenes.victory_scene import VictoryScene
+from src.settings import display_manager
 
 # Получение пути исполняемого файла, что бы сменить текущую папку
 # т.к. исполняемый файл может быть запущен в неправильной папке
@@ -31,11 +33,19 @@ def main():
     pygame.init()
     pygame.display.set_caption("Space Invaders: Новая угроза")
 
+    display_settings = SettingsScene.load_display_settings()
+    if display_settings.get("fullscreen_enabled"):
+        # Фикс бага pygame.
+        # Так как у нас требуется включить режим полного экрана, создадим простое окно сперва -
+        # иначе если сразу создать "полный экран", то pygame больше не сможет менять разрешение
+        pygame.display.set_mode(settings.SCREEN_SIZE)
+
+    display_manager.set_mode(**display_settings)
+
     pygame.mouse.set_visible(False)
     pygame.mixer_music.set_endevent(settings.MUSIC_END_EVENT)
 
     scene_manager = SceneManager()
-    screen = pygame.display.set_mode(settings.SCREEN_SIZE)
 
     # Регистрация классов сцен
     scene_manager.add_scene_class("menu", MenuScene)
@@ -45,6 +55,7 @@ def main():
     scene_manager.add_scene_class("trailer", TrailerScene)
     scene_manager.add_scene_class("boss", BossScene)
     scene_manager.add_scene_class("scores", ScoresScene)
+    scene_manager.add_scene_class("settings", SettingsScene)
 
     # Запуск начальной сцены
     scene_manager.push_scene("menu")
@@ -61,7 +72,16 @@ def main():
                 run = False
 
         scene_manager.update(dt)
-        scene_manager.draw(screen)
+        scene_manager.draw(display_manager.screen_surface)
+
+        if pygame.display.is_fullscreen():
+            pygame.draw.rect(
+                display_manager.screen_surface,
+                (100, 100, 200),
+                (0, 0, display_manager.screen_surface.get_width(), display_manager.screen_surface.get_height()),
+                2
+            )
+
         pygame.display.update()
         clock.tick(60)
 
