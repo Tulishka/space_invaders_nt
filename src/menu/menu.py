@@ -30,6 +30,7 @@ class Menu(ItemsMenu):
         self.top = settings.SCREEN_HEIGHT // 2 - 200
         self.opacity = 200
         self.cursor_image = images.load('cursor.png')
+        self.min_width = 150
 
     def update(self, dt):
         self.time += dt
@@ -135,7 +136,7 @@ class Menu(ItemsMenu):
         if self.back_image:
             screen.blit(self.back_image, self.back_rect)
 
-        max_width = 0
+        max_width = self.min_width
         for item in self.items:
             x = xc - item.get_width() // 2
             item.rect.topleft = x, y

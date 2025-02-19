@@ -20,6 +20,8 @@ class MenuItem:
         self.action = action
         self.key = key
         self.rect = pygame.Rect(0, 0, 1, 1)
+        self.min_height = 0
+        self.min_width = 0
 
     def update(self, dt):
         self.time += dt
@@ -32,10 +34,10 @@ class MenuItem:
         return False
 
     def get_width(self) -> int:
-        return self.rect.width
+        return max(self.rect.width, self.min_width)
 
     def get_height(self) -> int:
-        return self.rect.height
+        return max(self.rect.height, self.min_height)
 
     def draw(self, surface):
         pass
@@ -72,3 +74,5 @@ class ImageMenuItem(MenuItem):
 
     def draw(self, surface):
         surface.blit(self.image, self.rect.topleft)
+
+
