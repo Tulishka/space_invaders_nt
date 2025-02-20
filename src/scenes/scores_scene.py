@@ -39,8 +39,6 @@ class ScoresScene(Scene):
         self.back_image_top = 0
         self.hidden_height = 0
 
-        self.cursor_image = images.load('cursor.png')
-
         results = db.get_top_results(10)
 
         table_width = 550
@@ -55,7 +53,7 @@ class ScoresScene(Scene):
         label.rect.midtop = settings.SCREEN_WIDTH // 2, logo.rect.bottom
 
         if results:
-            text1 = create_text_sprite(self.scene_groups["logo"], "ТОП-10", font_size=32, color="green")
+            text1 = create_text_sprite(self.scene_groups["logo"], "ЛОКАЛЬНЫЙ ТОП-10", font_size=32, color="green")
             text1.rect.midtop = settings.SCREEN_WIDTH // 2, label.rect.bottom + 40
 
             create_table(results, tab_rect, self.scene_groups["table"], spacing=8)
@@ -117,10 +115,6 @@ class ScoresScene(Scene):
 
         for group in self.scene_groups.values():
             group.draw(screen)
-
-        mouse_pos = pygame.mouse.get_pos()
-        if mouse_pos[0] != 0 and mouse_pos[1] != 0:
-            screen.blit(self.cursor_image, mouse_pos)
 
         self.menu.draw(screen)
 
