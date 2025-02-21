@@ -128,7 +128,7 @@
 
 ### Запуск сборки
 
-> Скачайте с github [релиз](https://github.com/Tulishka/space_invaders_nt/releases/tag/v0.9) 
+> Скачайте с github [релиз](https://github.com/Tulishka/space_invaders_nt/releases/tag/v1.0) 
 
 > Для запуска на `macos` потребуется выполнить строку в терминале:
 > 
