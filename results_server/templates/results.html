@@ -20,7 +20,15 @@
             {% for result in results %}
             <tr class="{{ 'table-success' if result.hl else '' }}">
                 <td class="text-start" style="max-width: 40px">{{ result.position }}</td>
-                <td class="text-start">{{ result.player_name }}</td>
+                <td class="text-start">{{ result.player_name }} {% if secret %}
+                    <form method="POST" action="/space_invaders_nt/delete" style="display: inline">
+                        <input type="hidden" name="station_uid" value="{{ result.station_uid }}">
+                        <input type="hidden" name="user_name" value="{{ result.user_name }}">
+                        <input type="hidden" name="secret" value="{{ secret }}">
+                        <button type="submit" class="btn btn-danger btn-sm">🗑</button>
+                    </form>
+               {% endif %}
+                </td>
                 <td class="text-end">{{ result.score }}</td>
             </tr>
             {% endfor %}

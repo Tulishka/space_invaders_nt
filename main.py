@@ -63,6 +63,9 @@ def main():
     run = True
     clock = pygame.time.Clock()
 
+    light = pygame.Surface(settings.SCREEN_SIZE, pygame.SRCALPHA)
+
+
     while run:
         dt = clock.get_time() / 1000
         for event in pygame.event.get():
@@ -82,6 +85,15 @@ def main():
                 2
             )
 
+        # mouse_pos = pygame.mouse.get_pos()
+        # light.fill((255, 255, 255))
+        # for i in range(5):
+        #     w = 400 - i * 50
+        #     c = (5-i) * 20
+        #     pygame.draw.ellipse(light, (c, c, c, 100),
+        #                     (mouse_pos[0]-w//2, - light.get_height() // 2, w, light.get_height() * 1.5))
+        #
+        # display_manager.screen_surface.blit(light, (0,0), special_flags=pygame.BLEND_RGBA_SUB)
         pygame.display.update()
         clock.tick(60)
 

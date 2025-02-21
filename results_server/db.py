@@ -53,6 +53,17 @@ def insert_result(data) -> bool:
     return True
 
 
+def delete_result(station_uid, user_name):
+    conn = sqlite3.connect(DB_FILENAME)
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM results WHERE station_uid = ? AND user_name = ?",
+        (station_uid, user_name)
+    )
+    conn.commit()
+    conn.close()
+
+
 def get_results(top: int = 200) -> list[dict]:
     """Получение лучших результатов (top)
 
