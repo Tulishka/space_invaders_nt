@@ -4,7 +4,7 @@ from collections import Counter
 
 from flask import Flask, request, render_template, redirect, url_for
 
-from results_server import db
+import db
 
 app = Flask(__name__)
 
