@@ -34,6 +34,8 @@ class Menu(ItemsMenu):
 
     def update(self, dt):
         self.time += dt
+        for item in self.items:
+            item.update(dt)
 
     def process_event(self, event) -> bool:
         """Метод обработчик pygame-событий меню: нажатие кнопок и событий мышки

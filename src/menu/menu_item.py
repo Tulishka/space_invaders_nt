@@ -3,6 +3,7 @@ from typing import Callable
 import pygame
 
 from .items_menu import ItemsMenu
+from ..core.animation import Animation
 
 
 class MenuItem:
@@ -76,3 +77,22 @@ class ImageMenuItem(MenuItem):
         surface.blit(self.image, self.rect.topleft)
 
 
+class AnimatedMenuItem(MenuItem):
+    """Элемент меню - анимированная картинка"""
+
+    def __init__(self, parent: ItemsMenu, animation: Animation, action: Callable = None, key: int = None):
+        super().__init__(parent, action, key)
+        self.animation = animation
+        self.image = animation.get_frame(0)
+        self.rect.width = self.image.get_width()
+        self.rect.height = self.image.get_height()
+
+    def update(self, dt):
+        super().update(dt)
+        self.image = self.animation.get_frame(self.time)
+
+    def set_animation(self, animation: Animation):
+        self.animation = animation
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect.topleft)
