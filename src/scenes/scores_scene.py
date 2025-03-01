@@ -12,11 +12,13 @@ from src.components.player import Player
 from src.components.projectile import Bomb, Bullet
 from src.components.projectile_utils import collide_bullets
 from src.core import db, pg_utils, web_results, images
+from src.core.animation import Animation
 from src.core.cooldown import Cooldown
 from src.core.pg_utils import create_text_sprite, create_table, create_text_image
 from src.core.scene import Scene
 from src.core.scene_manager import SceneManager
 from src.menu import Menu, ImageMenuItem, MarginMenuItem
+from src.menu.menu_item import AnimatedMenuItem
 
 
 class ScoresScene(Scene):
@@ -74,15 +76,37 @@ class ScoresScene(Scene):
             action=web_results.open_world_records)
         MarginMenuItem(self.menu, 2)
         ImageMenuItem(self.menu, create_text_image("саундтреки написанные для игры", font_size=26, color="gray"))
-        ImageMenuItem(
-            self.menu,
-            create_text_image("Вторжение пришельцев (rus)", font_size=28, color="green"),
-            partial(self.set_music_theme, "ost_rus")
-        )
-        ImageMenuItem(
-            self.menu, create_text_image("Space Invasion (eng)", font_size=28, color="green"),
-            partial(self.set_music_theme, "ost_eng")
-        )
+
+        ost_rus_img_off = create_text_image("  Вторжение пришельцев (rus)  ", font_size=28, color="darkgreen")
+        ost_eng_img_off = create_text_image("  Space Invasion (eng)  ", font_size=28, color="darkgreen")
+
+        ost_rus_img = create_text_image("  Вторжение пришельцев (rus)  ", font_size=28, color="green")
+        ost_eng_img = create_text_image("  Space Invasion (eng)  ", font_size=28, color="green")
+
+        self.stopped_animations = {
+            "ost_rus": Animation([ost_rus_img_off]),
+            "ost_eng": Animation([ost_eng_img_off]),
+        }
+
+        ost_rus_img_on = ost_rus_img.copy()
+        pygame.draw.circle(ost_rus_img_on, "yellow", (3, ost_rus_img_on.get_height() // 2), 3)
+
+        ost_eng_img_on = ost_eng_img.copy()
+        pygame.draw.circle(ost_eng_img_on, "yellow", (3, ost_eng_img_on.get_height() // 2), 3)
+        self.playing_animations = {
+            "ost_rus": Animation([ost_rus_img, ost_rus_img_on]),
+            "ost_eng": Animation([ost_eng_img, ost_eng_img_on]),
+        }
+
+        self.music_items = {
+            "ost_rus": AnimatedMenuItem(
+                self.menu, self.stopped_animations["ost_rus"],
+                partial(self.set_music_theme, "ost_rus")
+            ),
+            "ost_eng": AnimatedMenuItem(
+                self.menu, self.stopped_animations["ost_eng"],
+                partial(self.set_music_theme, "ost_eng")
+            )}
         MarginMenuItem(self.menu, 0)
         ImageMenuItem(self.menu, create_text_image("ВЫХОД", font_size=28, color=(200, 200, 255)), self.exit)
 
@@ -142,9 +166,13 @@ class ScoresScene(Scene):
         super().update(dt)
 
         if self.music_theme_cd:
-            music.play(ScoresScene.music_theme, 1, 0)
+            for theme, item in self.music_items.items():
+                item.set_animation(self.stopped_animations[theme])
+            music.play(ScoresScene.music_theme, 100, 0)
+            self.music_items[ScoresScene.music_theme].set_animation(self.playing_animations[ScoresScene.music_theme])
             self.music_theme_cd.start(99999999)
 
+        self.menu.update(dt)
         for group in self.scene_groups.values():
             group.update(dt)
 
