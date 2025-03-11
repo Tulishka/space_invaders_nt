@@ -1,3 +1,4 @@
+import math
 import random
 import sys
 from collections import defaultdict
@@ -38,7 +39,6 @@ class MenuScene(Scene):
         ImageMenuItem(self.menu, font3.render("зал славы", True, "gold"), self.open_results)
         ImageMenuItem(self.menu, font3.render("настройки", True, (200, 200, 255)), self.open_settings)
         ImageMenuItem(self.menu, font3.render("выход", True, (200, 200, 255)), sys.exit)
-
 
         self.markers = self.load_markers("music/menu1_markers.txt")
         self.cur_marker = 0
@@ -97,7 +97,7 @@ class MenuScene(Scene):
         if self.cur_marker < len(self.markers) and self.markers[self.cur_marker] <= self.time:
             self.beat_value = 1
             self.cur_marker += 1
-            pos = (settings.SCREEN_WIDTH, random.randint(32, settings.SCREEN_HEIGHT - 32))
+            pos = (settings.SCREEN_WIDTH, int(self.time * 500) % (settings.SCREEN_HEIGHT - 64) + 32)
 
             if self.bonus_alien_beat_num == self.cur_marker or self.cur_marker % 30 == 0:
                 alien_type = settings.BONUS_ALIEN_TYPE
