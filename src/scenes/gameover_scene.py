@@ -135,8 +135,13 @@ class GameOverScene(Scene):
             self.num_players,
             *((self.player_names[idx], self.scores[idx]) for idx in range(self.num_players))
         )
+        achievements = (
+                ("👑" if type(self).__name__ == "VictoryScene" else "💀") +
+                ("🤡" if self.params.get("cheats") else "")
+        )
+        print(achievements)
         web_results.send_world_record(
             ", ".join(sorted(self.player_names[:self.num_players])),
             sum(self.scores),
-            "👑" if type(self).__name__ == "VictoryScene" else "💀"
+            achievements
         )

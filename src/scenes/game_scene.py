@@ -173,16 +173,14 @@ class GameScene(Scene):
             music.play("gameover")
 
         if self.gameover_time and self.gameover_time < self.time:
-            self.scene_manager.change_scene(
-                "defeat",
-                {
-                    "text": "GAME OVER",
-                    "num_players": self.num_players,
-                    "score": self.score,
-                    "p1_score": self.player_score[0],
-                    "p2_score": self.player_score[1]
-                }
-            )
+            self.params.update({
+                "text": "GAME OVER",
+                "num_players": self.num_players,
+                "score": self.score,
+                "p1_score": self.player_score[0],
+                "p2_score": self.player_score[1]
+            })
+            self.scene_manager.change_scene("defeat", self.params)
 
     def hit_player(self, player: Player, minus_lives: int = 1):
         """Обработка получения урона игроком
@@ -335,7 +333,7 @@ class GameScene(Scene):
             else:
                 self.open_menu()
 
-        # отладка
+        # читы
         if event.key == pygame.K_DELETE:
             self.scene_groups["aliens"].empty()
         elif event.key == pygame.K_PAGEDOWN:
@@ -345,6 +343,10 @@ class GameScene(Scene):
         elif event.key == pygame.K_g:
             for player in self.players:
                 player.upgrade_gun()
+        else:
+            return
+
+        self.params["cheats"] = True
 
     def create_menu(self):
         """Создание внутри-игрового меню
